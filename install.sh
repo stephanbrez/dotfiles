@@ -46,28 +46,28 @@ function fail() {
 function linux_package() {
 if [ -x "$(command -v apk)" ];
 then
-    pkgmgr="apk "
-    pkginstall="add --no-cache "
+    pkgmgr="apk"
+    pkginstall="add --no-cache"
     pkgupdate="update"	
 elif [ -x "$(command -v apt)" ];
 then
-    pkgmgr="apt "
-    pkginstall="install -y "
+    pkgmgr="apt"
+    pkginstall="install -y"
     pkgupdate="update"	
 elif [ -x "$(command -v dnf)" ];
 then
-    pkgmgr="dnf "
-    pkginstall="install "
+    pkgmgr="dnf"
+    pkginstall="install -y"
     pkgupdate="update"	
 elif [ -x "$(command -v pacman)" ];
 then
-    pkgmgr="pacman "
-    pkginstall="-S "
+    pkgmgr="pacman"
+    pkginstall="-S"
     pkgupdate="-Syu"	
 elif [ -x "$(command -v zypper)" ];
 then
-    pkgmgr="zypper "
-    pkginstall="install "
+    pkgmgr="zypper"
+    pkginstall="install"
     pkgupdate="refresh && zypper update"	
 else
     fail "Package manager not found. You must manually install packages.";
@@ -81,8 +81,8 @@ _echo "configuring package manager"
 
 case "$OSTYPE" in
   	darwin*)  
-	pkgmgr="brew "
-	pkginstall="install "
+	pkgmgr="brew"
+	pkginstall="install"
 	pkgupdate="update"
 	DARWIN=1 
 	;; 
@@ -105,11 +105,12 @@ case "$OSTYPE" in
 	;;
   	*)        
 	fail "unknown: $OSTYPE" 
+ 	exit 1
 	;;
 esac
 
 _echo "updating package manager"
-"$pkgmgr""$pkgupdate"
+eval "$pkgmgr" "$pkgupdate"
 
 # install all the things \o/
 _echo "installing packages"
@@ -171,10 +172,10 @@ pkgInstall=(
 case $pkgmgr in
 	apt*)
 	# Debian specific tools
-	"$pkgmgr""pkginstall"apt-utils dash debianutils
+	eval "$pkgmgr" "$pkginstall" "apt-utils dash debianutils"
 	;;
 esac
-"$pkgmgr""pkginstall""${pkgInstall[*]}"
+eval "$pkgmgr" "$pkginstall" "${pkgInstall[*]}"
 
 # manually add apt sources
 mkdir -p /etc/apt/keyrings
