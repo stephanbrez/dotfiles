@@ -116,8 +116,6 @@ _echo "installing packages"
 # build package list
 pkgInstall=(
 	# command line tools
-	autoconf
-	automake
 	bat
 	btop
 	diffutils
@@ -137,10 +135,10 @@ pkgInstall=(
 	stow
 	tldr
 	tmux
+ 	trash-cli
 	zsh
-	zsh-syntax-highlighting
 	# system/server tools
-	apt-utils
+ 	automake
 	bash
 	bash-completion
 	build-essential
@@ -149,7 +147,6 @@ pkgInstall=(
 	cmake
 	coreutils
 	curl
-	dnsutils
 	docker.io
 	dpkg
 	e2fsprogs
@@ -157,7 +154,8 @@ pkgInstall=(
 	fail2ban
 	gcc
 	gpg
-	pkg-config
+ 	meson
+	pkgconf
 	psmisc
 	python3
 	python3-pip
@@ -166,13 +164,14 @@ pkgInstall=(
 	secure-delete
 	sudo
 	util-linux
+ 	wget
 	# fun
 	toilet
 )
 case $pkgmgr in
 	apt*)
 	# Debian specific tools
-	"$pkgmgr""pkginstall"dash debianutils
+	"$pkgmgr""pkginstall"apt-utils dash debianutils
 	;;
 esac
 "$pkgmgr""pkginstall""${pkgInstall[*]}"
