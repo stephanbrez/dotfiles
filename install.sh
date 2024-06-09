@@ -11,8 +11,6 @@
 #  ░           ░       ░                 ░  ░    ░  ░    ░  ░   ░  ░   ░
 
 # TODO:
-# - setup distro versions
-#	- os detection
 #
 # ╔════════════════════════════════════════════════╗
 # ║  ░█▄█░█▀▀░▀█▀░█░█░█▀█░█▀▄░█▀█░█░░░█▀█░█▀▀░█░█  ║
@@ -33,7 +31,6 @@ bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
 dots="nvim starship tmux zsh"
 ASME="sudo -u $USER"
-PKG_MGR="apt"
 
 # ======== helper functions ======== #
 function _echo() { printf "\n╓───── %s \n╙────────────────────────────────────── ─ ─ \n" "$1"; }
@@ -45,36 +42,36 @@ function fail() {
 	echo ''
 	exit
 }
-function get_os_release() {
-	if [ -f /etc/os-release ]; then
-	    # freedesktop.org and systemd
-	    . /etc/os-release
-	    OS=$NAME
-	    VER=$VERSION_ID
-	elif type lsb_release >/dev/null 2>&1; then
-	    # linuxbase.org
-	    OS=$(lsb_release -si)
-	    VER=$(lsb_release -sr)
-	elif [ -f /etc/lsb-release ]; then
-	    # For some versions of Debian/Ubuntu without lsb_release command
-	    . /etc/lsb-release
-	    OS=$DISTRIB_ID
-	    VER=$DISTRIB_RELEASE
-	elif [ -f /etc/debian_version ]; then
-	    # Older Debian/Ubuntu/etc.
-	    OS=Debian
-	    VER=$(cat /etc/debian_version)
-	elif [ -f /etc/SuSe-release ]; then
-	    # Older SuSE/etc.
-	    ...
-	elif [ -f /etc/redhat-release ]; then
-	    # Older Red Hat, CentOS, etc.
-	    ...
-	else
-	    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
-	    OS=$(uname -s)
-	    VER=$(uname -r)
-	fi
+
+function linux_package() {
+if [ -x "$(command -v apk)" ];
+then
+    pkgmgr="apk "
+    pkginstall="add --no-cache "
+    pkgupdate="update"	
+elif [ -x "$(command -v apt)" ];
+then
+    pkgmgr="apt "
+    pkginstall="install -y "
+    pkgupdate="update"	
+elif [ -x "$(command -v dnf)" ];
+then
+    pkgmgr="dnf "
+    pkginstall="install "
+    pkgupdate="update"	
+elif [ -x "$(command -v pacman)" ];
+then
+    pkgmgr="pacman "
+    pkginstall="-S "
+    pkgupdate="-Syu"	
+elif [ -x "$(command -v zypper)" ];
+then
+    pkgmgr="zypper "
+    pkginstall="install "
+    pkgupdate="refresh && zypper update"	
+else
+    fail "Package manager not found. You must manually install packages.";
+fi
 }
 
 #########################################
@@ -82,45 +79,42 @@ function get_os_release() {
 #########################################
 _echo "configuring package manager"
 
-if 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        get_os_release
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-        # Mac OSX
-	PKG_MGR = "brew"
-elif [[ "$OSTYPE" == "cygwin" ]]; then
-        # POSIX compatibility layer and Linux environment emulation for Windows
-elif [[ "$OSTYPE" == "msys" ]]; then
-        # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
-elif [[ "$OSTYPE" == "win32" ]]; then
-        # I'm not sure this can happen.
-elif [[ "$OSTYPE" == "freebsd"* ]]; then
+case "$OSTYPE" in
+  	darwin*)  
+	pkgmgr="brew "
+	pkginstall="install "
+	pkgupdate="update"
+	DARWIN=1 
+	;; 
+  	linux*)   
+	LINUX=1
+	linux_package 
+	;;
+  	bsd*)     	
 	OS=$(uname -s)
-	VER=$(uname -r)
-else
-        # Unknown.
-	fail "error getting OS & release"
-fi
-
-case $VER in
-	debian)
- 	PKG_MGR = "apt"
-  	;;
-  	fedora | "redhat"* )
-	PKG_MGR = "dnf"
- 	;;
- 	arch)
-	PKG_MGR = "pacman"
- 	;;
+	VER=$(uname -r) 
+	;;
+  	msys*)    
+	echo "WINDOWS" 
+	;;
+  	cygwin*)  
+	echo "ALSO WINDOWS" 
+	;;
+  	win32*)
+	echo "WINDOWS"
+	;;
+  	*)        
+	fail "unknown: $OSTYPE" 
+	;;
 esac
 
 _echo "updating package manager"
-$PKG_MGR update
+"$pkgmgr""$pkgupdate"
 
 # install all the things \o/
 _echo "installing packages"
 # build package list
-CMD_PKGS=(
+pkgInstall=(
 	# command line tools
 	autoconf
 	automake
@@ -174,11 +168,14 @@ CMD_PKGS=(
 	util-linux
 	# fun
 	toilet
-	# Debian specific tools
-	dash
-	debianutils
 )
-$PKG_MGR install -y --noconfirm "${CMD_PKGS[@]}"
+case $pkgmgr in
+	apt*)
+	# Debian specific tools
+	"$pkgmgr""pkginstall"dash debianutils
+	;;
+esac
+"$pkgmgr""pkginstall""${pkgInstall[*]}"
 
 # manually add apt sources
 mkdir -p /etc/apt/keyrings
