@@ -25,12 +25,13 @@
 #########################################
 # Script setup                          #
 #########################################
-myhome="$HOME"
+me="stephan"
+myhome="/home/$me"
 basedir="$myhome/.dotfiles"
 bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
-dots="nvim starship tmux zsh"
-ASME="sudo -u $USER"
+dots="nvim starship tmux wezterm zsh"
+ASME="sudo -u $me"
 
 # ======== helper functions ======== #
 function _echo() { printf "\n╓───── %s \n╙────────────────────────────────────── ─ ─ \n" "$1"; }
@@ -154,6 +155,9 @@ pkgInstall=(
 	ethtool
 	fail2ban
 	gcc
+	golang
+	golang-doc
+	golang-src
 	gpg
  	meson
 	pkgconf
@@ -201,7 +205,7 @@ chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
 apt install -y eza
 
 # ======== install fzf ======== #
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf &&
+$ASME git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf &&
 	~/.fzf/install
 
 # ======== install glow ======== #
@@ -230,7 +234,7 @@ ln -s "$(which fd)" "$bindir"/fd
 # ======== Fun stuff ======== #
 _echo "setting up ascii/ansi art tools"
 rm -rf /usr/share/figlet/
-# git clone --depth=1 https://github.com/xero/figlet-fonts.git /usr/share/figlet/
+git clone --depth=1 https://github.com/xero/figlet-fonts.git /usr/share/figlet/
 $ASME git clone --depth=1 https://github.com/digitallyserviced/tdfgo.git "$myhome"/.local/src/tdfgo &&
 	cd "$myhome"/.local/src/tdfgo &&
 	$ASME go build &&
@@ -243,22 +247,24 @@ $ASME git clone --depth=1 https://github.com/digitallyserviced/tdfgo.git "$myhom
 # Setup                                 #
 #########################################
 _echo "creating directories"
-$ASME mkdir -p "$myhome/.local/{bin, cache, lib, share, src, state}"
-ln -s "$myhome"/Documents "$myhome"/.local/docs
+$ASME mkdir -p \
+	"$myhome/.{config,local}" \
+	"$myhome/.local/{bin,cache,lib,share,src,state}"
+$ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
 
 # ======== setup dotfiles ======== #
 _echo "setting up dotfiles"
 if [ -d "$basedir/.git" ]; then
 	info "Updating dotfiles using existing git..."
 	cd "$basedir" &&
-		git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
+		$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
 else
 	info "Checking out dotfiles using git..."
 	rm -rf "$basedir"
 	$ASME git clone --quiet "$repourl" "$basedir" &&
 		cd "$basedir" &&
 		$ASME stow "$dots" -t "$myhome" --adopt &&
-		git restore .
+		$ASME git restore .
 fi
 
 _echo "setting up starship"
@@ -286,7 +292,7 @@ if which tmux >/dev/null 2>&1; then
 	if [ -e "$myhome/.config/tmux/plugins/tpm" ]; then
 		mv "$myhome/.config/tmux/plugins/tpm" "$tpm"
 		pushd "$tpm" >/dev/null &&
-			git pull -q origin master &&
+			$ASME git pull -q origin master &&
 			popd >/dev/null || return
 	else
 		$ASME git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm" &&
