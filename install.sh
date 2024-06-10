@@ -25,8 +25,8 @@
 #########################################
 # Script setup                          #
 #########################################
-me="stephan"
-myhome="/home/$me"
+me=$(dirname "$0")
+myhome=$(pwd -P)
 basedir="$myhome/.dotfiles"
 bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
@@ -74,6 +74,20 @@ else
     fail "Package manager not found. You must manually install packages.";
 fi
 }
+
+_echo "setting up dotfiles for '$me' in '$basedir'"
+user "Do you want to continue? (y/n):"
+read choice
+case "$choice" in
+	y|Y)
+ 		info "Continuing..."
+   		;;
+    	n|N)
+     		fail "Exiting."
+       		;;
+	*)
+ 		user "Invalid choice. Please enter 'y' or 'n'."
+   		;;
 
 #########################################
 # Install                               #
@@ -191,13 +205,13 @@ mkdir -p /etc/debsig/policies/AC2D62742012EA22/ &&
 	curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
 mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 &&
 	curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
-apt install -y 1password 1password-cli
+apt update && apt install -y 1password 1password-cli
 
 # ======== install eza ======== #
 wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
 echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | tee /etc/apt/sources.list.d/gierens.list
 chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-apt install -y eza
+apt update && apt install -y eza
 
 # ======== install fzf ======== #
 $ASME git clone --depth 1 https://github.com/junegunn/fzf.git "$myhome"/.fzf &&
@@ -219,12 +233,12 @@ cd "$myhome" &&
 # ======== install wezterm ======== #
 curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
 echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
-apt install wezterm
+apt update && apt install wezterm
 
 # ======== install zoxide ======== #
 # debian only
 $ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
-# fix fd clash
+# fix fd clash if needed
 ln -s "$(which fd)" "$bindir"/fd
 
 # ======== Fun stuff ======== #
