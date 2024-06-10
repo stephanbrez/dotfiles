@@ -185,17 +185,12 @@ eval "$pkgmgr" "$pkginstall" "${pkgInstall[*]}"
 mkdir -p /etc/apt/keyrings
 
 # ======== install 1password ======== #
-sudo -s \
-	curl -sS https://downloads.1password.com/linux/keys/1password.asc |
-	gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" |
-	tee /etc/apt/sources.list.d/1password.list
-mkdir -p /etc/debsig/policies/AC2D62742012EA22/
-curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol |
-	tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
-mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
-curl -sS https://downloads.1password.com/linux/keys/1password.asc |
-	gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
+curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg &&
+	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | tee /etc/apt/sources.list.d/1password.list
+mkdir -p /etc/debsig/policies/AC2D62742012EA22/ &&
+	curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
+mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 &&
+	curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
 apt install -y 1password 1password-cli
 
 # ======== install eza ======== #
@@ -205,8 +200,8 @@ chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
 apt install -y eza
 
 # ======== install fzf ======== #
-$ASME git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf &&
-	~/.fzf/install
+$ASME git clone --depth 1 https://github.com/junegunn/fzf.git "$myhome"/.fzf &&
+	"$myhome"/.fzf/install
 
 # ======== install glow ======== #
 curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
@@ -219,15 +214,15 @@ cd "$myhome" &&
 	curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" &&
 	tar xf lazygit.tar.gz lazygit &&
 	install lazygit /usr/local/bin &&
-	cd "$basedir"
+	cd "$myhome"
 
 # ======== install wezterm ======== #
-curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
-echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
 apt install wezterm
 
 # ======== install zoxide ======== #
-curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
 # fix fd clash
 ln -s "$(which fd)" "$bindir"/fd
 
