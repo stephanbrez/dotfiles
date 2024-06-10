@@ -30,7 +30,7 @@ me=$(basename "$myhome")
 basedir="$myhome/.dotfiles"
 bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
-dots="nvim starship tmux wezterm zsh"
+stowpkg=(nvim starship tmux wezterm zsh)
 ASME="sudo -u $me"
 
 # ======== helper functions ======== #
@@ -126,7 +126,7 @@ case "$OSTYPE" in
 esac
 
 _echo "updating package manager"
-eval "$pkgmgr" "$pkgupdate"
+"$pkgmgr" "$pkgupdate"
 
 # install all the things \o/
 _echo "installing packages"
@@ -194,7 +194,7 @@ case $pkgmgr in
 	eval "$pkgmgr" "$pkginstall" "apt-utils dash debianutils"
 	;;
 esac
-eval "$pkgmgr" "$pkginstall" "${pkgInstall[*]}"
+"$pkgmgr" "$pkginstall" "${pkgInstall[*]}"
 
 # manually add apt sources
 mkdir -p /etc/apt/keyrings
@@ -259,8 +259,8 @@ $ASME git clone --depth=1 https://github.com/digitallyserviced/tdfgo.git "$myhom
 #########################################
 _echo "creating directories"
 $ASME mkdir -p \
-	"$myhome/.{config,local}" \
-	"$myhome/.local/{bin,cache,lib,share,src,state}"
+	"$myhome"/.{config,local} \
+	"$myhome"/.local/{bin,cache,lib,share,src,state}
 $ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
 
 # ======== setup dotfiles ======== #
@@ -274,7 +274,9 @@ else
 	rm -rf "$basedir"
 	$ASME git clone --quiet "$repourl" "$basedir" &&
 		cd "$basedir" &&
-		$ASME stow "$dots" -t "$myhome" --adopt &&
+		for item in "${stowpkg[@]}"; do
+			$ASME stow "$item" -t "$myhome" --adopt
+		done &&
 		$ASME git restore .
 fi
 
