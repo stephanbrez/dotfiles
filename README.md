@@ -105,7 +105,7 @@ Manually download the script from [here](https://github.com/stephanbrez/dotfiles
 You'll need curl, so install if needed:
 `apt install curl` or `dnf install curl` or `pacman -S curl` or `brew install curl`
 
-First download the script:
+First download the script into your **home**:
 ```
 cd ~
 curl -LO https://raw.githubusercontent.com/stephanbrez/dotfiles/main/install
