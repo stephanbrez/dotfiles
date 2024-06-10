@@ -191,10 +191,10 @@ pkgInstall=(
 case $pkgmgr in
 	apt*)
 	# Debian specific tools
-	eval "$pkgmgr" "$pkginstall" "apt-utils dash debianutils"
+	$pkgmgr $pkginstall apt-utils dash debianutils
 	;;
 esac
-"$pkgmgr" "$pkginstall" "${pkgInstall[*]}"
+$pkgmgr $pkginstall ${pkgInstall[@]}
 
 # manually add apt sources
 mkdir -p /etc/apt/keyrings
@@ -224,6 +224,7 @@ echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *
 apt update && apt install glow
 
 # ======== install lazygit ======== #
+export PATH=$PATH:~/go/bin
 cd "$myhome" &&
 	$ASME git clone https://github.com/jesseduffield/lazygit.git &&
 	cd lazygit &&
