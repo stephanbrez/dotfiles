@@ -25,9 +25,7 @@
 #########################################
 # Script setup                          #
 #########################################
-# in case you forgot to run this from your home dir
-cd ~ || exit
-myhome=$(pwd -P)
+myhome=$(dirname "$(readlink -f "$0")")
 me=$(basename "$myhome")
 basedir="$myhome/.dotfiles"
 bindir="$myhome/.local/bin"
