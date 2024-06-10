@@ -2,7 +2,7 @@
 
 ## Requirements
 
-This are required to install dotfiles:
+These are required to install dotfiles:
 
 ### Git
 
@@ -97,9 +97,10 @@ To make it easier to install and configure apps individually, each app has a fol
         └── tmux            --> symlinked to ~/.config
             └── tmux.conf   --> config files
 ```
-
-Write a shell script to setup your dotfiles.
+### Install Script
+Automate the setup of your dotfiles with this handy script!
 
 ```
-
+cd ~
+curl -L https://raw.githubusercontent.com/stephanbrez/dotfiles/main/install.sh > install && chmod +x install && sudo ./install
 ```
