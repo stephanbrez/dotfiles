@@ -25,8 +25,10 @@
 #########################################
 # Script setup                          #
 #########################################
-me=$(dirname "$0")
+# in case you forgot to run this from your home dir
+cd ~ || exit
 myhome=$(pwd -P)
+me=$(basename "$myhome")
 basedir="$myhome/.dotfiles"
 bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
@@ -75,6 +77,7 @@ else
 fi
 }
 
+# ======== sanity check ======== #
 _echo "setting up dotfiles for '$me' in '$basedir'"
 user "Do you want to continue? (y/n):"
 read choice
@@ -88,6 +91,7 @@ case "$choice" in
 	*)
  		user "Invalid choice. Please enter 'y' or 'n'."
    		;;
+esac
 
 #########################################
 # Install                               #
@@ -120,7 +124,6 @@ case "$OSTYPE" in
 	;;
   	*)        
 	fail "unknown: $OSTYPE" 
- 	exit 1
 	;;
 esac
 
