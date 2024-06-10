@@ -100,7 +100,23 @@ To make it easier to install and configure apps individually, each app has a fol
 ### Install Script
 Automate the setup of your dotfiles with this handy script!
 
+Manually download the script from [here](https://github.com/stephanbrez/dotfiles/blob/main/install.sh) or run the commands below in your favorite terminal.
+
+You'll need curl, so install if needed:
+`apt install curl` or `dnf install curl` or `pacman -S curl` or `brew install curl`
+
+First download the script:
 ```
 cd ~
-curl -L https://raw.githubusercontent.com/stephanbrez/dotfiles/main/install.sh > install && chmod +x install && sudo ./install
+curl -LO https://raw.githubusercontent.com/stephanbrez/dotfiles/main/install
+```
+
+Check the script (you should never trust explicitly!):
+```
+less install
+```
+
+Make it executable and then run it *with sudo*:
+```
+chmod +x install && sudo ./install
 ```
