@@ -201,7 +201,7 @@ apt install -y eza
 
 # ======== install fzf ======== #
 $ASME git clone --depth 1 https://github.com/junegunn/fzf.git "$myhome"/.fzf &&
-	"$myhome"/.fzf/install
+	$ASME "$myhome"/.fzf/install
 
 # ======== install glow ======== #
 curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
@@ -222,7 +222,8 @@ echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/w
 apt install wezterm
 
 # ======== install zoxide ======== #
-$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+# debian only
+$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
 # fix fd clash
 ln -s "$(which fd)" "$bindir"/fd
 
