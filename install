@@ -35,11 +35,16 @@ ASME="sudo -u $me"
 
 # ======== helper functions ======== #
 function _echo() { printf "\n╓───── %s \n╙────────────────────────────────────── ─ ─ \n" "$1"; }
-function info() { printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"; }
-function user() { printf "\r  [ \033[0;33m??\033[0m ] %s\n" "$1"; }
-function success() { printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"; }
+function info() { printf "\r  [ \033[34m>>\033[0m ] %s\n" "$1"; }
+function debug() { 
+	true 
+	# comment/uncomment the line below to toggle debug messages
+	printf "\r  [ \033[36mDebug\033[0m ] %s\n" "$1";
+}
+function user() { printf "\r  [ \033[33m??\033[0m ] %s\n" "$1"; }
+function success() { printf "\r\033[2K  [ \033[32mOK\033[0m ] %s\n" "$1"; }
 function fail() {
-	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
+	printf "\r\033[2K  [ \033[01;31mFAIL\033[0m ] %s\n" "$1"
 	echo ''
 	exit
 }
@@ -262,7 +267,6 @@ $ASME mkdir -p \
 	"$myhome"/.{config,local} \
 	"$myhome"/.local/{bin,cache,lib,share,src,state}
 $ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
-$ASME ln -s "$myhome"/.local/bin "$myhome"/bin
 
 # ======== setup dotfiles ======== #
 _echo "setting up dotfiles"
