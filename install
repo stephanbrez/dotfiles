@@ -262,6 +262,7 @@ $ASME mkdir -p \
 	"$myhome"/.{config,local} \
 	"$myhome"/.local/{bin,cache,lib,share,src,state}
 $ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
+$ASME ln -s "$myhome"/.local/bin "$myhome"/bin
 
 # ======== setup dotfiles ======== #
 _echo "setting up dotfiles"
