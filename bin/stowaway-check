@@ -1,0 +1,272 @@
+#!/bin/bash
+
+# *Stowaway Catcher* - a wrapper for [stow](https://www.gnu.org/software/stow/) designed for use with dotfiles in your 🏠 ($HOME).
+#
+# It adds interactivity: you can choose which packages to operate on. Selectively install, backup, and 
+# add dotfiles on a package by package basis. This means you can try dotfiles before committing to them, before or after forking a repo. 
+#
+# It operates on the package level not the file level, meaning that any operation chosen for an individual
+# file will apply to the entire package. (Stow defines a "package" as any directory in the source parameter)
+# e.g. Selecting "backup" on "source_path/zsh/.zshrc" will backup (rename) the zsh directory to "target_path/zsh.backup"
+#
+# 🚨 Warning: selecting "all" for any of the options will remove the ability to work on packages one by one
+#
+# Why not just create the symlinks and remove stow? Because stow has some nice features for handling dotfiles, deletions,
+# and tree folding/unfolding. 
+#
+#
+# Parameters:
+#	There are no direct parameters to get around the limitations of how bash accesses variables in subshells. Instead, you
+#	declare variables inside the scope of where stowaway_check is called. These variables have to be **exactly** the following:
+# 	  	local install_all=false overwrite_all=false backup_all=false skip_all=false add_all=false
+#
+# Globals:
+# (variables set by the function that are available after execution...kinda like a return)
+#	$action - A single character with the user's selection
+#
+# Returns:	  	
+#	To get output you have to declare the variable "stowcmds" at the scope where stowaway_check is called.
+#	Depending on how you want to process the output, stowparams can be an array or a string:
+#		local stowparams=() or local stowparams=""
+#
+#	If you use an *array*, you have to loop through stowparams with whatever processing you want (cleaner if you want to add extra steps)
+#	If you use a *string*, you have to process the string directly after calling stowaway_check (uglier but marginally faster)
+#		e.g. for dir in $(find ...); do stowaway_check $dir; do_something_with $stowparams; done
+#
+#	⚠️ Note: Why not just use ${stowparams[@]} to pass all the parameters to one command since Stow can handle multiple packages at once?
+#		Because you won't be able to "add" any *individual* packages into the repo, it becomes all or none.
+
+# ======== helper functions ======== #
+function _echo() { printf "\n╓───── %s \n╙────────────────────────────────────── ─ ─ \n" "$1"; }
+function user() { printf "\r  [ \033[33m??\033[0m ] %s\n" "$1"; }
+function fail() {
+	printf "\r\033[2K  [ \033[01;31mFAIL\033[0m ] %s\n" "$1"
+	echo ''
+	exit
+}
+
+# Initialize verbose mode to off
+verbose_mode=false
+
+log_message() {
+# Function to format and print messages based on the type with optional override to force display (ignore verbose)
+# Usage: log_message "str:MSGTYPE" "str:Message" "boolean:force display"
+  local message_type=$1
+  local message=$2
+  local force=${3:-false}
+  local timestamp
+  timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+
+  if $verbose_mode || $force; then
+    case $message_type in
+      DEBUG) printf "  [ \033[36mDebug\033[0m ][%s] %s\n" "$timestamp" "$message";;
+      INFO) printf "[ \033[34m>>\033[0m ] %s\n" "$message";;
+      WARNING) printf "[\033[31m;1 !!! \033[0m][%s] %s\n" "$timestamp" "$message";;
+      SUCCESS) printf "\033[2K  [ \033[32mOK\033[0m ] %s\n" "$message";;	
+      *) printf "[UNKNOWN][%s] %s\n" "$timestamp" "$message";;  # Fallback for unknown message types
+    esac
+  fi
+}
+
+stowaway_check () {
+  local src=$1
+  local overwrite="" backup="" skip="" install="" add=""
+  local stowcmd=""
+  local pkgname=""
+  local target_dir="$HOME" # hardcoded because where else do dotfiles go? 
+
+	log_message "DEBUG" "Starting stowaway_check for $src"
+
+	if ! which stow >/dev/null 2>&1; then
+		fail "Skipping dotfiles setup because stow isn't installed."
+	else
+log_message "DEBUG" "install_all=$( [ "$install_all" == "true" ] && echo true || echo false) \
+overwrite_all=$( [ "$overwrite_all" == "true" ] && echo true || echo false) \
+backup_all=$( [ "$backup_all" == "true" ] && echo true || echo false) \
+skip_all=$( [ "$skip_all" == "true" ] && echo true || echo false) \
+import_all=$( [ "$add_all" == "true" ] && echo true || echo false)"
+
+pkgname="$(basename "$src")"
+ 
+	if [ "$install_all" == "false" ] && [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ] && [ "$add_all" == "false" ];
+    then
+	local children
+	local found=""
+	local cfg_child_name=""
+
+	# Get all children of the source directory one level deep
+	log_message "DEBUG" "searching for children of $src"
+	children=$(find "$src" -mindepth 1 -maxdepth 1)
+
+	for child in $children; do
+		# Skip processing children if anything in this package has been installed or skipped
+		if [ "$skip" != "true" ] && [ "$install" != "true" ]; then # "false" or empty
+			log_message "DEBUG" "processing children for ""$src"""
+			# Get the base name of the child (remove the directory part)
+    			local child_name=""
+			child_name=$(basename "$child")
+
+    			if [ -d "$child" ]; then
+        			log_message "DEBUG" "Child Type Directory"
+   				if [ "$child_name" = ".config" ]; then
+					local cfg_children="" cfg_child_name=""
+        				# Get all children of the .config directory one level deep
+					cfg_children=$(find "$child" -mindepth 1 -maxdepth 1)
+					for cfg_child in $cfg_children; do
+    						cfg_child_name=$(basename "$cfg_child")
+						log_message "DEBUG" "checking for ""$target_dir"/.config/"$cfg_child_name""" 
+						if [ -e "$target_dir/.config/$cfg_child_name" ]; then
+							found="$target_dir"/.config/"$cfg_child_name"
+							log_message "DEBUG" "found existing dots $found"
+						else
+							cfg_child_name=""
+							log_message "DEBUG" "couldn't find existing dots"
+						fi
+					done
+				else
+					if [ -e "$target_dir/$child_name" ]; then
+						found="$target_dir/$child_name"
+					fi
+				fi
+    			elif [ -f "$child" ]; then
+        			log_message "DEBUG" "Child Type File"
+				if [ -e "$target_dir/$child_name" ]; then
+					found="$target_dir/$child_name"
+				fi
+    			fi
+
+    			# Get user input
+    			if [[ -n $found ]]; then
+				log_message "DEBUG" "Exists ""${pkgname}"/"${child_name}"" in ""$found"""
+				echo "found existing dots at $found, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all, [a]dd, [A]dd all?"
+				read -n 1 action
+				  log_message "DEBUG" "User action = $action"
+    			else
+				# For debug
+				if [ -n "$cfg_child_name" ]; then
+					log_message "DEBUG" "No existing dots for ${src}/${child_name}/${cfg_child_name}"
+				else
+					log_message "DEBUG" "No existing dots for ${src}/${child_name}${cfg_child_name}"
+				fi
+				# End debug
+  local valid_options="iIsS"
+  while true; do
+    user "Found $pkgname, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? "
+    read -r -n 1 action  # Read a single character from the user
+    echo  # Move to a new line after reading input
+    if [[ "$valid_options" == *"$action"* ]]; then
+      log_message "DEBUG" "You chose: $action"
+      break
+    else
+      log_message "WARNING" "Invalid option. Please choose either i, I, s, or S." "true"
+    fi
+  done
+  			fi
+		fi
+
+		case "$action" in
+          		i )
+           	 		install=true;;
+         	 	I )
+          	  		install_all=true;;
+         	 	o )
+           	 		overwrite=true;;
+         	 	O )
+            			overwrite_all=true;;
+          		b )
+            			backup=true;;
+         	 	B )
+            			backup_all=true;;
+          		a )
+            			add=true;;
+         	 	A )
+            			add_all=true;;
+          		s )
+            			skip=true;;
+          		S )
+            			skip_all=true;;
+          		* )
+            			;;
+        	esac
+
+	done
+
+
+fi
+# if the individual action is unset, match the "all" action
+	install=${install:-$install_all}
+    	overwrite=${overwrite:-$overwrite_all}
+    	backup=${backup:-$backup_all}
+	add=${add:-$add_all}
+    	skip=${skip:-$skip_all}
+
+	# delete the specified file to "overwrite"
+    if [ "$overwrite" == "true" ]; then
+	stowparams+="-D ""$pkgname"""
+	log_message "DEBUG" "overwriting $found"
+    fi
+
+    if [ "$backup" == "true" ]; then
+	# back up the entire package
+	local dst=""
+	dst="${target_dir}"/"${pkgname}"
+        log_message "DEBUG" "renamed $dst to ${dst}.backup"
+	log_message "INFO" "Backing up $dst"
+    fi
+
+	# this will cause the whole package to be skipped if any of its children is skipped
+    if [ "$skip" == "true" ]; then
+      log_message "INFO" "Skipping $pkgname"
+    fi
+ 
+
+# use the repo version unless skip or add is chosen
+  if [ "$skip" != "true" ];
+  then
+	stowcmd+="-S $pkgname"
+      log_message "INFO" "Installing $pkgname"
+	# add on the adopt flag if add or add_all
+	if [ "$add" == "true" ];
+	then
+		stowcmd+=" --adopt"
+	fi
+	log_message "DEBUG" "adding to stowparams: $stowcmd"
+	stowparams+=("$stowcmd -t $target_dir")
+  fi
+	fi	
+}
+
+# install dotfiles
+install_dotfiles () {
+  _echo 'installing dotfiles'
+
+	# don't change these 2 lines
+  local install_all=false overwrite_all=false backup_all=false skip_all=false add_all=false
+  local stowparams=() 
+  #declare -A test_var
+
+    # Use find to generate a list of packages (directories)
+for dir in $(find . -mindepth 1 -maxdepth 1 -type d ! -name '*.git*'); do stowaway_check "$dir"; done
+# while read -d '' filename; do   dosomething "${filename}" </dev/null; done < <(find . -type d -print0)
+
+for cmd in "${stowparams[@]}"; do
+  	log_message "log_message "DEBUG"" "running command: stow $cmd"
+	#if split on -S, if ! which stow >/dev/null 2>&1; then 
+	#echo "You chose to install dotfiles for the following packages, but they aren't on your system:"
+	#Echo $somelist
+	#echo "Would you like to install them: y/n?
+	#building out a system packager command when possible
+	#Echo "Attempting to install:"
+done
+log_message "SUCCESS" "dotfiles installed" "true"
+}
+
+# Parse command-line arguments
+while getopts "v" option; do
+  case $option in
+    v) verbose_mode=true;;
+    *) echo "Usage: $0 [-v]"; exit 1;;
+  esac
+done
+
+install_dotfiles
