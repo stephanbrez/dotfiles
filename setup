@@ -319,7 +319,7 @@ install_dotfiles () {
 
 	for cmd in "${stowparams[@]}"; do
 	  	log_message "DEBUG" "running command: stow $cmd" "true"
-		$ASME stow $cmd
+		$ASME stow $basedir $cmd
 	done
 
 	# to finish some day
