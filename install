@@ -306,7 +306,8 @@ $ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
 
 # ======== setup dotfiles ======== #
 install_dotfiles () {
-	# don't change these 2 lines
+	# don't change these 4 lines
+	source "$basedir"/bin/stowaway-check
 	local install_all=false overwrite_all=false backup_all=false skip_all=false add_all=false
 	local stowparams=() 
 	local stowcheck=""
@@ -345,7 +346,6 @@ else
 	log_message "INFO" "Checking out dotfiles using git..."
 	rm -rf "$basedir"
 	$ASME git clone --quiet "$repourl" "$basedir" &&
-		source "$basedir"/bin/stowaway-check
 		cd "$basedir" &&
 		install_dotfiles
 fi
