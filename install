@@ -109,7 +109,7 @@ fi
 log_message "INFO" "setting up dotfiles for '$me' in '$basedir'" "true"
 while true; do
 	user "Do you want to continue? (y/n):"
-	read yn -n 1
+	read yn -n1
 	case $yn in
 		y|Y ) log_message "INFO" "Continuing..." "true"; break;;
 		n|N ) fail "Exiting.";;
