@@ -215,6 +215,7 @@ stowaway_check () {
 
 # ======== for testing ======== #
 # install dotfiles
+dotspath="$HOME"/.dotfiles
 install_dotfiles () {
 	_echo 'installing dotfiles'
 	
@@ -224,7 +225,7 @@ install_dotfiles () {
 	#declare -A test_var
 	
 	# Use find to generate a list of packages (directories)
-	for dir in $(find . -mindepth 1 -maxdepth 1 -type d ! -name '*.git*'); do stowaway_check "$dir"; done
+	for dir in $(find "$dotspath" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*'); do stowaway_check "$dir"; done
 	# while read -d '' filename; do   dosomething "${filename}" </dev/null; done < <(find . -type d -print0)
 
 	for cmd in "${stowparams[@]}"; do
