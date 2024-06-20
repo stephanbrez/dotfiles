@@ -137,9 +137,9 @@ stowaway_check () {
 				else
 					# For debug
 					if [ -n "$cfg_child_name" ]; then
-						log_message "DEBUG" "No existing files at ${target_dir}/${child_name}/${cfg_child_name}"
+						log_message "DEBUG" "No existing files at ${target_dir}/${src}/${child_name}/${cfg_child_name}"
 					else
-						log_message "DEBUG" "No existing files at ${target_dir}/${child_name}"
+						log_message "DEBUG" "No existing files at ${target_dir}/${src}/${child_name}"
 					fi
 					# End debug
 		  		local valid_options="iIsS"
