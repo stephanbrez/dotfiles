@@ -183,7 +183,7 @@ stowaway_check () {
 		# delete the specified file to "overwrite"
 		if [ "$overwrite" == "true" ]; then
 			stowparams+="-D ""$pkgname"""
-			stowcheck+=""$pkgname":delete,"
+			stowcheck+="$pkgname:delete,"
 			log_message "DEBUG" "overwriting $found"
 		fi
 	
@@ -205,10 +205,10 @@ stowaway_check () {
 			# add on the adopt flag if add or add_all
 			if [ "$add" == "true" ]; then
 				stowcmd+="-S $pkgname --adopt"
-				stowcheck+=""$pkgname":adopt,"
+				stowcheck+="$pkgname:adopt,"
 			else
 				stowcmd+="-S $pkgname"
-				stowcheck+=""$pkgname":stow,"
+				stowcheck+="$pkgname:stow,"
 			fi
 			log_message "INFO" "Installing $pkgname"
 
@@ -242,8 +242,8 @@ install_dotfiles () {
 		for i in "${array[@]}"; do
 			log_message "DEBUG" "Processing $i"
 			IFS=':' read -r -a arr2 <<< "$i"
-			log_message "DEBUG" "Checking to see if ${arr[0]} is installed"
-			if [ ${arr2[1]} == "stow" ] && [ ! which ${arr2[0]} >/dev/null 2>&1 ]; then
+			log_message "DEBUG" "Checking to see if ${arr2[0]} is installed"
+			if [ "${arr2[1]}" == "stow" ] && ! which "${arr2[0]}" >/dev/null 2>&1; then
 				echo "You chose to install dotfiles for the following packages, but they aren't on your system:"
 				#Echo $somelist
 				#echo "Would you like to install them: y/n?
