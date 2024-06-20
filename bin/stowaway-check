@@ -69,23 +69,23 @@ log_message() {
 }
 
 stowaway_check () {
-  local src=$1
-  local overwrite="" backup="" skip="" install="" add=""
-  local stowcmd=""
-  local pkgname=""
-  local target_dir="$HOME" # hardcoded because where else do dotfiles go? 
+	local src=$1
+	local overwrite="" backup="" skip="" install="" add=""
+	local stowcmd=""
+	local pkgname=""
+	local target_dir="$HOME" # hardcoded because where else do dotfiles go? 
 
 	if ! which stow >/dev/null 2>&1; then
 		fail "Skipping dotfiles setup because stow isn't installed."
 	else
-
+	
 	log_message "DEBUG" "Starting stowaway_check for $src"
 	log_message "DEBUG" "install_all=$( [ "$install_all" == "true" ] && echo true || echo false) \
 	overwrite_all=$( [ "$overwrite_all" == "true" ] && echo true || echo false) \
 	backup_all=$( [ "$backup_all" == "true" ] && echo true || echo false) \
 	skip_all=$( [ "$skip_all" == "true" ] && echo true || echo false) \
 	import_all=$( [ "$add_all" == "true" ] && echo true || echo false)"
-
+	
 	pkgname="$(basename "$src")"
  
 	if [ "$install_all" == "false" ] && [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ] && [ "$add_all" == "false" ];
@@ -103,36 +103,32 @@ stowaway_check () {
 			if [ "$skip" != "true" ] && [ "$install" != "true" ]; then # "false" or empty
 				log_message "DEBUG" "processing children for ""$src"""
 				# Get the base name of the child (remove the directory part)
-	    	local child_name=""
+	    		local child_name=""
 				child_name=$(basename "$child")
-	
-				if [ -d "$child" ]; then
-					log_message "DEBUG" "Child Type Directory"
-					if [ "$child_name" = ".config" ]; then
-						local cfg_children="" cfg_child_name=""
-						# Get all children of the .config directory one level deep
-						cfg_children=$(find "$child" -mindepth 1 -maxdepth 1)
-						for cfg_child in $cfg_children; do
-							cfg_child_name=$(basename "$cfg_child")
-							log_message "DEBUG" "checking for ""$target_dir"/.config/"$cfg_child_name""" 
-							if [ -e "$target_dir/.config/$cfg_child_name" ]; then
-								found="$target_dir"/.config/"$cfg_child_name"
-								log_message "DEBUG" "found existing dots $found"
-							else
-								cfg_child_name=""
-								log_message "DEBUG" "couldn't find existing dots"
-							fi
-						done
-					else
-						if [ -e "$target_dir/$child_name" ]; then
-							found="$target_dir/$child_name"
-						fi
-					fi
-				elif [ -f "$child" ]; then
+
+				if [ -e "$target_dir/$child_name" ]; then
+					found="$target_dir/$child_name"
+					if [ -f "$child" ]; then
 						log_message "DEBUG" "Child Type File"
-					if [ -e "$target_dir/$child_name" ]; then
-						found="$target_dir/$child_name"
+					elif [ -d "$child" ]; then
+						log_message "DEBUG" "Child Type Directory"
 					fi
+				fi
+				if [ -d "$child" ] && [ "$child_name" = ".config" ]; then
+					local cfg_children="" cfg_child_name=""
+					# Get all children one level deep
+					cfg_children=$(find "$child" -mindepth 1 -maxdepth 1)
+					for cfg_child in $cfg_children; do
+						cfg_child_name=$(basename "$cfg_child")
+						log_message "DEBUG" "checking for ""$target_dir"/.config/"$cfg_child_name""" 
+						if [ -e "$target_dir/.config/$cfg_child_name" ]; then
+							found="$target_dir"/.config/"$cfg_child_name"
+							log_message "DEBUG" "found existing dots $found"
+						else
+							cfg_child_name=""
+							log_message "DEBUG" "couldn't find existing dots"
+						fi
+					done
 				fi
 	
 				# Get user input
@@ -235,7 +231,7 @@ install_dotfiles () {
 	# while read -d '' filename; do   dosomething "${filename}" </dev/null; done < <(find . -type d -print0)
 
 	for cmd in "${stowparams[@]}"; do
-	  	log_message "log_message "DEBUG"" "running command: stow $cmd"
+	  	log_message "DEBUG" "running command: stow $cmd"
 		#if split on -S, if ! which stow >/dev/null 2>&1; then 
 		#echo "You chose to install dotfiles for the following packages, but they aren't on your system:"
 		#Echo $somelist
