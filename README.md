@@ -121,17 +121,17 @@ You'll need curl for the fully automated setup:
 First download the script into your **home**:
 ```
 cd ~
-curl -LO https://raw.githubusercontent.com/stephanbrez/dotfiles/main/install
+curl -LO https://raw.githubusercontent.com/stephanbrez/dotfiles/main/setup
 ```
 
 Check the script if you want to doublecheck everything (you should never trust explicitly!):
 ```
-less install
+less setup
 ```
 
 Make it executable and then run it *with sudo*:
 ```
-chmod +x install && sudo ./install
+chmod +x setup && sudo ./setup
 ```
 
 ### Manual Install
