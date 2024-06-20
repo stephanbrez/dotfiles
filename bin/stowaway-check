@@ -36,38 +36,6 @@
 #	⚠️ Note: Why not just use ${stowparams[@]} to pass all the parameters to one command since Stow can handle multiple packages at once?
 #		Because you won't be able to "add" any *individual* packages into the repo, it becomes all or none.
 
-# ======== helper functions ======== #
-function _echo() { printf "\n╓───── %s \n╙────────────────────────────────────── ─ ─ \n" "$1"; }
-function user() { printf "\r  [ \033[33m??\033[0m ] %s\n" "$1"; }
-function fail() {
-	printf "\r\033[2K  [ \033[01;31mFAIL\033[0m ] %s\n" "$1"
-	echo ''
-	exit
-}
-
-# Initialize verbose mode to off
-verbose_mode=false
-
-log_message() {
-# Function to format and print messages based on the type with optional override to force display (ignore verbose)
-# Usage: log_message "str:MSGTYPE" "str:Message" "boolean:force display"
-	local message_type=$1
-	local message=$2
-	local force=${3:-false}
-	local timestamp
-	timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-
-	if $verbose_mode || $force; then
-		case $message_type in
-			DEBUG) printf "  [ \033[36mDebug\033[0m ][%s] %s\n" "$timestamp" "$message";;
-			INFO) printf "[ \033[34m>>\033[0m ] %s\n" "$message";;
-			WARNING) printf "[\033[31m;1 !!! \033[0m][%s] %s\n" "$timestamp" "$message";;
-			SUCCESS) printf "\033[2K  [ \033[32mOK\033[0m ] %s\n" "$message";;	
-			*) printf "[UNKNOWN][%s] %s\n" "$timestamp" "$message";;  # Fallback for unknown message types
-		esac
-	fi
-}
-
 stowaway_check () {
 	local src=$1
 	local target_dir="$2" 
@@ -257,13 +225,3 @@ install_dotfiles () {
 	
 	log_message "SUCCESS" "dotfiles installed" "true"
 }
-
-# Parse command-line arguments
-while getopts "v" option; do
-	case $option in
-		v) verbose_mode=true;;
-		*) echo "Usage: $0 [-v]"; exit 1;;
-	esac
-done
-
-install_dotfiles
