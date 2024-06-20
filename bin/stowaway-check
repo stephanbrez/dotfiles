@@ -183,6 +183,7 @@ stowaway_check () {
 		# delete the specified file to "overwrite"
 		if [ "$overwrite" == "true" ]; then
 			stowparams+="-D ""$pkgname"""
+			stowcheck["$pkgname"]="delete"
 			log_message "DEBUG" "overwriting $found"
 		fi
 	
@@ -202,10 +203,12 @@ stowaway_check () {
 		# use the repo version unless skip or add is chosen
 	  if [ "$skip" != "true" ]; then
 			stowcmd+="-S $pkgname"
+			stowcheck["$pkgname"]="stow"
 			log_message "INFO" "Installing $pkgname"
 			# add on the adopt flag if add or add_all
 			if [ "$add" == "true" ]; then
 				stowcmd+=" --adopt"
+				stowcheck["$pkgname"]="adopt"
 			fi
 			log_message "DEBUG" "adding to stowparams: $stowcmd"
 			stowparams+=("$stowcmd -t $target_dir")
@@ -222,7 +225,7 @@ install_dotfiles () {
 	# don't change these 2 lines
 	local install_all=false overwrite_all=false backup_all=false skip_all=false add_all=false
 	local stowparams=() 
-	#declare -A test_var
+	declare -A stowcheck
 	
 	# Use find to generate a list of packages (directories)
 	for dir in $(find "$dotspath" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*'); do stowaway_check "$dir"; done
@@ -236,6 +239,9 @@ install_dotfiles () {
 		#echo "Would you like to install them: y/n?
 		#building out a system packager command when possible
 		#Echo "Attempting to install:"
+	done
+	for key in "${!stowcheck[@]}"; do
+	    echo "$key ${stowcheck[$key]}"
 	done
 	log_message "SUCCESS" "dotfiles installed" "true"
 }
