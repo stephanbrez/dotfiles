@@ -44,7 +44,7 @@ while getopts "v" option; do
 		*) echo "Usage: $0 [-v]"; exit 1;;
 	esac
 done
-log_message "INFO" "Verbose mode ON"
+echo "Verbose mode is $verbose_mode"
 
 # ======== helper functions ======== #
 function _echo() { printf "\n╓───── %s \n╙────────────────────────────────────── ─ ─ \n" "$1"; }
