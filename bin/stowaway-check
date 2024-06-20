@@ -238,18 +238,21 @@ install_dotfiles () {
 	done
 
 	# to finish some day
-	#IFS=',' read -r -a array <<< "$stowcheck"
-	readarray -td, a <<<"$stowcheck,"; unset 'a[-1]'; declare -p a;
-	for index in "${!a[@]}"
-	do
-	    	echo "$index ${a[index]}"
-		#if split on -S, if ! which stow >/dev/null 2>&1; then 
-		#echo "You chose to install dotfiles for the following packages, but they aren't on your system:"
-		#Echo $somelist
-		#echo "Would you like to install them: y/n?
-		#building out a system packager command when possible
-		#Echo "Attempting to install:"
-	done
+	while IFS=',' read -ra array; do
+		for i in "${array[@]}"; do
+			# process "$i"
+			IFS=':' read -r -a arr2 <<< "$i"
+			if [$arr2[1] == "stow" ] && [ ! which $arr2[0] >/dev/null 2>&1 ]; then
+				echo "You chose to install dotfiles for the following packages, but they aren't on your system:"
+				#Echo $somelist
+				#echo "Would you like to install them: y/n?
+
+				#building out a system packager command when possible
+				#Echo "Attempting to install:"
+			fi
+		done
+	done <<< "$stowcheck"
+	
 	log_message "SUCCESS" "dotfiles installed" "true"
 }
 
