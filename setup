@@ -315,11 +315,11 @@ install_dotfiles () {
 	
 	# Use find to generate a list of packages (directories)
 	log_message "DEBUG" "Searching for dots in $basedir"
-	for dir in $(find "$basedir" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*'); do stowaway_check "$dir" "$basedir"; done
+	for dir in $(find "$basedir" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*'); do stowaway_check "$dir" "$myhome"; done
 
 	for cmd in "${stowparams[@]}"; do
 	  	log_message "DEBUG" "running command: stow $cmd" "true"
-		$ASME stow $basedir $cmd
+		$ASME stow $cmd
 	done
 
 	# to finish some day
