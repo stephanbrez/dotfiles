@@ -32,21 +32,46 @@ bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
 stowpkg=(nvim starship tmux wezterm zsh)
 ASME="sudo -u $me"
+# ======== end user options ======== #
+
+# Initialize verbose mode to off
+verbose_mode=false
+
+# Parse command-line arguments
+while getopts "v" option; do
+	case $option in
+		v) verbose_mode=true;;
+		*) echo "Usage: $0 [-v]"; exit 1;;
+	esac
+done
 
 # ======== helper functions ======== #
 function _echo() { printf "\n╓───── %s \n╙────────────────────────────────────── ─ ─ \n" "$1"; }
-function info() { printf "\r  [ \033[34m>>\033[0m ] %s\n" "$1"; }
-function debug() { 
-	true 
-	# comment/uncomment the line below to toggle debug messages
-	printf "\r  [ \033[36mDebug\033[0m ] %s\n" "$1";
-}
 function user() { printf "\r  [ \033[33m??\033[0m ] %s\n" "$1"; }
-function success() { printf "\r\033[2K  [ \033[32mOK\033[0m ] %s\n" "$1"; }
 function fail() {
 	printf "\r\033[2K  [ \033[01;31mFAIL\033[0m ] %s\n" "$1"
 	echo ''
 	exit
+}
+
+log_message() {
+# Function to format and print messages based on the type with optional override to force display (ignore verbose)
+# Usage: log_message "str:MSGTYPE" "str:Message" "boolean:force display"
+	local message_type=$1
+	local message=$2
+	local force=${3:-false}
+	local timestamp
+	timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+
+	if $verbose_mode || $force; then
+		case $message_type in
+			DEBUG) printf "  [ \033[36mDebug\033[0m ][%s] %s\n" "$timestamp" "$message";;
+			INFO) printf "[ \033[34m>>\033[0m ] %s\n" "$message";;
+			WARNING) printf "[\033[31m;1 !!! \033[0m][%s] %s\n" "$timestamp" "$message";;
+			SUCCESS) printf "\033[2K  [ \033[32mOK\033[0m ] %s\n" "$message";;	
+			*) printf "[UNKNOWN][%s] %s\n" "$timestamp" "$message";;  # Fallback for unknown message types
+		esac
+	fi
 }
 
 function linux_package() {
@@ -81,183 +106,191 @@ fi
 }
 
 # ======== sanity check ======== #
-_echo "setting up dotfiles for '$me' in '$basedir'"
-user "Do you want to continue? (y/n):"
-read choice
-case "$choice" in
-	y|Y)
- 		info "Continuing..."
-   		;;
-    	n|N)
-     		fail "Exiting."
-       		;;
-	*)
- 		user "Invalid choice. Please enter 'y' or 'n'."
-   		;;
-esac
+log_message "INFO" "setting up dotfiles for '$me' in '$basedir'" "true"
+while true; do
+	user "Do you want to continue? (y/n):"
+	read yn -n 1
+	case $yn in
+		y|Y ) log_message "INFO" "Continuing..." "true"; break;;
+		n|N ) fail "Exiting.";;
+		* ) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true";;
+	esac
+done
 
 #########################################
-# Install                               #
+# Install Packages                      #
 #########################################
-_echo "configuring package manager"
+function install_packages() {
+	_echo "configuring package manager"
+	
+	case "$OSTYPE" in
+	  	darwin*)  
+		pkgmgr="brew"
+		pkginstall="install"
+		pkgupdate="update"
+		DARWIN=1 
+		;; 
+	  	linux*)   
+		LINUX=1
+		linux_package 
+		;;
+	  	bsd*)     	
+		OS=$(uname -s)
+		VER=$(uname -r) 
+		;;
+	  	msys*)    
+		echo "WINDOWS" 
+		;;
+	  	cygwin*)  
+		echo "ALSO WINDOWS" 
+		;;
+	  	win32*)
+		echo "WINDOWS"
+		;;
+	  	*)        
+		fail "unknown: $OSTYPE" 
+		;;
+	esac
+	
+	_echo "updating package manager"
+	"$pkgmgr" "$pkgupdate"
+	
+	# install all the things \o/
+	_echo "installing packages"
+	# build package list
+	pkgInstall=(
+		# command line tools
+		bat
+		btop
+		diffutils
+		doxygen
+		fd-find
+		findutils
+		gawk
+		gh
+		git
+		luarocks
+		mawk
+		mc
+		neovim
+		ripgrep
+		shellcheck
+		silversearcher-ag
+		stow
+		tldr
+		tmux
+	 	trash-cli
+		zsh
+		# system/server tools
+	 	automake
+		bash
+		bash-completion
+		build-essential
+		ca-certificates
+		clamav-base
+		cmake
+		coreutils
+		curl
+		docker.io
+		dpkg
+		e2fsprogs
+		ethtool
+		fail2ban
+		gcc
+		golang
+		golang-doc
+		golang-src
+		gpg
+	 	meson
+		pkgconf
+		psmisc
+		python3
+		python3-pip
+		python3-venv
+		rkhunter
+		secure-delete
+		sudo
+		util-linux
+	 	wget
+		# fun
+		toilet
+	)
+	case $pkgmgr in
+		apt*)
+		# Debian specific tools
+		$pkgmgr $pkginstall apt-utils dash debianutils
+		;;
+	esac
+	$pkgmgr $pkginstall ${pkgInstall[@]}
+	
+	# manually add apt sources
+	mkdir -p /etc/apt/keyrings
+	
+	# ======== install 1password ======== #
+	curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg &&
+		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | tee /etc/apt/sources.list.d/1password.list
+	mkdir -p /etc/debsig/policies/AC2D62742012EA22/ &&
+		curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
+	mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 &&
+		curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
+	apt update && apt install -y 1password 1password-cli
+	
+	# ======== install eza ======== #
+	wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+	echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | tee /etc/apt/sources.list.d/gierens.list
+	chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+	apt update && apt install -y eza
+	
+	# ======== install fzf ======== #
+	$ASME git clone --depth 1 https://github.com/junegunn/fzf.git "$myhome"/.fzf &&
+		$ASME "$myhome"/.fzf/install
+	
+	# ======== install glow ======== #
+	curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+	echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
+	apt update && apt install glow
+	
+	# ======== install lazygit ======== #
+	LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+	curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+	tar xf lazygit.tar.gz lazygit
+	install lazygit /usr/local/bin
+	rm -rf lazygit.tar.gz
+	rm -rf lazygit
+	
+	# ======== install wezterm ======== #
+	curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+	echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
+	apt update && apt install wezterm
+	
+	# ======== install zoxide ======== #
+	# debian only
+	$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
+	# fix fd clash if needed
+	ln -s "$(which fd)" "$bindir"/fd
+	
+	# ======== Fun stuff ======== #
+	_echo "setting up ascii/ansi art tools"
+	rm -rf /usr/share/figlet/
+	git clone --depth=1 https://github.com/xero/figlet-fonts.git /usr/share/figlet/
+	$ASME git clone --depth=1 https://github.com/digitallyserviced/tdfgo.git "$myhome"/.local/src/tdfgo &&
+		cd "$myhome"/.local/src/tdfgo &&
+		$ASME go build &&
+		mv ./tdfgo "$myhome"/.local/bin/tdfgo &&
+		chmod +x "$myhome"/.local/bin/tdfgo &&
+		mkdir -p "$myhome"/.config/tdfgo &&
+		mv ./fonts "$myhome"/.config/tdfgo/fonts
 
-case "$OSTYPE" in
-  	darwin*)  
-	pkgmgr="brew"
-	pkginstall="install"
-	pkgupdate="update"
-	DARWIN=1 
-	;; 
-  	linux*)   
-	LINUX=1
-	linux_package 
-	;;
-  	bsd*)     	
-	OS=$(uname -s)
-	VER=$(uname -r) 
-	;;
-  	msys*)    
-	echo "WINDOWS" 
-	;;
-  	cygwin*)  
-	echo "ALSO WINDOWS" 
-	;;
-  	win32*)
-	echo "WINDOWS"
-	;;
-  	*)        
-	fail "unknown: $OSTYPE" 
-	;;
-esac
+}
 
-_echo "updating package manager"
-"$pkgmgr" "$pkgupdate"
-
-# install all the things \o/
-_echo "installing packages"
-# build package list
-pkgInstall=(
-	# command line tools
-	bat
-	btop
-	diffutils
-	doxygen
-	fd-find
-	findutils
-	gawk
-	gh
-	git
-	luarocks
-	mawk
-	mc
-	neovim
-	ripgrep
-	shellcheck
-	silversearcher-ag
-	stow
-	tldr
-	tmux
- 	trash-cli
-	zsh
-	# system/server tools
- 	automake
-	bash
-	bash-completion
-	build-essential
-	ca-certificates
-	clamav-base
-	cmake
-	coreutils
-	curl
-	docker.io
-	dpkg
-	e2fsprogs
-	ethtool
-	fail2ban
-	gcc
-	golang
-	golang-doc
-	golang-src
-	gpg
- 	meson
-	pkgconf
-	psmisc
-	python3
-	python3-pip
-	python3-venv
-	rkhunter
-	secure-delete
-	sudo
-	util-linux
- 	wget
-	# fun
-	toilet
-)
-case $pkgmgr in
-	apt*)
-	# Debian specific tools
-	$pkgmgr $pkginstall apt-utils dash debianutils
-	;;
-esac
-$pkgmgr $pkginstall ${pkgInstall[@]}
-
-# manually add apt sources
-mkdir -p /etc/apt/keyrings
-
-# ======== install 1password ======== #
-curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg &&
-	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | tee /etc/apt/sources.list.d/1password.list
-mkdir -p /etc/debsig/policies/AC2D62742012EA22/ &&
-	curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
-mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 &&
-	curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
-apt update && apt install -y 1password 1password-cli
-
-# ======== install eza ======== #
-wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | tee /etc/apt/sources.list.d/gierens.list
-chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-apt update && apt install -y eza
-
-# ======== install fzf ======== #
-$ASME git clone --depth 1 https://github.com/junegunn/fzf.git "$myhome"/.fzf &&
-	$ASME "$myhome"/.fzf/install
-
-# ======== install glow ======== #
-curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
-echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
-apt update && apt install glow
-
-# ======== install lazygit ======== #
-LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-tar xf lazygit.tar.gz lazygit
-install lazygit /usr/local/bin
-rm -rf lazygit.tar.gz
-rm -rf lazygit
-
-# ======== install wezterm ======== #
-curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
-echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
-apt update && apt install wezterm
-
-# ======== install zoxide ======== #
-# debian only
-$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
-# fix fd clash if needed
-ln -s "$(which fd)" "$bindir"/fd
-
-# ======== Fun stuff ======== #
-_echo "setting up ascii/ansi art tools"
-rm -rf /usr/share/figlet/
-git clone --depth=1 https://github.com/xero/figlet-fonts.git /usr/share/figlet/
-$ASME git clone --depth=1 https://github.com/digitallyserviced/tdfgo.git "$myhome"/.local/src/tdfgo &&
-	cd "$myhome"/.local/src/tdfgo &&
-	$ASME go build &&
-	mv ./tdfgo "$myhome"/.local/bin/tdfgo &&
-	chmod +x "$myhome"/.local/bin/tdfgo &&
-	mkdir -p "$myhome"/.config/tdfgo &&
-	mv ./fonts "$myhome"/.config/tdfgo/fonts
+while true; do
+	read -p "Do you want to install packages? (y/n): " yn
+	case $yn in
+		[Yy]* ) log_message "INFO" "Continuing with package install..." "true"; install_packages; break;;
+		[Nn]* ) log_message "INFO" "Skipping package install." "true"; break;;
+		* ) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true";;
+	esac
+done
 
 #########################################
 # Setup                                 #
@@ -269,20 +302,49 @@ $ASME mkdir -p \
 $ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
 
 # ======== setup dotfiles ======== #
+install_dotfiles () {
+	# don't change these 2 lines
+	local install_all=false overwrite_all=false backup_all=false skip_all=false add_all=false
+	local stowparams=() 
+	local stowcheck=""
+	
+	# Use find to generate a list of packages (directories)
+	for dir in $(find "$basedir" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*'); do stowaway_check "$dir"; done
+
+	for cmd in "${stowparams[@]}"; do
+	  	log_message "DEBUG" "running command: stow $cmd" "true"
+	done
+
+	# to finish some day
+	while IFS=',' read -ra array; do
+		for i in "${array[@]}"; do
+			log_message "DEBUG" "Processing $i"
+			IFS=':' read -r -a arr2 <<< "$i"
+			log_message "DEBUG" "Checking to see if ${arr2[0]} is installed"
+			if [ "${arr2[1]}" == "stow" ] && ! which "${arr2[0]}" >/dev/null 2>&1; then
+				echo "You chose to install dotfiles for the following packages, but they aren't on your system:"
+				#Echo $somelist
+				#echo "Would you like to install them: y/n?
+
+				#building out a system packager command when possible
+				#Echo "Attempting to install:"
+			fi
+		done
+	done <<< "$stowcheck"
+	log_message "SUCCESS" "dotfiles installed" "true"
+}
 _echo "setting up dotfiles"
 if [ -d "$basedir/.git" ]; then
-	info "Updating dotfiles using existing git..."
+	log_message "INFO" "Updating dotfiles using existing git..."
 	cd "$basedir" &&
 		$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
 else
-	info "Checking out dotfiles using git..."
+	log_message "INFO" "Checking out dotfiles using git..."
 	rm -rf "$basedir"
+	source "$basedir"/bin/stowaway-check
 	$ASME git clone --quiet "$repourl" "$basedir" &&
 		cd "$basedir" &&
-		for item in "${stowpkg[@]}"; do
-			$ASME stow "$item" -t "$myhome" --adopt
-		done &&
-		$ASME git restore .
+		install_dotfiles
 fi
 
 _echo "setting up starship"
@@ -300,7 +362,7 @@ read git_user_email
 # Set git credentials
 git config --global user.name "$git_user_name"
 git config --global user.email "$git_user_email"
-success 'gitconfig'
+log_message "SUCCESS" "gitconfig"
 
 # ======== setup tmux ======== #
 _echo "setting up tmux"
