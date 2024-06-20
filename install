@@ -344,8 +344,8 @@ if [ -d "$basedir/.git" ]; then
 else
 	log_message "INFO" "Checking out dotfiles using git..."
 	rm -rf "$basedir"
-	source "$basedir"/bin/stowaway-check
 	$ASME git clone --quiet "$repourl" "$basedir" &&
+		source "$basedir"/bin/stowaway-check
 		cd "$basedir" &&
 		install_dotfiles
 fi
