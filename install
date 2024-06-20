@@ -342,6 +342,7 @@ if [ -d "$basedir/.git" ]; then
 	log_message "INFO" "Updating dotfiles using existing git..."
 	cd "$basedir" &&
 		$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
+	install_dotfiles
 else
 	log_message "INFO" "Checking out dotfiles using git..."
 	rm -rf "$basedir"
@@ -350,6 +351,7 @@ else
 		install_dotfiles
 fi
 
+# ======== setup starship ======== #
 _echo "setting up starship"
 curl -sS https://starship.rs/install.sh | sh
 
