@@ -47,7 +47,7 @@ done
 
 # ======== helper functions ======== #
 function _echo() { printf "\n╓───── %s \n╙────────────────────────────────────── ─ ─ \n" "$1"; }
-function user() { printf "\r  [ \033[33m??\033[0m ] %s\n" "$1"; }
+function user() { printf "\r  [ \033[33m??\033[0m ] %s" "$1"; }
 function fail() {
 	printf "\r\033[2K  [ \033[01;31mFAIL\033[0m ] %s\n" "$1"
 	echo ''
@@ -108,8 +108,9 @@ fi
 # ======== sanity check ======== #
 log_message "INFO" "setting up dotfiles for '$me' in '$basedir'" "true"
 while true; do
-	user "Do you want to continue? (y/n):"
+	user "Do you want to continue? (y/n): "
 	read -n1 yn
+	echo # Move to a new line after reading input
 	case $yn in
 		y|Y ) log_message "INFO" "Continuing..." "true"; break;;
 		n|N ) fail "Exiting.";;
@@ -284,7 +285,9 @@ function install_packages() {
 }
 
 while true; do
-	read -p "Do you want to install packages? (y/n): " yn
+	user "Do you want to install packages? (y/n): "
+	read -n1 yn
+	echo # Move to a new line after reading input
 	case $yn in
 		[Yy]* ) log_message "INFO" "Continuing with package install..." "true"; install_packages; break;;
 		[Nn]* ) log_message "INFO" "Skipping package install." "true"; break;;
