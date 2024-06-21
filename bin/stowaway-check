@@ -76,10 +76,13 @@ stowaway_check () {
 	    			local child_name=""
 				child_name=$(basename "$child")
 
+				# Check for files in the package
 				if [ -e "$target_dir/$pkgname/$child_name" ] && [ -f "$child" ]; then
 					log_message "DEBUG" "Child Type File"
 					found="$target_dir/$pkgname/$child_name"
 				fi
+
+				# only check the subdir that is .config 
 				if [ -d "$child" ] && [ "$child_name" = ".config" ]; then
 					log_message "DEBUG" "Child Type .config Directory"
 					local cfg_children="" cfg_child_name=""
@@ -92,7 +95,6 @@ stowaway_check () {
 							found="$target_dir"/.config/"$cfg_child_name"
 							log_message "DEBUG" "found existing dots $found"
 						else
-							cfg_child_name=""
 							log_message "DEBUG" "couldn't find existing dots"
 						fi
 					done
@@ -122,9 +124,9 @@ stowaway_check () {
 				else
 					# For debug
 					if [ -n "$cfg_child_name" ]; then
-						log_message "DEBUG" "No existing files at ${target_dir}/${pkgname}/${child_name}/${cfg_child_name}"
+						log_message "DEBUG" "No existing files at ${target_dir}/${child_name}/${cfg_child_name}"
 					else
-						log_message "DEBUG" "No existing files at ${target_dir}/${pkgname}/${child_name}"
+						log_message "DEBUG" "No existing files at ${target_dir}/$pkgname/${child_name}"
 					fi
 					# End debug
 		  			local valid_options="iIsS"
