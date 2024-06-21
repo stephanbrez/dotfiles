@@ -119,6 +119,12 @@ while true; do
 	esac
 done
 
+_echo "creating directories"
+$ASME mkdir -p \
+	"$myhome"/.{config,local} \
+	"$myhome"/.local/{bin,cache,lib,share,src,state}
+$ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
+
 #########################################
 # Install Packages                      #
 #########################################
@@ -206,6 +212,7 @@ function install_packages() {
 		gpg
 	 	meson
 		ninja-build
+		npm
 		pkgconf
 		psmisc
 		python3
@@ -264,15 +271,17 @@ function install_packages() {
 	rm -rf lazygit
 
 	# ======== install neovim ======== #
+	_echo "building neovim"
 	# build from source because debian is old
-	git clone https://github.com/neovim/neovim &&
-		cd neovim && 
+	$ASME git clone https://github.com/neovim/neovim $myhome/.local/src/neovim &&
+		cd $myhome/.local/src/neovim && 
 		git checkout stable && 
 		make CMAKE_BUILD_TYPE=RelWithDebInfo &&
 		cd build && 
 		cpack -G DEB && 
 		sudo dpkg -i nvim-linux64.deb
-	
+	# Use pip (below) to install python3-neovim to avoid distro specific package managers
+
 	# ======== install wezterm ======== #
 	curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
 	echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
@@ -312,13 +321,9 @@ done
 #########################################
 # Setup                                 #
 #########################################
-_echo "creating directories"
-$ASME mkdir -p \
-	"$myhome"/.{config,local} \
-	"$myhome"/.local/{bin,cache,lib,share,src,state}
-$ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
 
 # ======== setup dotfiles ======== #
+# function to install (stow) dotfiles
 install_dotfiles () {
 	# don't change these 4 lines
 	source "$basedir"/bin/stowaway-check
@@ -353,6 +358,8 @@ install_dotfiles () {
 	done <<< "$stowcheck"
 	log_message "SUCCESS" "dotfiles installed" "true"
 }
+
+# grab latest dotfiles before installing
 _echo "setting up dotfiles"
 if [ -d "$basedir/.git" ]; then
 	log_message "INFO" "Updating dotfiles using existing git..."
@@ -367,10 +374,6 @@ else
 		install_dotfiles
 fi
 
-# ======== setup starship ======== #
-_echo "setting up starship"
-curl -sS https://starship.rs/install.sh | sh
-
 # ======== setup git ======== #
 # Git config name
 echo "Please enter your FULL NAME for Git configuration:"
@@ -384,6 +387,19 @@ read git_user_email
 git config --global user.name "$git_user_name"
 git config --global user.email "$git_user_email"
 log_message "SUCCESS" "gitconfig"
+
+# ======== install extra python ======== #
+_echo "setting up python + pip"
+$ASME pip3 -V
+$ASME pip3 install --upgrade pip
+$ASME pip3 install --no-warn-script-location \
+	docutils \
+	emoji-fzf \
+	pynvim
+
+# ======== setup starship ======== #
+_echo "setting up starship"
+curl -sS https://starship.rs/install.sh | sh
 
 # ======== setup tmux ======== #
 _echo "setting up tmux"
