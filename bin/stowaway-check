@@ -171,7 +171,8 @@ stowaway_check () {
 		if [ "$overwrite" == "true" ]; then
 			stowparams+=("-D $pkgname -t $target_dir")
 			stowcheck+="$pkgname:restow,"
-			log_message "DEBUG" "overwriting $found"
+			log_message "INFO" "Overwriting $found"
+			log_message "WARNING" "When overwriting; files in $target_dir but NOT in the repo will still remain." "true"
 		fi
 	
 		if [ "$backup" == "true" ]; then
