@@ -220,8 +220,8 @@ function install_packages() {
 	)
 	case $pkgmgr in
 		apt*)
-		# Debian specific tools
-		$pkgmgr $pkginstall apt-utils dash debianutils
+		# Debian specific stuff
+		$pkgmgr $pkginstall apt-utils dash debianutils ttf-dejavu
 		;;
 	esac
 	$pkgmgr $pkginstall ${pkgInstall[@]}
