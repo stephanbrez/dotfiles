@@ -100,10 +100,25 @@ stowaway_check () {
 	
 				# Get user input
 				if [[ -n $found ]]; then
-					log_message "DEBUG" "Exists ""${pkgname}"/"${child_name}"" in ""$found"""
-					echo "found existing dots at $found, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all, [a]dd, [A]dd all?"
-					read -n 1 action
-					log_message "DEBUG" "User action = $action"
+					# For debug
+					if [ -n "$cfg_child_name" ]; then
+						log_message "DEBUG" "Exists ${pkgname}/${child_name}/${cfg_child_name} in $found"
+					else
+						log_message "DEBUG" "Exists ${pkgname}/${child_name} in $found"
+					fi
+					# End debug
+					local valid_options="sSoObBaA"
+				  	while true; do
+				    		user "Found existing dots at $found, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all, [a]dd, [A]dd all? "
+				    		read -r -n 1 action  # Read a single character from the user
+				    		echo  # Move to a new line after reading input
+				    		if [[ "$valid_options" == *"$action"* ]]; then
+				      			log_message "DEBUG" "You chose: $action"
+				      			break
+				    		else
+				      			log_message "WARNING" "Invalid option. Please choose either s, S, o, O, b, B, a or A." "true"
+				    		fi
+				  	done
 				else
 					# For debug
 					if [ -n "$cfg_child_name" ]; then
@@ -112,18 +127,18 @@ stowaway_check () {
 						log_message "DEBUG" "No existing files at ${target_dir}/${pkgname}/${child_name}"
 					fi
 					# End debug
-		  		local valid_options="iIsS"
-				  while true; do
-				    user "Found $pkgname, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? "
-				    read -r -n 1 action  # Read a single character from the user
-				    echo  # Move to a new line after reading input
-				    if [[ "$valid_options" == *"$action"* ]]; then
-				      log_message "DEBUG" "You chose: $action"
-				      break
-				    else
-				      log_message "WARNING" "Invalid option. Please choose either i, I, s, or S." "true"
-				    fi
-				  done
+		  			local valid_options="iIsS"
+				  	while true; do
+				    		user "Found $pkgname, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? "
+				    		read -r -n 1 action  # Read a single character from the user
+				    		echo  # Move to a new line after reading input
+				    		if [[ "$valid_options" == *"$action"* ]]; then
+				      			log_message "DEBUG" "You chose: $action"
+				      			break
+				    		else
+				      			log_message "WARNING" "Invalid option. Please choose either i, I, s, or S." "true"
+				    		fi
+				  	done
 				fi
 			fi
 	
