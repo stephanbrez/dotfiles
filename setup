@@ -228,7 +228,7 @@ function install_packages() {
 	case $pkgmgr in
 		apt*)
 		# Debian specific stuff
-		$pkgmgr $pkginstall apt-utils dash debianutils ttf-dejavu
+		$pkgmgr $pkginstall apt-utils dash debianutils python3-dev ttf-dejavu
 		;;
 	esac
 	$pkgmgr $pkginstall ${pkgInstall[@]}
@@ -395,7 +395,8 @@ $ASME pip3 install --upgrade pip
 $ASME pip3 install --no-warn-script-location \
 	docutils \
 	emoji-fzf \
-	pynvim
+	pynvim \
+	thefuck
 
 # ======== setup starship ======== #
 _echo "setting up starship"
