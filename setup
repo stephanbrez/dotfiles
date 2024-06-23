@@ -304,8 +304,6 @@ function install_packages() {
 	# debian only
 	_echo "installing zoxide"
 	$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
-	# fix fd clash if needed
-	ln -s "$(which fd)" "$bindir"/fd
 
 	# ======== install extra python apps ======== #
 	_echo "setting up python + pip"
@@ -396,6 +394,10 @@ else
 		cd "$basedir" &&
 		install_dotfiles
 fi
+
+# ======== setup fd ======== #
+# debian only
+ln -s "$(which fd)" "$bindir"/fd
 
 # ======== setup git ======== #
 # Git config name
