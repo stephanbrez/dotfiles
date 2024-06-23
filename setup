@@ -30,7 +30,7 @@ me=$(basename "$myhome")
 basedir="$myhome/.dotfiles"
 bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
-stowpkg=(nvim starship tmux wezterm zsh)
+arch="amd64"
 ASME="sudo -u $me"
 # ======== end user options ======== #
 
@@ -110,7 +110,7 @@ fi
 log_message "INFO" "setting up dotfiles for '$me' in '$basedir'" "true"
 while true; do
 	user "Do you want to continue? (y/n): "
-	read -n1 yn
+	read -r -n1 yn
 	echo # Move to a new line after reading input
 	case $yn in
 		y|Y ) log_message "INFO" "Continuing..." "true"; break;;
@@ -256,8 +256,8 @@ function install_packages() {
 
 	# ======== install fastfetch ======== #
 	_echo "installing fastfetch"
-	curl -Lo https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb &&
-		dpkg -i fastfetch-linux-$(dpkg --print-architecture).deb
+	curl -Lo https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-"$(dpkg --print-architecture)".deb &&
+		dpkg -i fastfetch-linux-"$(dpkg --print-architecture)".deb
 	
 	# ======== install fzf ======== #
 	_echo "installing fzf"
@@ -282,8 +282,8 @@ function install_packages() {
 	# ======== install neovim ======== #
 	_echo "building neovim"
 	# build from source because debian is old
-	$ASME git clone https://github.com/neovim/neovim $myhome/.local/src/neovim &&
-		cd $myhome/.local/src/neovim && 
+	$ASME git clone https://github.com/neovim/neovim "$myhome"/.local/src/neovim &&
+		cd "$myhome"/.local/src/neovim && 
 		git checkout stable && 
 		make CMAKE_BUILD_TYPE=RelWithDebInfo &&
 		cd build && 
@@ -320,7 +320,7 @@ function install_packages() {
 
 while true; do
 	user "Do you want to install packages? (y/n): "
-	read -n1 yn
+	read -r -n1 yn
 	echo # Move to a new line after reading input
 	case $yn in
 		[Yy]* ) log_message "INFO" "Continuing with package install..." "true"; install_packages; break;;
