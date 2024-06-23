@@ -5,7 +5,7 @@
 # It adds interactivity: you can choose which packages to operate on. Selectively install, backup, and 
 # add dotfiles on a package by package basis. This means you can try dotfiles before committing to them, before or after forking a repo. 
 #
-# It operates on the package level not the file level, meaning that any operation chosen for an individual
+# It operates on the **package level** not the file level, meaning that any operation chosen for an individual
 # file will apply to the entire package. (Stow defines a "package" as any directory in the source parameter)
 # e.g. Selecting "backup" on "source_path/zsh/.zshrc" will backup (rename) the zsh directory to "target_path/zsh.backup"
 #
@@ -25,13 +25,16 @@
 #	$action - A single character with the user's selection
 #
 # Returns:	  	
-#	To get output you have to declare the variable "stowcmds" at the scope where stowaway_check is called.
-#	Depending on how you want to process the output, stowparams can be an array or a string:
-#		local stowparams=() or local stowparams=""
+#	To get output you have to declare the array variable "stowcmds" at the scope where stowaway_check is called.
+#		local stowparams=()
 #
 #	If you use an *array*, you have to loop through stowparams with whatever processing you want (cleaner if you want to add extra steps)
-#	If you use a *string*, you have to process the string directly after calling stowaway_check (uglier but marginally faster)
-#		e.g. for dir in $(find ...); do stowaway_check $dir; do_something_with $stowparams; done
+#	
+#	There is also a second string variable "stowcheck". Currently it's a fake associative array (dictionary)
+#	because MacOSX ships with old Bash. It may make sense to force bash > 4.0 and then use real dictionaries.
+#	The fake dictionary stores key/values as "pkgname:operation" with "," as a separator. You then have to build some logic to process
+#	the operation into a stow command. This is more work initially, but it allows for doing other things like checking & installing
+#	packages at the system level based on the presence of dotfiles.
 #
 #	⚠️ Note: Why not just use ${stowparams[@]} to pass all the parameters to one command since Stow can handle multiple packages at once?
 #		Because you won't be able to "add" any *individual* packages into the repo, it becomes all or none.
