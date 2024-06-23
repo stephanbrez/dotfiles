@@ -256,8 +256,9 @@ function install_packages() {
 
 	# ======== install fastfetch ======== #
 	_echo "installing fastfetch"
-	curl -Lo "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb" &&
-		dpkg -i fastfetch-linux-"$(dpkg --print-architecture)".deb
+	curl -Lo fastfetch-linux.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb" &&
+		dpkg -i fastfetch-linux.deb &&
+		rm -rf fastfetch-linux.deb
 	
 	# ======== install fzf ======== #
 	_echo "installing fzf"
