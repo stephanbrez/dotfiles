@@ -196,7 +196,6 @@ function install_packages() {
 		bash-completion
 		build-essential
 		ca-certificates
-		clamav-base
 		cmake
 		coreutils
 		curl
@@ -215,7 +214,6 @@ function install_packages() {
 		npm
 		pipx
 		pkgconf
-		psmisc
 		python3
 		python3-neovim
 		python3-pip
