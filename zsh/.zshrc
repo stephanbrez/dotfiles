@@ -62,6 +62,7 @@ zinit wait lucid light-mode for \
       zsh-users/zsh-autosuggestions \
   blockf atpull'zinit creinstall -q .' \
       zsh-users/zsh-completions
+
 # Add in snippets
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
@@ -88,9 +89,28 @@ zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 
 # Other plugins & tools									#
 #########################################
 
+# ======== emoji-fzf ======== #
+zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
+# Path to the emoji-fzf executable
+EMOJI_FZF_BIN_PATH="emoji-fzf"
+# Bind to Ctrl-K by default. Unset to disable.
+EMOJI_FZF_BINDKEY=
+# Fuzzy matching tool to use for the emoji selection
+EMOJI_FZF_FUZZY_FINDER=fzf
+# Optional arguments to pass to the fuzzy finder tool
+EMOJI_FZF_FUZZY_FINDER_ARGS=
+# Path to an optional custom alias JSON file
+EMOJI_FZF_CUSTOM_ALIASES=
+# Set to non-empty value to prepend the emoji before the emoji aliases
+EMOJI_FZF_PREPEND_EMOJIS=1
+# Set to non-empty value to skip the creation of shell aliases
+EMOJI_FZF_NO_ALIAS=
+# Set clipboard management tool
+EMOJI_FZF_CLIPBOARD="xsel -b"
+
 # ======== fzf ======== #
-source <(fzf --zsh)
-#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#source <(fzf --zsh)
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # use fd instead of find
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --strip-cwd-prefix --exclude .git'
