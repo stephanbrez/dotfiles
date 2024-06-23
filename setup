@@ -309,7 +309,7 @@ function install_packages() {
 
 	# ======== install extra python apps ======== #
 	_echo "setting up python + pip"
-	$ASME pipx ensurepath
+	$ASME pipx ensurepath # add bin path to bash - aka $bindir
 	pipx ensurepath --global # optional to allow pipx actions with --global argument
 	$ASME pipx install docutils
 	$ASME pipx install emoji-fzf
