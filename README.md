@@ -17,21 +17,24 @@
 
 ## Introduction
 
-This isn't *yet another collection of dotfiles*. Why? Through the process of writing an install script I got tired of having to spin up a new virtual machine to test each new version. This led to the following two major features (laziness: the true driver of innovation):
+This isn't trying to be *yet another collection of dotfiles*. Why? Through the process of writing an install script I got tired of having to spin up a new virtual machine to test each new version. This led to the following two major features (laziness: the true driver of innovation):
 
 ### Try Before you Buy
-With the use of *Stowaway Catcher* (a wrapper for [stow](https://www.gnu.org/software/stow/)), you can selectively use, backup, and adopt dotfiles on a package by package basis. This means you can try these (or any) dotfiles before committing to them, before or after forking this repo. *e.g.* Changed your mind about a specific package? Run the installer again and re-do the dotfiles setup. It's also really useful if you have several machines and only want to use some packages and dotfiles on certain ones (see below).
+With the use of [*Stowaway Catcher*](https://github.com/stephanbrez/dotfiles/blob/main/bin/stowaway-check) (a wrapper for [stow](https://www.gnu.org/software/stow/)), you can selectively use, backup, and adopt dotfiles on a package by package basis. This means you can try these (or any) dotfiles before committing to them, before or after forking this repo. *e.g.* Changed your mind about a specific package? Run the installer again and re-do the dotfiles setup. It's also really useful if you have several machines and only want to use some packages and dotfiles on certain ones (see below).
 
 ### Machine Specific Config
 Don't want to install packages & apps on your machine? No problem, you can only install dotfiles.
 Have more than one machine (like a desktop & laptop)? You can select separate package install configs.
 
 **Other useful ideas & concepts**
-There are a lot of great dotfiles managers and solutions out there. A lot of them unfortunately force you to use their naming scheme/file structure/methodology. Dotfiles are very personal, and you may have already spent a lot time organizing them how you want. If you're going to use this repo (isn't that the point of public repos?), wouldn't it be nice if it required minimal changes on your part? It would also be convenient if personalization only had to be done in one file–instead of 5 in 5 directories–wouldn't it? Or better yet, wouldn't it be great if the installer was interactive so you didn't have to figure out how to make changes?
+There are a lot of great dotfiles managers and solutions out there. A lot of them unfortunately force you to use their naming scheme/file structure/methodology. Dotfiles are very personal, and you may have already spent a lot time organizing them how you want. If you're going to use this repo (isn't that the point of public repos?), wouldn't it be nice if it required minimal changes on your part? It would also be convenient if personalization only had to be done in one file wouldn't it? *Or better yet, wouldn't it be great if the installer was interactive so you didn't have to figure out how to make changes?*
 
-## Organization
+## Methodology
 
-### Home Directories
+
+### Organization
+
+#### Home Directories
 
 Following [xdg base directories standards](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 
@@ -62,7 +65,7 @@ Following [xdg base directories standards](https://specifications.freedesktop.or
 └──  ▄█▀ ▀█▀ ▐▄█ █▀ █▀
 ```
 
-### Dotfiles
+#### Dotfiles
 
 To make it easier to install and configure apps individually, each app has a folder in `~/.dotfiles`. The structure mirrors the home directory structure. The contents then can be symlinked to the proper location in `~` on an app by app basis.
 🚨 *Not following this structure will cause Stow and Stowaway Catcher to break.*
@@ -107,7 +110,7 @@ or
 sudo apt install stow
 ```
 
-🛠️ ## Installation
+## 🛠️ Installation
 You can use the interactive install script, or if you're feeling a little masochistic, you can do a manual install.
 
 ### Install Script
@@ -132,6 +135,11 @@ less setup
 Make it executable and then run it *with sudo*:
 ```
 chmod +x setup && sudo ./setup
+```
+
+If you want to have an installation log to review afterwards pipe to a tee to the previous command:
+```
+chmod +x setup && sudo ./setup | tee setup_dots.log
 ```
 
 ### Manual Install
