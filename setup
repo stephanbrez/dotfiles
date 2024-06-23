@@ -105,6 +105,9 @@ else
     fail "Package manager not found. You must manually install packages.";
 fi
 }
+# for avoiding eval some day
+# pkgcommands[0] = "$pkgmgr $pkginstall"
+# pkgcommands[1] = "$pkgmgr $pkgupdate"
 
 # ======== sanity check ======== #
 log_message "INFO" "setting up dotfiles for '$me' in '$basedir'" "true"
@@ -229,10 +232,10 @@ function install_packages() {
 	case $pkgmgr in
 		apt*)
 		# Debian specific stuff
-		$pkgmgr $pkginstall apt-utils dash debianutils dpkg python3-dev ttf-dejavu
+		eval "$pkgmgr $pkginstall apt-utils dash debianutils dpkg python3-dev ttf-dejavu"
 		;;
 	esac
-	$pkgmgr $pkginstall ${pkgInstall[@]}
+	eval "$pkgmgr $pkginstall ${pkgInstall[*]}"
 	
 	# manually add apt sources
 	mkdir -p /etc/apt/keyrings
@@ -401,11 +404,11 @@ ln -s "$(which fd)" "$bindir"/fd
 # ======== setup git ======== #
 # Git config name
 echo "Please enter your FULL NAME for Git configuration:"
-read git_user_name
+read -r git_user_name
 
 # Git config email
 echo "Please enter your EMAIL for Git configuration:"
-read git_user_email
+read -r git_user_email
 
 # Set git credentials
 git config --global user.name "$git_user_name"
