@@ -185,6 +185,7 @@ function install_packages() {
 		shellcheck
 		silversearcher-ag
 		stow
+		thefuck
 		tldr
 		tmux
 	 	trash-cli
@@ -212,9 +213,11 @@ function install_packages() {
 	 	meson
 		ninja-build
 		npm
+		pipx
 		pkgconf
 		psmisc
 		python3
+		python3-neovim
 		python3-pip
 		python3-venv
 		secure-delete
@@ -290,7 +293,6 @@ function install_packages() {
 		cd build && 
 		cpack -G DEB && 
 		dpkg -i nvim-linux64.deb
-	# Use pip (below) to install python3-neovim to avoid distro specific package managers
 
 	# ======== install wezterm ======== #
 	_echo "installing wezterm"
@@ -304,6 +306,15 @@ function install_packages() {
 	$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
 	# fix fd clash if needed
 	ln -s "$(which fd)" "$bindir"/fd
+
+	# ======== install extra python apps ======== #
+	_echo "setting up python + pip"
+	$ASME pipx ensurepath
+	pipx ensurepath --global # optional to allow pipx actions with --global argument
+	$ASME pipx install --upgrade pip
+	$ASME pipx install \
+		docutils \
+		emoji-fzf
 	
 	# ======== Fun stuff ======== #
 	_echo "setting up ascii/ansi art tools"
@@ -399,20 +410,6 @@ read git_user_email
 git config --global user.name "$git_user_name"
 git config --global user.email "$git_user_email"
 log_message "SUCCESS" "gitconfig"
-
-# ======== install extra python ======== #
-_echo "setting up python + pip"
-$ASME pip3 -V
-$ASME pip3 install --upgrade pip
-$ASME pip3 install --no-warn-script-location \
-	docutils \
-	emoji-fzf \
-	pynvim \
-	thefuck
-
-# ======== setup starship ======== #
-_echo "setting up starship"
-curl -sS https://starship.rs/install.sh | sh
 
 # ======== setup tmux ======== #
 _echo "setting up tmux"
