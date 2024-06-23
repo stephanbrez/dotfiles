@@ -205,6 +205,7 @@ function install_packages() {
 		docker.io
 		e2fsprogs
 		ethtool
+		exfatprogs
 		flatpak
 		gcc
 		gettext
@@ -232,8 +233,11 @@ function install_packages() {
 	case $pkgmgr in
 		apt*)
 		# Debian specific stuff
-		eval "$pkgmgr $pkginstall apt-utils dash debianutils dpkg python3-dev ttf-dejavu"
+		eval "$pkgmgr $pkginstall apt-utils dash debianutils dpkg python3-dev exfat-fuse ttf-dejavu"
 		;;
+		dnf*)
+		# Fedora specific stuff
+		eval "$pkgmgr $pkginstall dejavu-fonts fuse-exfat python3-devel python3-neovim neovim"
 	esac
 	eval "$pkgmgr $pkginstall ${pkgInstall[*]}"
 	
