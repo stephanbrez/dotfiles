@@ -106,7 +106,7 @@ EMOJI_FZF_PREPEND_EMOJIS=1
 # Set to non-empty value to skip the creation of shell aliases
 EMOJI_FZF_NO_ALIAS=
 # Set clipboard management tool
-EMOJI_FZF_CLIPBOARD="xsel -b"
+EMOJI_FZF_CLIPBOARD="wl-copy"
 
 # ======== fzf ======== #
 #source <(fzf --zsh)
