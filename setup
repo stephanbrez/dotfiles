@@ -224,6 +224,7 @@ function install_packages() {
 		unzip
 		util-linux
 	 	wget
+		wl-clipboard
 		# fun
 		toilet
 	)
