@@ -73,10 +73,10 @@ To make it easier to install and configure apps individually, each app has a fol
 ```
 .dotfiles/
 ├── README.md
-├── starship
+├── starship                --> app folder
 │   └── .config
 │       └── starship.toml   --> symlinked to ~/.config
-└── tmux                    --> app folder
+└── tmux                    
     └── .config
         └── tmux            --> symlinked to ~/.config
             └── tmux.conf   --> config files
