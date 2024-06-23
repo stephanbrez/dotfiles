@@ -218,7 +218,7 @@ function install_packages() {
 		pipx
 		pkgconf
 		python3
-		python3-neovim
+		# python3-neovim - Debian will force old neovim install
 		python3-pip
 		python3-venv
 		secure-delete
@@ -313,6 +313,8 @@ function install_packages() {
 	pipx ensurepath --global # optional to allow pipx actions with --global argument
 	$ASME pipx install docutils
 	$ASME pipx install emoji-fzf
+	# install python neovim after neovim because debian will install old neovim
+	eval "$pkgmgr $pkginstall python3-neovim"
 	
 	# ======== Fun stuff ======== #
 	_echo "setting up ascii/ansi art tools"
