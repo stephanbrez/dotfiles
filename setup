@@ -311,10 +311,8 @@ function install_packages() {
 	_echo "setting up python + pip"
 	$ASME pipx ensurepath
 	pipx ensurepath --global # optional to allow pipx actions with --global argument
-	$ASME pipx install --upgrade pip
-	$ASME pipx install \
-		docutils \
-		emoji-fzf
+	$ASME pipx install docutils
+	$ASME pipx install emoji-fzf
 	
 	# ======== Fun stuff ======== #
 	_echo "setting up ascii/ansi art tools"
@@ -327,7 +325,6 @@ function install_packages() {
 		chmod +x "$myhome"/.local/bin/tdfgo &&
 		mkdir -p "$myhome"/.config/tdfgo &&
 		mv ./fonts "$myhome"/.config/tdfgo/fonts
-
 }
 
 while true; do
@@ -399,7 +396,7 @@ fi
 
 # ======== setup fd ======== #
 # debian only
-ln -s "$(which fd)" "$bindir"/fd
+ln -s "$(which fdfind)" "$bindir"/fd
 
 # ======== setup git ======== #
 # Git config name
