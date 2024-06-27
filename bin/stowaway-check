@@ -2,8 +2,8 @@
 
 # *Stowaway Catcher* - a wrapper for [stow](https://www.gnu.org/software/stow/) designed for use with dotfiles in your 🏠 ($HOME).
 #
-# It adds interactivity: you can choose which packages to operate on. Selectively install, backup, and 
-# add dotfiles on a package by package basis. This means you can try dotfiles before committing to them, before or after forking a repo. 
+# It adds interactivity: you can choose which packages to operate on. Selectively install, backup, and
+# add dotfiles on a package by package basis. This means you can try dotfiles before committing to them, before or after forking a repo.
 #
 # It operates on the **package level** not the file level, meaning that any operation chosen for an individual
 # file will apply to the entire package. (Stow defines a "package" as any directory in the source parameter)
@@ -12,7 +12,7 @@
 # 🚨 Warning: selecting "all" for any of the options will remove the ability to work on packages one by one
 #
 # Why not just create the symlinks and remove stow? Because stow has some nice features for handling dotfiles, deletions,
-# and tree folding/unfolding. 
+# and tree folding/unfolding.
 #
 #
 # Parameters:
@@ -24,12 +24,12 @@
 # (variables set by the function that are available after execution...kinda like a return)
 #	$action - A single character with the user's selection
 #
-# Returns:	  	
-#	To get output you have to declare the array variable "stowcmds" at the scope where stowaway_check is called.
-#		local stowparams=()
+# Returns:
+#	  String: stowparams - A string of the parameters to pass to stow
+#	⚠️ Note: To get output you have to declare the string variable "stowparams" at the scope where stowaway_check is called.
+#		local stowparams=""
 #
-#	If you use an *array*, you have to loop through stowparams with whatever processing you want (cleaner if you want to add extra steps)
-#	
+#
 #	There is also a second string variable "stowcheck". Currently it's a fake associative array (dictionary)
 #	because MacOSX ships with old Bash. It may make sense to force bash > 4.0 and then use real dictionaries.
 #	The fake dictionary stores key/values as "pkgname:operation" with "," as a separator. You then have to build some logic to process
@@ -39,9 +39,9 @@
 #	⚠️ Note: Why not just use ${stowparams[@]} to pass all the parameters to one command since Stow can handle multiple packages at once?
 #		Because you won't be able to "add" any *individual* packages into the repo, it becomes all or none.
 
-stowaway_check () {
+stowaway_check() {
 	local src=$1
-	local target_dir="$2" 
+	local target_dir="$2"
 	local overwrite="" backup="" skip="" install="" add=""
 	local stowcmd=""
 	local pkgname=""
@@ -51,32 +51,31 @@ stowaway_check () {
 	elif [ ! -e "$target_dir" ]; then
 		fail "Target directory not found"
 	fi
-	
+
 	log_message "DEBUG" "Starting stowaway_check for $src"
-	log_message "DEBUG" "install_all=$( [ "$install_all" == "true" ] && echo true || echo false) \
-	overwrite_all=$( [ "$overwrite_all" == "true" ] && echo true || echo false) \
-	backup_all=$( [ "$backup_all" == "true" ] && echo true || echo false) \
-	skip_all=$( [ "$skip_all" == "true" ] && echo true || echo false) \
-	import_all=$( [ "$add_all" == "true" ] && echo true || echo false)"
-	
+	log_message "DEBUG" "install_all=$([ "$install_all" == "true" ] && echo true || echo false) \
+	overwrite_all=$([ "$overwrite_all" == "true" ] && echo true || echo false) \
+	backup_all=$([ "$backup_all" == "true" ] && echo true || echo false) \
+	skip_all=$([ "$skip_all" == "true" ] && echo true || echo false) \
+	import_all=$([ "$add_all" == "true" ] && echo true || echo false)"
+
 	pkgname="$(basename "$src")"
- 
-	if [ "$install_all" == "false" ] && [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ] && [ "$add_all" == "false" ];
-    then
+
+	if [ "$install_all" == "false" ] && [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ] && [ "$add_all" == "false" ]; then
 		local children
 		local found=""
 		local cfg_child_name=""
-	
+
 		# Get all children of the source directory one level deep
 		log_message "DEBUG" "searching for children of $src"
 		children=$(find "$src" -mindepth 1 -maxdepth 1)
-	
+
 		for child in $children; do
 			# Skip processing children if anything in this package has been installed or skipped
 			if [ "$skip" != "true" ] && [ "$install" != "true" ]; then # "false" or empty
 				log_message "DEBUG" "processing children for ""$src"""
 				# Get the base name of the child (remove the directory part)
-	    			local child_name=""
+				local child_name=""
 				child_name=$(basename "$child")
 
 				# Check for files in the package
@@ -85,7 +84,7 @@ stowaway_check () {
 					found="$target_dir/$pkgname/$child_name"
 				fi
 
-				# only check the subdir that is .config 
+				# only check the subdir that is .config
 				if [ -d "$child" ] && [ "$child_name" = ".config" ]; then
 					log_message "DEBUG" "Child Type .config Directory"
 					local cfg_children="" cfg_child_name=""
@@ -93,7 +92,7 @@ stowaway_check () {
 					cfg_children=$(find "$child" -mindepth 1 -maxdepth 1)
 					for cfg_child in $cfg_children; do
 						cfg_child_name=$(basename "$cfg_child")
-						log_message "DEBUG" "checking for ""$target_dir"/.config/"$cfg_child_name""" 
+						log_message "DEBUG" "checking for ""$target_dir"/.config/"$cfg_child_name"""
 						if [ -e "$target_dir/.config/$cfg_child_name" ]; then
 							found="$target_dir"/.config/"$cfg_child_name"
 							log_message "DEBUG" "found existing dots $found"
@@ -102,7 +101,7 @@ stowaway_check () {
 						fi
 					done
 				fi
-	
+
 				# Get user input
 				if [[ -n $found ]]; then
 					# For debug
@@ -113,17 +112,17 @@ stowaway_check () {
 					fi
 					# End debug
 					local valid_options="sSoObBaA"
-				  	while true; do
-				    		user "Found existing dots at $found, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all, [a]dd, [A]dd all? "
-				    		read -r -n 1 action  # Read a single character from the user
-				    		echo  # Move to a new line after reading input
-				    		if [[ "$valid_options" == *"$action"* ]]; then
-				      			log_message "DEBUG" "You chose: $action"
-				      			break
-				    		else
-				      			log_message "WARNING" "Invalid option. Please choose either s, S, o, O, b, B, a or A." "true"
-				    		fi
-				  	done
+					while true; do
+						user "Found existing dots at $found, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all, [a]dd, [A]dd all? "
+						read -r -n 1 action # Read a single character from the user
+						echo                # Move to a new line after reading input
+						if [[ "$valid_options" == *"$action"* ]]; then
+							log_message "DEBUG" "You chose: $action"
+							break
+						else
+							log_message "WARNING" "Invalid option. Please choose either s, S, o, O, b, B, a or A." "true"
+						fi
+					done
 				else
 					# For debug
 					if [ -n "$cfg_child_name" ]; then
@@ -132,78 +131,78 @@ stowaway_check () {
 						log_message "DEBUG" "No existing files at ${target_dir}/$pkgname/${child_name}"
 					fi
 					# End debug
-		  			local valid_options="iIsS"
-				  	while true; do
-				    		user "Found $pkgname, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? "
-				    		read -r -n 1 action  # Read a single character from the user
-				    		echo  # Move to a new line after reading input
-				    		if [[ "$valid_options" == *"$action"* ]]; then
-				      			log_message "DEBUG" "You chose: $action"
-				      			break
-				    		else
-				      			log_message "WARNING" "Invalid option. Please choose either i, I, s, or S." "true"
-				    		fi
-				  	done
+					local valid_options="iIsS"
+					while true; do
+						user "Found $pkgname, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? "
+						read -r -n 1 action # Read a single character from the user
+						echo                # Move to a new line after reading input
+						if [[ "$valid_options" == *"$action"* ]]; then
+							log_message "DEBUG" "You chose: $action"
+							break
+						else
+							log_message "WARNING" "Invalid option. Please choose either i, I, s, or S." "true"
+						fi
+					done
 				fi
 			fi
-	
-			case "$action" in
-				i ) install=true;;
-				I ) install_all=true;;
-				o ) overwrite=true;;
-				O ) overwrite_all=true;;
-				b ) backup=true;;
-				B ) backup_all=true;;
-				a ) add=true;;
-				A ) add_all=true;;
-				s ) skip=true;;
-				S ) skip_all=true;;
-				* ) ;;
-				esac
-			done
-		fi
-	
-		# if the individual action is unset, match the "all" action
-		install=${install:-$install_all}
-		overwrite=${overwrite:-$overwrite_all}
-		backup=${backup:-$backup_all}
-		add=${add:-$add_all}
-		skip=${skip:-$skip_all}
-	
-		# delete the specified file to "overwrite"
-		if [ "$overwrite" == "true" ]; then
-			stowparams+=("-D $pkgname -t $target_dir")
-			stowcheck+="$pkgname:restow,"
-			log_message "INFO" "Overwriting $found"
-			log_message "WARNING" "When overwriting; files in $target_dir but NOT in the repo will still remain." "true"
-		fi
-	
-		if [ "$backup" == "true" ]; then
-			# back up the entire package
-			local dst=""
-			dst="${target_dir}"/"${pkgname}"
-		        log_message "DEBUG" "renamed $dst to ${dst}.backup"
-			log_message "INFO" "Backing up $dst"
-		fi
-	
-		# this will cause the whole package to be skipped if any of its children is skipped
-		if [ "$skip" == "true" ]; then
-			log_message "INFO" "Skipping $pkgname"
-		fi
-	 
-		# use the repo version unless skip or add is chosen
-	  if [ "$skip" != "true" ]; then
-			# add on the adopt flag if add or add_all
-			if [ "$add" == "true" ]; then
-				stowcmd+="-S $pkgname --adopt"
-				stowcheck+="$pkgname:adopt,"
-			else
-				stowcmd+="-S $pkgname"
-				stowcheck+="$pkgname:stow,"
-			fi
-			log_message "INFO" "Installing $pkgname"
 
-			log_message "DEBUG" "adding to stowparams: $stowcmd"
-			stowparams+=("$stowcmd -t $target_dir")
-	  fi	
+			case "$action" in
+			i) install=true ;;
+			I) install_all=true ;;
+			o) overwrite=true ;;
+			O) overwrite_all=true ;;
+			b) backup=true ;;
+			B) backup_all=true ;;
+			a) add=true ;;
+			A) add_all=true ;;
+			s) skip=true ;;
+			S) skip_all=true ;;
+			*) ;;
+			esac
+		done
+	fi
+
+	# if the individual action is unset, match the "all" action
+	install=${install:-$install_all}
+	overwrite=${overwrite:-$overwrite_all}
+	backup=${backup:-$backup_all}
+	add=${add:-$add_all}
+	skip=${skip:-$skip_all}
+
+	# delete the specified file to "overwrite"
+	if [ "$overwrite" == "true" ]; then
+		stowcmd="-R $pkgname -t $target_dir"
+		stowcheck="$pkgname:restow,"
+		log_message "INFO" "Overwriting $found"
+		log_message "WARNING" "When overwriting; files in $target_dir but NOT in the repo will still remain." "true"
+	fi
+
+	if [ "$backup" == "true" ]; then
+		# back up the entire package
+		local dst=""
+		dst="${target_dir}"/"${pkgname}"
+		log_message "DEBUG" "renamed $dst to ${dst}.backup"
+		log_message "INFO" "Backing up $dst"
+	fi
+
+	# this will cause the whole package to be skipped if any of its children is skipped
+	if [ "$skip" == "true" ]; then
+		log_message "INFO" "Skipping $pkgname"
+	fi
+
+	# use the repo version unless skip or add is chosen
+	if [ "$skip" != "true" ]; then
+		# add on the adopt flag if add or add_all
+		if [ "$add" == "true" ]; then
+			stowcmd="-S $pkgname --adopt"
+			stowcheck="$pkgname:adopt,"
+		else
+			stowcmd="-S $pkgname"
+			stowcheck="$pkgname:stow,"
+		fi
+		log_message "INFO" "Installing $pkgname"
+
+		stowparams="$stowcmd -t $target_dir"
+		log_message "DEBUG" "adding to stowparams: $stowparams"
+	fi
 }
