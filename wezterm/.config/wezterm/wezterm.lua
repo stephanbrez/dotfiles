@@ -36,7 +36,7 @@ end
 
 -- This is where you actually apply your config choices
 config.hide_tab_bar_if_only_one_tab = true
-config.font = wezterm.font("SauceCodePro Nerd Font Mono")
+config.font = wezterm.font("DejaVuSansM Nerd Font")
 config.font_size = 12
 -- Auto light/dark mode:
 -- config.color_scheme = "Gruvbox light, medium (base16)"
