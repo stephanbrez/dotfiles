@@ -201,10 +201,10 @@ alias jn="jupyter notebook"
 
 # Neovim #
 alias nv='nvim'                   # Open neovim
-  alias nvf='nvim -o `fzf`'         # Edit file by fuzzy search
+alias nvf='nvim -o `fzf`'         # Edit file by fuzzy search
 
 # PKM #
-alias pkm="nv ~/Documents/BC_PKM/"
+alias pkm="cd ~/Documents/BC_PKM/ && nv"
 
 #ssh
 alias sshkey="cat ~/.ssh/id_rsa.pub"                    # View ssh key
