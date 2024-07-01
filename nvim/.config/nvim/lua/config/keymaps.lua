@@ -22,8 +22,8 @@ vim.keymap.set("n", "Y", "y$")
 -- better indenting
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
-vim.keymap.set("n", "<", "<S-v><<esc>")
-vim.keymap.set("n", ">", "<S-v>><esc>")
+vim.keymap.set("n", "<", "<S-v><<esc>", { desc = "Select line and indent left" })
+vim.keymap.set("n", ">", "<S-v>><esc>", { desc = "Select line and indent right" })
 
 -- Select all
 vim.keymap.set("n", "==", "gg<S-v>G")
