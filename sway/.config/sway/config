@@ -97,7 +97,9 @@ set $default-terminal wezterm
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu dmenu_path | dmenu | xargs swaymsg exec --
+# set $menu dmenu_path | dmenu | xargs swaymsg exec --
+set $menu wofi -show drun | xargs swaymsg exec --
+
 
 # ======== Autostart  ======== #
 # setup PKM workspace
@@ -112,9 +114,9 @@ bindsym $mod+Shift+w exec $default-web-browser
 # bindsym $mod+d exec --no-startup-id dmenu_run
 # A more modern dmenu replacement is rofi:
 # bindcode $mod+40 exec "rofi -modi drun,run -show-icons -show drun"
-bindcode $mod+40 exec "rofi -show combi" 
+# bindcode $mod+40 exec "rofi -show combi" 
 # Start your launcher
-# bindsym $mod+d exec $menu
+bindsym $mod+d exec $menu
 
 #########################################
 # Windows
