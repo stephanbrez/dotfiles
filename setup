@@ -40,8 +40,11 @@ verbose_mode=false
 # Parse command-line arguments
 while getopts "v" option; do
 	case $option in
-		v) verbose_mode=true;;
-		*) echo "Usage: $0 [-v]"; exit 1;;
+	v) verbose_mode=true ;;
+	*)
+		echo "Usage: $0 [-v]"
+		exit 1
+		;;
 	esac
 done
 echo "Verbose mode is $verbose_mode"
@@ -56,8 +59,8 @@ function fail() {
 }
 
 log_message() {
-# Function to format and print messages based on the type with optional override to force display (ignore verbose)
-# Usage: log_message "str:MSGTYPE" "str:Message" "boolean:force display"
+	# Function to format and print messages based on the type with optional override to force display (ignore verbose)
+	# Usage: log_message "str:MSGTYPE" "str:Message" "boolean:force display"
 	local message_type=$1
 	local message=$2
 	local force=${3:-false}
@@ -66,44 +69,39 @@ log_message() {
 
 	if $verbose_mode || $force; then
 		case $message_type in
-			DEBUG) printf "  [ \033[36mDebug\033[0m ][%s] %s\n" "$timestamp" "$message";;
-			INFO) printf "[ \033[34m>>\033[0m ] %s\n" "$message";;
-			WARNING) printf "[\033[31m;1 !!! \033[0m][%s] %s\n" "$timestamp" "$message";;
-			SUCCESS) printf "\033[2K  [ \033[32mOK\033[0m ] %s\n" "$message";;	
-			*) printf "[UNKNOWN][%s] %s\n" "$timestamp" "$message";;  # Fallback for unknown message types
+		DEBUG) printf "  [ \033[36mDebug\033[0m ][%s] %s\n" "$timestamp" "$message" ;;
+		INFO) printf "[ \033[34m>>\033[0m ] %s\n" "$message" ;;
+		WARNING) printf "[\033[31m;1 !!! \033[0m][%s] %s\n" "$timestamp" "$message" ;;
+		SUCCESS) printf "\033[2K  [ \033[32mOK\033[0m ] %s\n" "$message" ;;
+		*) printf "[UNKNOWN][%s] %s\n" "$timestamp" "$message" ;; # Fallback for unknown message types
 		esac
 	fi
 }
 
 function linux_package() {
-if [ -x "$(command -v apk)" ];
-then
-    pkgmgr="apk"
-    pkginstall="add --no-cache"
-    pkgupdate="update"	
-elif [ -x "$(command -v apt)" ];
-then
-    pkgmgr="apt"
-    pkginstall="install -y"
-    pkgupdate="update"	
-elif [ -x "$(command -v dnf)" ];
-then
-    pkgmgr="dnf"
-    pkginstall="install -y"
-    pkgupdate="update"	
-elif [ -x "$(command -v pacman)" ];
-then
-    pkgmgr="pacman"
-    pkginstall="-S"
-    pkgupdate="-Syu"	
-elif [ -x "$(command -v zypper)" ];
-then
-    pkgmgr="zypper"
-    pkginstall="install"
-    pkgupdate="refresh && zypper update"	
-else
-    fail "Package manager not found. You must manually install packages.";
-fi
+	if [ -x "$(command -v apk)" ]; then
+		pkgmgr="apk"
+		pkginstall="add --no-cache"
+		pkgupdate="update"
+	elif [ -x "$(command -v apt)" ]; then
+		pkgmgr="apt"
+		pkginstall="install -y"
+		pkgupdate="update"
+	elif [ -x "$(command -v dnf)" ]; then
+		pkgmgr="dnf"
+		pkginstall="install -y"
+		pkgupdate="update"
+	elif [ -x "$(command -v pacman)" ]; then
+		pkgmgr="pacman"
+		pkginstall="-S"
+		pkgupdate="-Syu"
+	elif [ -x "$(command -v zypper)" ]; then
+		pkgmgr="zypper"
+		pkginstall="install"
+		pkgupdate="refresh && zypper update"
+	else
+		fail "Package manager not found. You must manually install packages."
+	fi
 }
 # for avoiding eval some day
 # pkgcommands[0] = "$pkgmgr $pkginstall"
@@ -116,9 +114,12 @@ while true; do
 	read -r -n1 yn
 	echo # Move to a new line after reading input
 	case $yn in
-		y|Y ) log_message "INFO" "Continuing..." "true"; break;;
-		n|N ) fail "Exiting.";;
-		* ) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true";;
+	y | Y)
+		log_message "INFO" "Continuing..." "true"
+		break
+		;;
+	n | N) fail "Exiting." ;;
+	*) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true" ;;
 	esac
 done
 
@@ -133,39 +134,39 @@ $ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
 #########################################
 function install_packages() {
 	_echo "configuring package manager"
-	
+
 	case "$OSTYPE" in
-	  	darwin*)  
+	darwin*)
 		pkgmgr="brew"
 		pkginstall="install"
 		pkgupdate="update"
-		DARWIN=1 
-		;; 
-	  	linux*)   
+		DARWIN=1
+		;;
+	linux*)
 		LINUX=1
-		linux_package 
+		linux_package
 		;;
-	  	bsd*)     	
+	bsd*)
 		OS=$(uname -s)
-		VER=$(uname -r) 
+		VER=$(uname -r)
 		;;
-	  	msys*)    
-		echo "WINDOWS" 
-		;;
-	  	cygwin*)  
-		echo "ALSO WINDOWS" 
-		;;
-	  	win32*)
+	msys*)
 		echo "WINDOWS"
 		;;
-	  	*)        
-		fail "unknown: $OSTYPE" 
+	cygwin*)
+		echo "ALSO WINDOWS"
+		;;
+	win32*)
+		echo "WINDOWS"
+		;;
+	*)
+		fail "unknown: $OSTYPE"
 		;;
 	esac
-	
+
 	_echo "updating package manager"
 	"$pkgmgr" "$pkgupdate"
-	
+
 	# install all the things \o/
 	_echo "installing packages"
 	# build package list
@@ -191,10 +192,10 @@ function install_packages() {
 		thefuck
 		tldr
 		tmux
-	 	trash-cli
+		trash-cli
 		zsh
 		# system/server tools
-	 	automake
+		automake
 		bash
 		bash-completion
 		build-essential
@@ -213,7 +214,7 @@ function install_packages() {
 		golang-doc
 		golang-src
 		gpg
-	 	meson
+		meson
 		ninja-build
 		npm
 		pipx
@@ -225,27 +226,28 @@ function install_packages() {
 		secure-delete
 		unzip
 		util-linux
-	 	wget
+		wget
 		wl-clipboard
 		# fun
 		toilet
 	)
 	case $pkgmgr in
-		apt*)
+	apt*)
 		# Debian specific stuff
 		eval "$pkgmgr $pkginstall apt-utils dash debianutils dpkg python3-dev exfat-fuse ttf-dejavu"
 		;;
-		dnf*)
+	dnf*)
 		# Fedora specific stuff
 		eval "$pkgmgr $pkginstall dejavu-fonts fuse-exfat python3-devel python3-neovim neovim"
+		;;
 	esac
 	eval "$pkgmgr $pkginstall ${pkgInstall[*]}"
-	
+
 	# manually add apt sources
 	mkdir -p /etc/apt/keyrings
 	# add flatpak repo
 	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-	
+
 	# ======== install 1password ======== #
 	_echo "installing 1password"
 	curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg &&
@@ -255,7 +257,7 @@ function install_packages() {
 	mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 &&
 		curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
 	apt update && apt install -y 1password 1password-cli
-	
+
 	# ======== install eza ======== #
 	_echo "installing eza"
 	wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
@@ -268,18 +270,18 @@ function install_packages() {
 	curl -Lo fastfetch-linux.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb" &&
 		dpkg -i fastfetch-linux.deb &&
 		rm -rf fastfetch-linux.deb
-	
+
 	# ======== install fzf ======== #
 	_echo "installing fzf"
 	$ASME git clone --depth 1 https://github.com/junegunn/fzf.git "$myhome"/.fzf &&
 		$ASME "$myhome"/.fzf/install
-	
+
 	# ======== install glow ======== #
 	_echo "installing glow"
 	curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
 	echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
 	apt update && apt install glow
-	
+
 	# ======== install lazygit ======== #
 	_echo "installing lazygit"
 	LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
@@ -293,11 +295,11 @@ function install_packages() {
 	_echo "building neovim"
 	# build from source because debian is old
 	$ASME git clone https://github.com/neovim/neovim "$myhome"/.local/src/neovim &&
-		cd "$myhome"/.local/src/neovim && 
-		git checkout stable && 
+		cd "$myhome"/.local/src/neovim &&
+		git checkout stable &&
 		make CMAKE_BUILD_TYPE=RelWithDebInfo &&
-		cd build && 
-		cpack -G DEB && 
+		cd build &&
+		cpack -G DEB &&
 		dpkg -i nvim-linux64.deb
 
 	# ======== install wezterm ======== #
@@ -305,7 +307,7 @@ function install_packages() {
 	curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
 	echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
 	apt update && apt install wezterm
-	
+
 	# ======== install zoxide ======== #
 	# debian only
 	_echo "installing zoxide"
@@ -313,13 +315,13 @@ function install_packages() {
 
 	# ======== install extra python apps ======== #
 	_echo "setting up python + pip"
-	$ASME pipx ensurepath # add bin path to bash - aka $bindir
+	$ASME pipx ensurepath    # add bin path to bash - aka $bindir
 	pipx ensurepath --global # optional to allow pipx actions with --global argument
 	$ASME pipx install docutils
 	$ASME pipx install emoji-fzf
 	# install python neovim after neovim because debian will install old neovim
 	eval "$pkgmgr $pkginstall python3-neovim"
-	
+
 	# ======== Fun stuff ======== #
 	_echo "setting up ascii/ansi art tools"
 	rm -rf /usr/share/figlet/
@@ -338,9 +340,16 @@ while true; do
 	read -r -n1 yn
 	echo # Move to a new line after reading input
 	case $yn in
-		[Yy]* ) log_message "INFO" "Continuing with package install..." "true"; install_packages; break;;
-		[Nn]* ) log_message "INFO" "Skipping package install." "true"; break;;
-		* ) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true";;
+	[Yy]*)
+		log_message "INFO" "Continuing with package install..." "true"
+		install_packages
+		break
+		;;
+	[Nn]*)
+		log_message "INFO" "Skipping package install." "true"
+		break
+		;;
+	*) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true" ;;
 	esac
 done
 
@@ -350,38 +359,37 @@ done
 
 # ======== setup dotfiles ======== #
 # function to install (stow) dotfiles
-install_dotfiles () {
+install_dotfiles() {
 	# don't change these 4 lines
 	source "$basedir"/bin/stowaway-check
 	local install_all=false overwrite_all=false backup_all=false skip_all=false add_all=false
-	local stowparams=() 
+	local stowparams=""
 	local stowcheck=""
-	
+	local dirs=()
+
 	# Use find to generate a list of packages (directories)
 	log_message "DEBUG" "Searching for dots in $basedir"
-	for dir in $(find "$basedir" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*'); do stowaway_check "$dir" "$myhome"; done
+	while IFS= read -r dir; do
+		dirs+=("$dir")
+	done < <(find "$basedir" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*')
 
-	for cmd in "${stowparams[@]}"; do
-	  	log_message "DEBUG" "running command: stow $cmd" "true"
-		$ASME stow $cmd
+	for dir in "${dirs[@]}"; do
+		stowaway-check "$dir" "$myhome"
+		log_message "DEBUG" "running command: stow $stowparams" "true"
+		"$ASME stow $stowparams"
+		# to finish some day
+		IFS=':' read -r -a arr2 <<<"$stowcheck"
+		log_message "DEBUG" "Checking to see if ${arr2[0]} is installed"
+		if [ "${arr2[1]}" == "stow" ] && ! which "${arr2[0]}" >/dev/null 2>&1; then
+			echo "You chose to install dotfiles for the following packages, but they aren't on your system: ${arr2[0]}"
+			#Echo $somelist
+			#echo "Would you like to install them: y/n?
+
+			#building out a system packager command when possible
+			#Echo "Attempting to install:"
+		fi
 	done
 
-	# to finish some day
-	while IFS=',' read -ra array; do
-		for i in "${array[@]}"; do
-			log_message "DEBUG" "Processing $i"
-			IFS=':' read -r -a arr2 <<< "$i"
-			log_message "DEBUG" "Checking to see if ${arr2[0]} is installed"
-			if [ "${arr2[1]}" == "stow" ] && ! which "${arr2[0]}" >/dev/null 2>&1; then
-				echo "You chose to install dotfiles for the following packages, but they aren't on your system: ${arr2[0]}"
-				#Echo $somelist
-				#echo "Would you like to install them: y/n?
-
-				#building out a system packager command when possible
-				#Echo "Attempting to install:"
-			fi
-		done
-	done <<< "$stowcheck"
 	log_message "SUCCESS" "dotfiles installed" "true"
 }
 
