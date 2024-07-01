@@ -1,0 +1,10 @@
+allow_images=true
+image_size=32
+width=600
+# height=20%
+insensitive=true
+mode=drun,run
+padding:5
+lines=8
+# dynamic_lines=true
+term=wezterm
