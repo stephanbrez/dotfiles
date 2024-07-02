@@ -20,6 +20,7 @@
 # Window management on the left hand side (arrows)
 # Workspace management on the right hand side (numbers)
 # Permanent workspace layout
+# Use of keycodes instead of names to maintain consistency when changing keyboard layouts
 #
 # Hotkeys:
 # *No* modifier to **focus** things
@@ -218,10 +219,10 @@ bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws10
 
-# cycle workspaces using h & l to match vim
-bindcode $mod+Shift+46 workspace next
-bindcode $mod+Shift+43 workspace prev
-# cycle workspaces on current screen with 'h' & 'l'
+# cycle all workspaces using 'j' & 'k' (colemak-dh) - index-1 row1&row3 
+bindcode $mod+45 workspace prev
+bindcode $mod+44 workspace next
+# cycle workspaces on current screen with 'h' & 'l' (colemak-dh) - index row1&row3
 bindcode $mod+43 workspace prev_on_output
 bindcode $mod+46 workspace next_on_output
 
@@ -250,9 +251,9 @@ bindcode $mod+Shift+57 move container to workspace back_and_forth; workspace las
 # Assign screens to workspaces          
 #########################################
 
-# move workspace to output (screen)
-  bindcode $mod+Control+43 move workspace to output left
-  bindcode $mod+Control+46 move workspace to output right
+# move workspace to output (screen) with 'h' & 'l
+  bindcode $mod+Shift+43 move workspace to output left
+  bindcode $mod+Shift+46 move workspace to output right
 
 # assign workspaces to outputs
 # grouping workspaces by output allows disconnecting screens 
