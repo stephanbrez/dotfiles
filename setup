@@ -134,7 +134,7 @@ $ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
 #########################################
 function install_packages() {
 	_echo "configuring package manager"
-
+	distro=$(lsb_release -c | awk '{print $2}')
 	case "$OSTYPE" in
 	darwin*)
 		pkgmgr="brew"
@@ -279,7 +279,7 @@ function install_packages() {
 	# ======== install glow ======== #
 	_echo "installing glow"
 	curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
-	echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
+	echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | tee /etc/apt/sources.list.d/charm.list
 	apt update && apt install glow
 
 	# ======== install lazygit ======== #
@@ -301,6 +301,12 @@ function install_packages() {
 		cd build &&
 		cpack -G DEB &&
 		dpkg -i nvim-linux64.deb
+
+	# ======== install openvpn ======== #
+	_echo "installing openvpn"
+	curl -sSfL https://packages.openvpn.net/packages-repo.gpg | tee /etc/apt/keyrings/openvpn.asc
+	echo "deb [signed-by=/etc/apt/keyrings/openvpn.asc] https://packages.openvpn.net/openvpn3/debian $distro main" | tee /etc/apt/sources.list.d/openvpn3.list
+	apt update && apt install -y openvpn3
 
 	# ======== install wezterm ======== #
 	_echo "installing wezterm"
