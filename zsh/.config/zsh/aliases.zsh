@@ -141,7 +141,7 @@ alias -g NUL="> /dev/null 2>&1"   # Silences both stdout and stderr
 if [[ $OSTYPE == darwin* ]]; then
   alias update="brew update && brew upgrade"
 else
-  alias update="sudo apt update && sudo apt upgrade -y" 
+  alias update="sudo apt update && sudo apt upgrade -y && flatpak update -y" 
 fi
 
 # Default programs #
@@ -202,6 +202,11 @@ alias jn="jupyter notebook"
 # Neovim #
 alias nv='nvim'                   # Open neovim
 alias nvf='nvim -o `fzf`'         # Edit file by fuzzy search
+
+# openvpn
+alias ovpnstop="openvpn3 session-manage --disconnect"
+alias ovpnc="openvpn3 session-start --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn"
+alias ovpnd="openvpn3 session-manage --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn --disconnect"
 
 # PKM #
 alias pkm="cd ~/Documents/BC_PKM/ && nv"
