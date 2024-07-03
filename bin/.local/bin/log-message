@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Function to format and print messages based on the type
+# Usage: log_message "str:MSGTYPE" "str:Message" "boolean:display"
+# Defaults: display=false
+log_message() {
+	local message_type=$1
+	local message=$2
+	local display=${3:-false}
+	local timestamp
+	timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+
+	if [ "$display" == "true" ]; then
+		case $message_type in
+		DEBUG) printf "  [ \033[36mDebug\033[0m ][%s] %s\n" "$timestamp" "$message" ;;
+		INFO) printf "[ \033[34m>>\033[0m ] %s\n" "$message" ;;
+		WARNING) printf "[\033[31m;1 !!! \033[0m][%s] %s\n" "$timestamp" "$message" ;;
+		SUCCESS) printf "\033[2K  [ \033[32mOK\033[0m ] %s\n" "$message" ;;
+		*) printf "[UNKNOWN][%s] %s\n" "$timestamp" "$message" ;; # Fallback for unknown message types
+		esac
+	fi
+}
+# standalone mode
+if test "$0" = "${BASH_SOURCE[0]}"; then
+	log_message "$@"
+fi
