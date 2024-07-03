@@ -358,54 +358,18 @@ done
 #########################################
 
 # ======== setup dotfiles ======== #
-# function to install (stow) dotfiles
-install_dotfiles() {
-	# don't change these 4 lines
-	source "$basedir"/bin/stowaway-check
-	local install_all=false overwrite_all=false backup_all=false skip_all=false add_all=false
-	local stowparams=""
-	local stowcheck=""
-	local dirs=()
-
-	# Use find to generate a list of packages (directories)
-	log_message "DEBUG" "Searching for dots in $basedir"
-	while IFS= read -r dir; do
-		dirs+=("$dir")
-	done < <(find "$basedir" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*')
-
-	for dir in "${dirs[@]}"; do
-		stowaway-check "$dir" "$myhome"
-		log_message "DEBUG" "running command: stow $stowparams" "true"
-		"$ASME stow $stowparams"
-		# to finish some day
-		IFS=':' read -r -a arr2 <<<"$stowcheck"
-		log_message "DEBUG" "Checking to see if ${arr2[0]} is installed"
-		if [ "${arr2[1]}" == "stow" ] && ! which "${arr2[0]}" >/dev/null 2>&1; then
-			echo "You chose to install dotfiles for the following packages, but they aren't on your system: ${arr2[0]}"
-			#Echo $somelist
-			#echo "Would you like to install them: y/n?
-
-			#building out a system packager command when possible
-			#Echo "Attempting to install:"
-		fi
-	done
-
-	log_message "SUCCESS" "dotfiles installed" "true"
-}
-
-# grab latest dotfiles before installing
 _echo "setting up dotfiles"
 if [ -d "$basedir/.git" ]; then
 	log_message "INFO" "Updating dotfiles using existing git..."
 	cd "$basedir" &&
 		$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
-	install_dotfiles
+	stowaway-dots "$basedir" "$myhome"
 else
 	log_message "INFO" "Checking out dotfiles using git..."
 	rm -rf "$basedir"
 	$ASME git clone --quiet "$repourl" "$basedir" &&
 		cd "$basedir" &&
-		install_dotfiles
+		stowaway-dots "$basedir" "$myhome"
 fi
 
 # ======== setup fd ======== #
