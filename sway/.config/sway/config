@@ -118,7 +118,7 @@ bindsym $mod+Shift+w exec $default-web-browser
 # bindcode $mod+40 exec "rofi -show combi" 
 # Start your launcher
 bindsym $mod+d exec $menu
-
+bindsym $mod+Shift+d exec wofi -show run | xargs swaymsg exec --
 #########################################
 # Windows
 #########################################
