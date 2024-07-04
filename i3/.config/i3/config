@@ -241,10 +241,10 @@ workspace 10  $output-secondary
 # ======== WS 1 (terminal) ======== #
 
 # ======== WS 2 (browser-primary) ======== #
-assign [class="LibreWolf"] $ws2
+assign [class="librewolf"] $ws2
 
 # ======== WS 3 (browser-secondary) ======== #
-assign [class="^Firefox$"] $ws3
+assign [class="firefox"] $ws3
 assign [class="Microsoft-edge"] $ws3
 
 # ======== WS 4 (PKM) ======== #
