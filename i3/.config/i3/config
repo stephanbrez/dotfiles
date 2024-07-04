@@ -67,7 +67,7 @@ set $indicator  #a8a3c1
 #########################################
 
 # ======== Defaults  ======== #
-set $default-web-browser vivaldi-stable
+set $default-web-browser librewolf
 set $default-terminal wezterm
 
 # ======== Autostart  ======== #
@@ -101,7 +101,7 @@ floating_modifier $mod
 tiling_drag modifier titlebar
 
 # toggle sticky mode for floating windows
-bindcode $mod+Shift+s sticky toggle
+bindsym $mod+Shift+s sticky toggle
 
 # switch to urgent window in an unfocused workspace
 bindsym $mod+u [urgent=latest] focus
@@ -152,7 +152,6 @@ bindsym $mod+c focus child
 #########################################
 # Screens
 #########################################
-# set $output-primary output DP-0
 set $output-primary output primary
 set $output-secondary output HDMI-0
 
@@ -186,10 +185,10 @@ bindsym $mod+8 workspace number $ws8
 bindsym $mod+9 workspace number $ws9
 bindsym $mod+0 workspace number $ws10
 
-# cycle workspaces using h & l to match vim
-bindcode $mod+Shift+46 workspace next
-bindcode $mod+Shift+43 workspace prev
-# cycle workspaces on current screen with 'h' & 'l'
+# cycle all workspaces using 'j' & 'k' (colemak-dh) - index-1 row1&row3 
+bindcode $mod+45 workspace prev
+bindcode $mod+44 workspace next
+# cycle workspaces on current screen with 'h' & 'l' (colemak-dh) - index row1&row3
 bindcode $mod+43 workspace prev_on_output
 bindcode $mod+46 workspace next_on_output
 
@@ -242,10 +241,10 @@ workspace 10  $output-secondary
 # ======== WS 1 (terminal) ======== #
 
 # ======== WS 2 (browser-primary) ======== #
-assign [class="Vivaldi"] $ws2
+assign [class="LibreWolf"] $ws2
 
 # ======== WS 3 (browser-secondary) ======== #
-assign [class="Firefox"] $ws3
+assign [class="^Firefox$"] $ws3
 assign [class="Microsoft-edge"] $ws3
 
 # ======== WS 4 (PKM) ======== #
@@ -294,13 +293,17 @@ bindsym $mod+r mode "resize"
 # UI                                    #
 #########################################
 
-# Font for window titles. Will also be used by the bar unless a different font
-# is used in the bar {} block below.
-font pango:Ubuntu Regular 10
-title_align center
+# Disable titlebar
+default_border pixel 1
+for_window [class="^.*"] border pixel 1
+
+# # Font for window titles. Will also be used by the bar unless a different font
+# # is used in the bar {} block below.
+# font pango:Ubuntu Regular 10
+# title_align center
 
 # Add icons to titlebar
-for_window [all] title_window_icon padding 1px
+# for_window [all] title_window_icon padding 1px
 
 # Inner/Outer Gaps
 gaps inner 10
@@ -314,7 +317,7 @@ gaps outer 0
 smart_gaps inverse_outer
 
 # Hide edge borders
-hide_edge_borders smart
+# hide_edge_borders smart
 
 # Colors
 #                       border          background      text            indicator (a line which shows where the next window will be placed)     
