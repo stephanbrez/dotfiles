@@ -34,6 +34,7 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
+-- config.front_end = "WebGpu"
 -- This is where you actually apply your config choices
 config.hide_tab_bar_if_only_one_tab = true
 config.font = wezterm.font("DejaVuSansM Nerd Font")
