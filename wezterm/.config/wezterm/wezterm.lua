@@ -24,7 +24,7 @@ function Scheme_for_appearance(appearance)
 	if appearance:find("Dark") then
 		return "Gruvbox dark, hard (base16)"
 	else
-		return "Gruvbox light, hard (base16)"
+		return "Rosé Pine Dawn (base16)"
 	end
 end
 
