@@ -71,8 +71,10 @@ set $default-web-browser librewolf
 set $default-terminal wezterm
 
 # ======== Autostart  ======== #
+# launch 1password to trigger system unlock
+exec --no-startup-id 1password
 # setup PKM workspace
-exec "workspace 4; exec $default-terminal, exec obsidian; workspace 1"
+ exec workspace 4; exec $default-terminal, exec obsidian; workspace 1
 
 # ======== Run  ======== #
 # start a terminal
