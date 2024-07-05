@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Terminate already running bar instances
+# If all your bars have ipc enabled, you can use
+polybar-msg cmd quit
+
+if type "xrandr" >/dev/null 2>&1; then
+	primary_monitor=$(xrandr --query | grep " connected primary" | cut -d" " -f1)
+	for m in $(xrandr --query | grep " connected" | cut -d" " -f1); do
+		if [ "$m" = "$primary_monitor" ]; then
+			MONITOR=$m polybar --reload primary &
+		else
+			MONITOR=$m polybar --reload secondary &
+		fi
+	done
+else
+	polybar --reload primary &
+fi
