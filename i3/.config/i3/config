@@ -94,6 +94,7 @@ bindcode $mod+40 exec "rofi -show combi"
 # Windows
 #########################################
 # hotkeys live (mostly) on the left hand side
+exec_always --no-startup-id autotiling -w 2 3 4 5 6
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -311,7 +312,7 @@ for_window [class="^.*"] border pixel 1
 # for_window [all] title_window_icon padding 1px
 
 # Inner/Outer Gaps
-gaps inner 10
+gaps inner 8
 gaps outer 0
 
 # Enabling “Smart Gaps” means no gaps will be shown when there is
