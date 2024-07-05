@@ -205,7 +205,7 @@ alias nvf='nvim -o `fzf`'         # Edit file by fuzzy search
 
 # openvpn
 alias ovpnstop="openvpn3 session-manage --disconnect"
-alias ovpnc="openvpn3 session-start --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn"
+alias ovpnc="1password && openvpn3 session-start --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn"
 alias ovpnd="openvpn3 session-manage --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn --disconnect"
 
 # PKM #
