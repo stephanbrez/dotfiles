@@ -71,6 +71,8 @@ set $default-web-browser librewolf
 set $default-terminal wezterm
 
 # ======== Autostart  ======== #
+# redshift to save the eyes
+exec --no-startup-id redshift -l 40.650002:-73.949997 -t 6500:3500
 # launch 1password to trigger system unlock
 exec --no-startup-id 1password
 # setup PKM workspace
