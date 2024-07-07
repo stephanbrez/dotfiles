@@ -59,7 +59,7 @@ vim.keymap.set("n", "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "Quic
 vim.keymap.set("n", "<leader>md", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle Markdown Preview" })
 vim.keymap.set("v", "<leader>mb", "di**<esc>p`]a**", { desc = "Bold Selection" })
 vim.keymap.set("v", "<leader>mi", "di*<esc>p`]a*", { desc = "Italisize Selection" })
-vim.keymap.set("v", "<leader>ml", "di[<esc>p`]a]()<esc>hi", { desc = "Auto Link Selection" })
+vim.keymap.set("v", "<leader>ml", "di[<esc>p`]a]()<esc>i", { desc = "Auto Link Selection" })
 vim.keymap.set("v", "<leader>mc", "di`<esc>p`]a`", { desc = "Backtick Selection" })
 vim.keymap.set("v", "<leader>mw", "di[[<esc>p`]a]]<esc>", { desc = "Wiki Link Selection" })
 
