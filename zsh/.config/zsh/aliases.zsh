@@ -115,6 +115,7 @@ alias fdir="find . -type d -name"     # Find a directory with name
 alias c="clear"                       # Clear
 alias h="history -i | nl"             # History
 alias hs="history | fzf +s --tac"     # Search terminal history
+alias j="jobs -l"                     # List jobs
 alias p="ps -f"                       # Display current processes
 function find_man() {
     man $1 | grep -- $2
@@ -199,9 +200,10 @@ function gacp() {
 # Jupyter #
 alias jn="jupyter notebook"
 
-# Neovim #
+# Neovim/vim #
 alias nv='nvim'                   # Open neovim
 alias nvf='nvim -o `fzf`'         # Edit file by fuzzy search
+alias sv='sudo vim'               # Open vim as sudo
 
 # openvpn
 alias ovpnstop="openvpn3 session-manage --disconnect"
