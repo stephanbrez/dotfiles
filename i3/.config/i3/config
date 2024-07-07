@@ -305,14 +305,6 @@ exec_always --no-startup-id $HOME/.config/polybar/launch
 default_border pixel 1
 for_window [class="^.*"] border pixel 1
 
-# # Font for window titles. Will also be used by the bar unless a different font
-# # is used in the bar {} block below.
-# font pango:Ubuntu Regular 10
-# title_align center
-
-# Add icons to titlebar
-# for_window [all] title_window_icon padding 1px
-
 # Inner/Outer Gaps
 gaps inner 8
 gaps outer 0
@@ -327,14 +319,16 @@ smart_gaps inverse_outer
 # Hide edge borders
 # hide_edge_borders smart
 
-# Colors
-#                       border          background      text            indicator (a line which shows where the next window will be placed)     
-client.focused          $bgcolor        $bgcolor        $text           $indicator
-client.unfocused        $in-bgcolor     $in-bgcolor     $in-text        $in-bgcolor
-client.focused_inactive $in-bgcolor     $in-bgcolor     $in-text        $in-bgcolor
-client.urgent           $u-bgcolor      $u-bgcolor      $text           $u-bgcolor
+include $HOME/.local/share/themes/rose-pine/i3/rose-pine-dawn.theme
+
+# # Colors
+# #                       border          background      text            indicator (a line which shows where the next window will be placed)     
+# client.focused          $bgcolor        $bgcolor        $text           $indicator
+# client.unfocused        $in-bgcolor     $in-bgcolor     $in-text        $in-bgcolor
+# client.focused_inactive $in-bgcolor     $in-bgcolor     $in-text        $in-bgcolor
+# client.urgent           $u-bgcolor      $u-bgcolor      $text           $u-bgcolor
 
 # Display Wallpaper
-exec_always feh --bg-fill ~/Downloads/wallpapers/gruvbox-wallpapers/light/8207838.png
+exec_always feh --bg-center --image-bg "#faf4ed" $HOME/.local/share/themes/rose-pine/wallpapers-main/rose_pine_shape.png
 
 
