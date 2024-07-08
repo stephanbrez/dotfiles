@@ -1,3 +1,4 @@
+-- https://github.com/epwalsh/obsidian.nvim
 return {
   "epwalsh/obsidian.nvim",
   version = "*", -- recommended, use latest release instead of latest commit
@@ -59,6 +60,14 @@ return {
       -- A map for custom variables, the key should be the variable and the value a function
       substitutions = {},
     },
+
+    -- `:ObsidianFollowLink` behavior
+    ---@param url string
+    follow_url_func = function(url)
+      -- Open the URL in the default web browser.
+      -- vim.fn.jobstart({"open", url})  -- Mac OS
+      vim.fn.jobstart({ "xdg-open", url }) -- linux
+    end,
 
     ui = {
       enable = true, -- set to false to disable all additional syntax features
