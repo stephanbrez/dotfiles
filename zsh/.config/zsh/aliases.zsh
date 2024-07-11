@@ -21,7 +21,7 @@ alias dotfiles="cd ~/.dotfiles"                   # Navigate to dotfiles
 # -----------------
 if which batcat >/dev/null 2>&1; then bat="batcat" else bat="bat" fi    # Debian fix
 alias mf="fzf | xargs ls -l"      # Show info for searched file
-alias pf="fzf --preview='$bat {}' --bind k:preview-up,j:preview-down"
+alias pf="fzf --preview='$bat --theme=base16 --style=numbers,header,changes --color=always {}' --bind k:preview-up,j:preview-down"
 alias mdir="mkdir -p"          # Create parent directories
 function mcd() { 
   mkdir -pv $1
