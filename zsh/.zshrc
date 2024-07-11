@@ -117,7 +117,10 @@ EMOJI_FZF_CLIPBOARD="wl-copy"
 # use fd instead of find
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --strip-cwd-prefix --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"    # use fd for ctrl-t
+# Preview directories with tree 
 export FZF_ALT_C_COMMAND="fd --type d --hidden --follow --exclude .git"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
 # Use fd (https://github.com/sharkdp/fd) for listing path candidates. 
 _fzf_compgen_path() {
   fd --hidden --follow --exclude ".git" . "$1"
@@ -126,8 +129,13 @@ _fzf_compgen_path() {
 _fzf_compgen_dir() {
   fd --type d --hidden --follow --exclude ".git" . "$1"
 }
-# Extra options
-export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+# Rose Pine Dawn Theme
+export FZF_DEFAULT_OPTS="
+	--color=fg:#797593,bg:#faf4ed,hl:#d7827e
+	--color=fg+:#575279,bg+:#f2e9e1,hl+:#d7827e
+	--color=border:#dfdad9,header:#286983,gutter:#faf4ed
+	--color=spinner:#ea9d34,info:#56949f,separator:#dfdad9
+	--color=pointer:#907aa9,marker:#b4637a,prompt:#797593"
 
 # ======== starship ======== #
 # eval "$(starship init zsh)"
