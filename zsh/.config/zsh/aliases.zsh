@@ -147,8 +147,7 @@ fi
 
 # Default programs #
 alias -s txt=nvim             # Open txt files with nvim
-alias vi='vim'                  # Open vim instead of vi
-alias svi='sudo vi'           # Open vim as sudo
+# alias vi='vim'                  # Open vim instead of vi
 
 # Archives #
 alias zip="unzip -l"           # List zip contents
@@ -203,7 +202,7 @@ alias jn="jupyter notebook"
 # Neovim/vim #
 alias nv='nvim'                   # Open neovim
 alias nvf='nvim -o `fzf`'         # Edit file by fuzzy search
-alias sv='sudo vim'               # Open vim as sudo
+alias sv='sudo vi'                # Open vi as sudo
 
 # openvpn
 alias ovpnstop="openvpn3 session-manage --disconnect"
