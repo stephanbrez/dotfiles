@@ -369,13 +369,13 @@ if [ -d "$basedir/.git" ]; then
 	log_message "INFO" "Updating dotfiles using existing git..."
 	cd "$basedir" &&
 		$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
-	stowaway-dots "$basedir" "$myhome"
+	stowaway-check "$basedir" "$myhome"
 else
 	log_message "INFO" "Checking out dotfiles using git..."
 	rm -rf "$basedir"
 	$ASME git clone --quiet "$repourl" "$basedir" &&
 		cd "$basedir" &&
-		stowaway-dots "$basedir" "$myhome"
+		stowaway-check "$basedir" "$myhome"
 fi
 
 # ======== setup fd ======== #
