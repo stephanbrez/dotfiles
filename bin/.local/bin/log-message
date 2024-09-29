@@ -3,6 +3,7 @@
 # Function to format and print messages based on the type
 # Usage: log_message "str:MSGTYPE" "str:Message" "boolean:display"
 # Defaults: display=false
+
 log_message() {
 	local message_type=$1
 	local message=$2
@@ -20,6 +21,7 @@ log_message() {
 		esac
 	fi
 }
+
 # standalone mode
 if test "$0" = "${BASH_SOURCE[0]}"; then
 	log_message "$@"
