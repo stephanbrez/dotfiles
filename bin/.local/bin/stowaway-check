@@ -13,8 +13,8 @@
 #
 # Why not just create the symlinks and remove stow? Because stow has some nice features for handling dotfiles, deletions, and tree folding/unfolding.
 #
-#	⚠️ Note: Why not pass all the parameters to one command since Stow can handle multiple packages at once?
-# Because you won't be able to "add" (adopt) any *individual* packages into the repo, it becomes all or none.
+# ⚠️ Note: Why not pass all the parameters to one command since Stow can handle multiple packages at once?
+#     -> Because you won't be able to "add" (adopt) any *individual* packages into the repo, it becomes all or none.
 #
 # Dependencies:
 #   stow
@@ -28,7 +28,7 @@
 #
 # Globals:
 # (variables set by the function that are available after execution...kinda like a return)
-#	$action - A single character with the user's selection
+#   $action - A single character with the user's selection
 #
 # Returns:
 #   None
@@ -108,7 +108,7 @@ stowaway_check() {
 					# End debug
 					local valid_options="sSoObBaA"
 					while true; do
-						printf "\r  [ \033[33m??\033[0m ] Found existing dots at $found, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all, [a]dd, [A]dd all? "
+						printf "\r  [ \033[33m??\033[0m ] Found existing dots at %s, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all, [a]dd, [A]dd all? " "$found"
 						read -r -n 1 action # Read a single character from the user
 						echo                # Move to a new line after reading input
 						if [[ "$valid_options" == *"$action"* ]]; then
@@ -128,7 +128,7 @@ stowaway_check() {
 					# End debug
 					local valid_options="iIsS"
 					while true; do
-						printf "\r  [ \033[33m??\033[0m ] Found $pkgname, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? "
+						printf "\r  [ \033[33m??\033[0m ] Found %s, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? " "$pkgname"
 						read -r -n 1 action # Read a single character from the user
 						echo                # Move to a new line after reading input
 						if [[ "$valid_options" == *"$action"* ]]; then
@@ -211,7 +211,7 @@ stowaway_dots() {
 	local stowcheck=()
 	local dirs=()
 
-	log-message "DEBUG" "Searching for dots in $basedir"
+	log-message "DEBUG" "Searching for dots in $target_dir"
 	while IFS= read -r dir; do
 		dirs+=("$dir")
 	done < <(find "$src" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*')
