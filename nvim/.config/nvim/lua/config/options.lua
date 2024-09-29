@@ -7,7 +7,7 @@ vim.opt.conceallevel = 2
 -- vim.go.bg = "light"
 
 -- Soft wrap text at window edge
-vim.opt.textwidth = 0
+vim.opt.textwidth = 80
 vim.opt.wrapmargin = 0
 vim.opt.wrap = true
 -- Break lines at word
