@@ -43,6 +43,7 @@ config.font_size = 12
 -- config.color_scheme = "Gruvbox light, medium (base16)"
 config.color_scheme = Scheme_for_appearance(get_appearance())
 -- Keybindings
+config.enable_kitty_keyboard = true
 config.keys = {
 	{
 		key = "t",
