@@ -4,6 +4,7 @@
 
 -- Navigation
 -- ###################
+-- vim.keymap.set("i", "<CR>", "<Esc>", { noremap = true, silent = true })
 
 -- Center cursor after scroll
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
@@ -13,11 +14,53 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "gj", [[/^##\+ .*<CR>]], { buffer = true, silent = true })
 vim.keymap.set("n", "gk", [[?^##\+ .*<CR>]], { buffer = true, silent = true })
 
+-- Editing
+-- ###################
+-- Function to toggle <CR> mapping in insert mode
+local function toggleEnterMapping()
+  if vim.fn.empty(vim.fn.mapcheck("<CR>", "i")) == 1 then
+    -- Map <CR> to <Esc>`^ and return "\<Esc>" so it acts like Esc
+    vim.keymap.set("i", "<CR>", "<Esc>`^", { noremap = true })
+    return vim.api.nvim_replace_termcodes("<Esc>", true, true, true)
+  else
+    -- Unmap <CR> and return "\<CR>" so it behaves as normal
+    vim.keymap.del("i", "<CR>")
+    return vim.api.nvim_replace_termcodes("<CR>", true, true, true)
+  end
+end
+
+-- Call the function to toggle <CR> mapping initially
+toggleEnterMapping()
+
+-- Mapping for <C-CR> in insert mode to toggle <CR> mapping
+vim.keymap.set("i", "<C-CR>", toggleEnterMapping, { silent = false, noremap = true, desc = "Toggle Enter Mapping" })
+-- Optional mappings to ensure <CR> cancels prefix, selection, operator in other modes
+vim.keymap.set("n", "<CR>", "<Esc>", { noremap = true })
+vim.keymap.set("v", "<CR>", "<Esc>gV", { noremap = true })
+vim.keymap.set("o", "<CR>", "<Esc>", { noremap = true })
+
+-- Select all
+vim.keymap.set("n", "==", "gg<S-v>G")
+
 -- Disable x sending to default register
 vim.keymap.set("n", "x", '"_x', { desc = "Delete character without copying to default register" })
 
 -- Make Y behave like C or D
 vim.keymap.set("n", "Y", "y$")
+
+-- Make d and D go to vim register "a"
+vim.keymap.set("n", "d", '"ad')
+vim.keymap.set("v", "d", '"ad')
+vim.keymap.set("n", "D", '"aD')
+vim.keymap.set("v", "D", '"aD')
+
+-- Make leader-x cut to clipboard
+vim.keymap.set("n", "<leader>x", '"+d', { desc = "Cut to clipboard" })
+vim.keymap.set("v", "<leader>x", '"+d', { desc = "Cut to clipboard" })
+--
+-- move line up and down
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move Line Down" })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move Line Up" })
 
 -- better indenting
 vim.keymap.set("v", "<", "<gv")
@@ -25,12 +68,12 @@ vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("n", "<", "<S-v><<esc>", { desc = "Select line and indent left" })
 vim.keymap.set("n", ">", "<S-v>><esc>", { desc = "Select line and indent right" })
 
--- Select all
-vim.keymap.set("n", "==", "gg<S-v>G")
-
--- move line up and down
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move Line Down" })
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move Line Up" })
+-- open current file in python interactive session
+vim.keymap.set("n", "<leader>t", function()
+  local currentfile = vim.fn.expand("%")
+  vim.cmd("new")
+  vim.cmd("terminal python3 -i " .. currentfile)
+end, { desc = "Run File in Python Terminal" })
 
 -- Plugins
 -- ###################
