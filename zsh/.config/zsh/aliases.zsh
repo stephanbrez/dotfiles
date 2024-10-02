@@ -14,7 +14,6 @@
 alias starshipcfg="nvim $STARSHIP_CONFIG"         # Edit starship config
 alias zshrc="nvim $HOME/.zshrc"                   # Edit zsh config
 alias zaliases="nvim ~/.config/zsh/aliases.zsh"   # Edit zsh aliases
-alias dotfiles="cd ~/.dotfiles"                   # Navigate to dotfiles
 
 # -----------------
 # File commands   #
@@ -133,6 +132,12 @@ alias -g LL="2>&1 | less"         # Writes stderr to stdout and passes it to les
 alias -g CA="2>&1 | cat -A"       # Writes stderr to stdout and passes it to cat
 alias -g NE="2 > /dev/null"       # Silences stderr
 alias -g NUL="> /dev/null 2>&1"   # Silences both stdout and stderr
+
+# -----------------
+# Shortcuts       #
+# -----------------
+alias dotfiles="cd ~/.dotfiles"                   # Navigate to dotfiles
+alias src="cd ~/.local/src"                       # Navigate to src
 
 # -----------------
 # Apps and Tools  #
