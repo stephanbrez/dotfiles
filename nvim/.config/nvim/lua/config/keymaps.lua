@@ -16,28 +16,51 @@ vim.keymap.set("n", "gk", [[?^##\+ .*<CR>]], { buffer = true, silent = true })
 
 -- Editing
 -- ###################
--- Function to toggle <CR> mapping in insert mode
-local function toggleEnterMapping()
-  if vim.fn.empty(vim.fn.mapcheck("<CR>", "i")) == 1 then
-    -- Map <CR> to <Esc>`^ and return "\<Esc>" so it acts like Esc
-    vim.keymap.set("i", "<CR>", "<Esc>`^", { noremap = true })
-    return vim.api.nvim_replace_termcodes("<Esc>", true, true, true)
-  else
-    -- Unmap <CR> and return "\<CR>" so it behaves as normal
-    vim.keymap.del("i", "<CR>")
-    return vim.api.nvim_replace_termcodes("<CR>", true, true, true)
+-- Autocmd to store the starting line when entering insert mode
+vim.api.nvim_create_autocmd("InsertEnter", {
+  pattern = "*",
+  callback = function()
+    -- Store the current line number when entering insert mode
+    vim.b.insertLineStart = vim.fn.line(".")
+  end,
+})
+
+-- Function to handle Down arrow key in insert mode
+function InsertModeDown()
+  local current_line = vim.fn.line(".")
+  local insert_line_start = vim.b.insertLineStart or current_line
+
+  -- Exit insert mode if cursor moves more than one line down
+  if current_line > insert_line_start + 1 then
+    vim.cmd("stopinsert")
   end
+  return "<Down>"
 end
 
--- Call the function to toggle <CR> mapping initially
-toggleEnterMapping()
+-- Function to handle Up arrow key in insert mode
+function InsertModeUp()
+  local current_line = vim.fn.line(".")
+  local insert_line_start = vim.b.insertLineStart or current_line
 
--- Mapping for <C-CR> in insert mode to toggle <CR> mapping
-vim.keymap.set("i", "<C-CR>", toggleEnterMapping, { silent = false, noremap = true, desc = "Toggle Enter Mapping" })
--- Optional mappings to ensure <CR> cancels prefix, selection, operator in other modes
-vim.keymap.set("n", "<CR>", "<Esc>", { noremap = true })
-vim.keymap.set("v", "<CR>", "<Esc>gV", { noremap = true })
-vim.keymap.set("o", "<CR>", "<Esc>", { noremap = true })
+  -- Exit insert mode if cursor moves more than one line up
+  if current_line < insert_line_start - 1 then
+    vim.cmd("stopinsert")
+  end
+  return "<Up>"
+end
+
+-- Key mappings for Up and Down arrows in insert mode
+vim.keymap.set("i", "<Down>", function()
+  return InsertModeDown()
+end, { expr = true })
+vim.keymap.set("i", "<Up>", function()
+  return InsertModeUp()
+end, { expr = true })
+
+-- Smart tab
+vim.keymap.set("i", "<Tab>", function()
+  return vim.fn.pumvisible() == 1 and "<C-N>" or "<Tab>"
+end, { expr = true })
 
 -- Select all
 vim.keymap.set("n", "==", "gg<S-v>G")
