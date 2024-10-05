@@ -8,6 +8,9 @@
 -- | ▓▓▓    \▓▓▓\▓▓     \  ▓▓    \  \▓▓  ▓▓\▓▓     \ ▓▓     | ▓▓ | ▓▓ | ▓
 --  \▓▓      \▓▓ \▓▓▓▓▓▓▓\▓▓▓▓▓▓▓▓   \▓▓▓▓  \▓▓▓▓▓▓▓\▓▓      \▓▓  \▓▓  \▓
 
+-- TODO:
+-- update theme switcher for auto light/dark mode
+--
 -- ╔════════════════════════════════════════════════╗
 -- ║  ░█▄█░█▀▀░▀█▀░█░█░█▀█░█▀▄░█▀█░█░░░█▀█░█▀▀░█░█  ║
 -- ║  ░█░█░█▀▀░░█░░█▀█░█░█░█░█░█░█░█░░░█░█░█░█░░█░  ║
@@ -27,6 +30,7 @@
 local wezterm = require("wezterm")
 local mux = wezterm.mux
 local cycle_theme = require("cycle_theme")
+local theme = wezterm.plugin.require("https://github.com/neapsix/wezterm").dawn
 local act = wezterm.action
 
 -- Show active workspaces
@@ -71,7 +75,8 @@ config.inactive_pane_hsb = {
 	brightness = 0.9,
 }
 -- Auto light/dark mode:
-config.color_scheme = Scheme_for_appearance(get_appearance())
+config.colors = theme.colors()
+-- config.color_scheme = Scheme_for_appearance(get_appearance())
 
 -- Keybindings
 config.enable_kitty_keyboard = true
