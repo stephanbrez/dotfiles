@@ -28,7 +28,8 @@
 # Permanent workspace layout
 #
 # Hotkeys:
-# *No* modifier to **focus** things
+# *Meta* for all i3 hotkeys
+# *No* additional modifier to **focus** things
 # *Shift* modifier for **moving** things
 # *Control* modifier for **editing* things
 
@@ -303,7 +304,7 @@ exec_always --no-startup-id $HOME/.config/polybar/launch
 
 # Disable titlebar
 default_border pixel 1
-for_window [class="^.*"] border pixel 1
+for_window [class="^.*"] border pixel 2
 
 # Inner/Outer Gaps
 gaps inner 8
