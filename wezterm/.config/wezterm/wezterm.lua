@@ -102,6 +102,11 @@ config.keys = {
 		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
 	},
 	{
+		key = "d",
+		mods = "CTRL|SHIFT",
+		action = wezterm.action.CloseCurrentPane({ confirm = true }),
+	},
+	{
 		key = "e",
 		mods = "CTRL|SHIFT",
 		action = act.PromptInputLine({
