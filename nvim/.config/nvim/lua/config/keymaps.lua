@@ -57,11 +57,6 @@ vim.keymap.set("i", "<Up>", function()
   return InsertModeUp()
 end, { expr = true })
 
--- Smart tab
-vim.keymap.set("i", "<Tab>", function()
-  return vim.fn.pumvisible() == 1 and "<C-N>" or "<Tab>"
-end, { expr = true })
-
 -- Select all
 vim.keymap.set("n", "==", "gg<S-v>G")
 
