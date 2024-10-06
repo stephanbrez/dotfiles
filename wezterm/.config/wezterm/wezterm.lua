@@ -33,11 +33,6 @@ local cycle_theme = require("cycle_theme")
 local theme = wezterm.plugin.require("https://github.com/neapsix/wezterm").dawn
 local act = wezterm.action
 
--- Show active workspaces
-wezterm.on("update-right-status", function(window, pane)
-	window:set_right_status(window:active_workspace())
-end)
-
 -- Automatically match schemes based on OS settings
 function get_appearance()
 	if wezterm.gui then
@@ -74,6 +69,69 @@ config.inactive_pane_hsb = {
 	saturation = 0.9,
 	brightness = 0.9,
 }
+-- -- Show active workspaces
+-- wezterm.on("update-right-status", function(window, pane)
+-- 	window:set_right_status(window:active_workspace())
+-- end)
+-- Tab bar
+wezterm.on("update-right-status", function(window, pane)
+	-- The elements to be shown in the tab bar
+	local elements = {}
+
+	-- Figure out the cwd and host of the current pane.
+	-- This will pick up the hostname for the remote host if your
+	-- shell is using OSC 7 on the remote host.
+	local cwd_uri = pane:get_current_working_dir()
+	if cwd_uri then
+		local cwd = ""
+		local hostname = ""
+
+		if type(cwd_uri) == "userdata" then
+			-- Running on a newer version of wezterm and we have
+			-- a URL object here, making this simple!
+
+			cwd = cwd_uri.file_path
+			hostname = cwd_uri.host or wezterm.hostname()
+		else
+			-- an older version of wezterm, 20230712-072601-f4abf8fd or earlier,
+			-- which doesn't have the Url object
+			cwd_uri = cwd_uri:sub(8)
+			local slash = cwd_uri:find("/")
+			if slash then
+				hostname = cwd_uri:sub(1, slash - 1)
+				-- and extract the cwd from the uri, decoding %-encoding
+				cwd = cwd_uri:sub(slash):gsub("%%(%x%x)", function(hex)
+					return string.char(tonumber(hex, 16))
+				end)
+			end
+		end
+
+		-- Remove the domain name portion of the hostname
+		local dot = hostname:find("[.]")
+		if dot then
+			hostname = hostname:sub(1, dot - 1)
+		end
+		if hostname == "" then
+			hostname = wezterm.hostname()
+		end
+
+		-- Current command
+		local cmd = pane:get_foreground_process_name()
+		if cmd then
+			cmd = string.gsub(cmd, "(.*[/\\])(.*)", "%2")
+			table.insert(elements, { Text = wezterm.nerdfonts.oct_terminal .. " " .. cmd })
+			table.insert(elements, { Text = " | " })
+		end
+
+		table.insert(elements, { Text = wezterm.nerdfonts.md_folder .. " " .. cwd })
+		table.insert(elements, { Text = " | " })
+		table.insert(elements, { Text = wezterm.nerdfonts.md_at .. " " .. hostname })
+	end
+
+	window:set_right_status(wezterm.format(elements))
+end) --
+--
+--
 -- Auto light/dark mode:
 config.colors = theme.colors()
 -- config.color_scheme = Scheme_for_appearance(get_appearance())
