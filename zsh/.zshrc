@@ -63,6 +63,11 @@ zinit wait lucid light-mode for \
   blockf atpull'zinit creinstall -q .' \
       zsh-users/zsh-completions
 
+# ZVM plugin
+# https://github.com/jeffreytse/zsh-vi-mode
+zinit ice depth=1
+zinit light jeffreytse/zsh-vi-mode
+
 # Add in snippets
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
@@ -90,6 +95,14 @@ zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 
 #########################################
 # ======== 1Password ======== #
 export SSH_AUTH_SOCK=~/.1password/agent.sock
+
+# ======== batman ======== #
+# Read system manual pages (man) using bat as the manual page formatter.
+# eval "$(batman --export-env)"
+# batman() {
+#     BAT_THEME="Solarized (dark)" batman "$@"
+#     return $?
+# }
 
 # ======== emoji-fzf ======== #
 zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
