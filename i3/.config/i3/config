@@ -93,6 +93,18 @@ bindcode $mod+40 exec "rofi -show combi"
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
 # bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
 
+# ======== Screenshots  ======== #
+#  Screenshots to file
+#  Uses xdo instead of the usual (buggy) xdotool
+bindsym $mod+$ exec --no-startup-id maim --format=png "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S').png"
+bindsym $mod+$+Space exec --no-startup-id maim --format=png -i $(printf %i $(xdo id)) "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S')_window.png"
+bindsym $mod+$+Shift exec --no-startup-id maim --format=png -s "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S')_selected.png"
+
+## Screenshots to clipboard
+bindsym Ctrl+$mod+$ exec --no-startup-id maim --format=png | xsel --clipboard --input --mime-type image/png
+bindsym Ctrl+$mod+$+Space exec --no-startup-id maim --format=png --window $(printf %i $(xdo id)) | xsel --clipboard --input --mime-type image/png
+bindsym Ctrl+$mod+$+Shift exec --no-startup-id maim --format=png -s | xsel --clipboard --input --mime-type image/png
+
 #########################################
 # Windows
 #########################################
