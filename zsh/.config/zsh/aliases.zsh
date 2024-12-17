@@ -155,7 +155,6 @@ alias -s txt=nvim             # Open txt files with nvim
 # alias vi='vim'                  # Open vim instead of vi
 
 # Archives #
-alias zip="unzip -l"           # List zip contents
 alias rar="unrar l"            # List rar contents
 alias tar="tar -tvf"           # List tar contents
 alias tar.gz="tar -zvtf"       # List tar.gz contents
