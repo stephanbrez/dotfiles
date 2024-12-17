@@ -155,10 +155,11 @@ alias -s txt=nvim             # Open txt files with nvim
 # alias vi='vim'                  # Open vim instead of vi
 
 # Archives #
-alias rar="unrar l"            # List rar contents
-alias tar="tar -tvf"           # List tar contents
+alias zipl="unzip -l"           # List zip contents
+alias rarl="unrar l"            # List rar contents
+alias tarl="tar -tvf"           # List tar contents
 alias tar.gz="tar -zvtf"       # List tar.gz contents
-alias ace="unace l"            # List ace contents
+alias acel="unace l"            # List ace contents
 
 # Anaconda #
 alias ca="conda activate"     # Activate conda
