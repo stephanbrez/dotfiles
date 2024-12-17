@@ -124,8 +124,7 @@ EMOJI_FZF_NO_ALIAS=
 EMOJI_FZF_CLIPBOARD="wl-copy"
 
 # ======== fzf ======== #
-#source <(fzf --zsh)
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source <(fzf --zsh)
 
 # use fd instead of find
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --strip-cwd-prefix --exclude .git'
