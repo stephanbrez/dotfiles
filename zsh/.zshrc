@@ -104,6 +104,9 @@ export SSH_AUTH_SOCK=~/.1password/agent.sock
 #     return $?
 # }
 
+# ======== conda ======== #
+source /opt/conda/etc/profile.d/conda.sh
+
 # ======== emoji-fzf ======== #
 zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
 # Path to the emoji-fzf executable
