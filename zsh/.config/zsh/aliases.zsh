@@ -172,8 +172,12 @@ function ccp ()
 {
   conda create --clone $1 --name $2
 }                             # Clone a conda env
-alias ci="conda install"      # Install conda
-alias cr="conda remove"       # Remove conda
+alias ci="conda install"      # Install conda package
+alias cr="conda remove"       # Remove conda package
+alias mi="mamba install"      # Install mamba package
+alias mr="mamba remove"       # Remove mamba package
+alias mle="mamba env list"    # List mamba environments
+alias mlp="mamba list"        # List mamba packages
 
 # Git #
 function g() { git $1 }             # Shorten git 
