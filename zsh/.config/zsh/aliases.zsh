@@ -165,7 +165,8 @@ alias acel="unace l"            # List ace contents
 alias ca="conda activate"     # Activate conda
 alias cda="conda deactivate"  # Deactivate conda
 alias ceu="conda env update"  # Update conda environment
-alias cl="conda list"         # List conda envs
+alias cle="conda env list"    # List conda environments
+alias clp="conda list"        # List conda packages
 alias cmk="conda create"      # Create conda env
 function ccp ()
 {
