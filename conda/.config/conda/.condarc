@@ -6,7 +6,7 @@ channels:
 show_channel_urls: True
 
 envs_dirs:
-  - ~/.local/share/conda/envs
+  - ~/.local/src/conda/envs
 
 pkgs_dirs:
-  - ~/.local/share/conda/pkgs
+  - ~/.local/src/conda/pkgs
