@@ -1,3 +1,9 @@
+envs_dirs:
+  - ~/.local/src/conda/envs
+
+pkgs_dirs:
+  - ~/.local/src/conda/pkgs
+
 channels:
   - conda-forge
 
@@ -5,8 +11,5 @@ channels:
 # and in 'conda list'. The default is False.
 show_channel_urls: True
 
-envs_dirs:
-  - ~/.local/src/conda/envs
-
-pkgs_dirs:
-  - ~/.local/src/conda/pkgs
+create_default_packages:
+  - pip
