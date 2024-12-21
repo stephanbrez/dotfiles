@@ -162,22 +162,59 @@ alias tar.gz="tar -zvtf"       # List tar.gz contents
 alias acel="unace l"            # List ace contents
 
 # Anaconda #
-alias ca="conda activate"     # Activate conda
-alias cda="conda deactivate"  # Deactivate conda
-alias ceu="conda env update"  # Update conda environment
-alias cle="conda env list"    # List conda environments
-alias clp="conda list"        # List conda packages
-alias cmk="conda create"      # Create conda env
-function ccp ()
+alias ca="conda activate"                      # Activate the specified conda environment
+alias cab="conda activate base"                # Activate the base conda environment
+alias cf="conda env create -f"                 # Create a new conda environment from a YAML file
+alias ccn="conda create -y -n"                 # Create a new conda environment with the given name
+alias ccp="conda create -y -p"                 # Create a new conda environment with the given prefix (path)
+alias cc="conda create -n"                     # Create new virtual environment with given name
+function ccc ()
 {
   conda create --clone $1 --name $2
-}                             # Clone a conda env
-alias ci="conda install"      # Install conda package
-alias cr="conda remove"       # Remove conda package
-alias mi="mamba install"      # Install mamba package
-alias mr="mamba remove"       # Remove mamba package
-alias mle="mamba env list"    # List mamba environments
-alias mlp="mamba list"        # List mamba packages
+}                                              # Clone the specified conda env
+alias cconf="conda config"                     # View or modify conda configuration
+alias css="conda config --show-source"         # Show the locations of conda configuration sources
+alias cda="conda deactivate"                   # Deactivate the current conda environment
+alias cel="conda env list"                     # List all available conda environments
+alias ci="conda install"                       # Install given package
+alias ciy="conda install -y"                   # Install given package without confirmation
+alias cl="conda list"                          # List installed packages in the current environment
+alias cle="conda list --export"                # Export the list of installed packages in the current environment
+alias cles="conda list --explicit > spec-file.txt"  # Export the list of installed packages in the current environment to a spec file
+alias cr="conda remove"                        # Remove given package
+alias cra="conda remove -y -all -n"            # Remove all packages in the specified environment
+alias cs="conda search"                        # Search conda repositories for package
+alias cu="conda update"                        # Update the specified package(s)
+alias cua="conda update --all"                 # Update all installed packages
+alias cue="conda env update"                   # Update the current environment
+alias cuc="conda update conda"                 # Update conda package manager
+# Mamba #
+alias ma="mamba activate"                      # Activate the specified mamba environment
+alias mab="mamba activate base"                # Activate the base mamba environment
+alias mf="mamba env create -f"                 # Create a new mamba environment from a YAML file
+alias mcn="mamba create -y -n"                 # Create a new mamba environment with the given name
+alias mcp="mamba create -y -p"                 # Create a new mamba environment with the given prefix (path)
+alias mc="mamba create -n"                     # Create new virtual environment with given name
+function mcc ()
+{
+  mamba create --clone $1 --name $2
+}                                              # Clone the specified mamba env
+alias mconf="mamba config"                     # View or modify mamba configuration
+alias mss="mamba config --show-source"         # Show the locations of mamba configuration sources
+alias mda="mamba deactivate"                   # Deactivate the current mamba environment
+alias mel="mamba env list"                     # List all available mamba environments
+alias mi="mamba install"                       # Install given package
+alias miy="mamba install -y"                   # Install given package without confirmation
+alias ml="mamba list"                          # List installed packages in the current environment
+alias mle="mamba list --export"                # Export the list of installed packages in the current environment
+alias mles="mamba list --explicit > spec-file.txt"  # Export the list of installed packages in the current environment to a spec file
+alias mr="mamba remove"                        # Remove given package
+alias mra="mamba remove -y -all -n"            # Remove all packages in the specified environment
+alias ms="mamba search"                        # Search mamba repositories for package
+alias mu="mamba update"                        # Update the specified package(s)
+alias mua="mamba update --all"                 # Update all installed packages
+alias mue="mamba env update"                   # Update the current environment
+alias muc="mamba update mamba"                 # Update mamba package manager
 
 # Git #
 function g() { git $1 }             # Shorten git 
