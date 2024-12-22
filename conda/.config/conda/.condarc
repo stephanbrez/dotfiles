@@ -1,8 +1,8 @@
+# Env and package caches
 envs_dirs:
-  - ~/.local/src/conda/envs
-
+  - ~/.local/share/conda/envs
 pkgs_dirs:
-  - ~/.local/src/conda/pkgs
+  - ~/.local/share/conda/pkgs
 
 channels:
   - conda-forge
