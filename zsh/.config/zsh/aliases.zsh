@@ -119,6 +119,9 @@ alias p="ps -f"                       # Display current processes
 function find_man() {
     man $1 | grep -- $2
 }
+function find_alias() {
+  alias | grep -- $1
+}
 
 # -----------------
 # Global aliases  #
