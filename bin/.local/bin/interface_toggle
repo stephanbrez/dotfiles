@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Check if correct number of arguments are provided
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <interface_name>"
+    exit 1
+fi
+
+interface=$1
+
+# Check if interface exists
+if ! ip link show "$interface" >/dev/null 2>&1; then
+    echo "Error: Interface '$interface' does not exist"
+    exit 1
+fi
+
+# Get current interface state
+current_state=$(ip link show "$interface" | grep -o "state.*" | cut -d' ' -f2)
+
+# Determine new state based on current state
+if [ "$current_state" = "UP" ]; then
+    new_state="down"
+else
+    new_state="up"
+fi
+
+# Perform the interface state change
+if ! ifconfig "$interface" "$new_state"; then
+    echo "Error: Failed to set interface $interface $new_state"
+    exit 1
+fi
+
+echo "Successfully toggled interface $interface to $new_state"

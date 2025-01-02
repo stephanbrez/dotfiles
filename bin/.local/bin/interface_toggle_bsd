@@ -1,0 +1,35 @@
+#!/bin/tcsh
+
+# Check if correct number of arguments are provided
+if ($#argv != 1) then
+    echo "Usage: $0 <interface_name>"
+    exit 1
+endif
+
+set interface = $1
+
+# Check if interface exists
+ifconfig "$interface" >& /dev/null
+if ($status != 0) then
+    echo "Error: Interface '$interface' does not exist"
+    exit 2
+endif
+
+# Get current interface state
+set current_state = `ifconfig "$interface" | grep -o "status.*" | cut -d' ' -f2`
+
+# Determine new state based on current state
+if ("$current_state" == "running" || "$current_state" == "active") then
+    set new_state = "down"
+else
+    set new_state = "up"
+endif
+
+# Perform the interface state change
+ifconfig "$interface" "$new_state"
+if ($status != 0) then
+    echo "Error: Failed to set interface $interface $new_state"
+    exit 1
+endif
+
+echo "Successfully toggled interface $interface to $new_state"
