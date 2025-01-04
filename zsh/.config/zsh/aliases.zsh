@@ -18,7 +18,12 @@ alias zaliases="nvim ~/.config/zsh/aliases.zsh"   # Edit zsh aliases
 # -----------------
 # File commands   #
 # -----------------
-if which batcat >/dev/null 2>&1; then bat="batcat" else bat="bat" fi    # Debian fix
+# Debian fix
+if command -v batcat >/dev/null 2>&1; then
+    alias bat="batcat"
+else
+    alias bat="bat"
+fi
 alias mf="fzf | xargs ls -l"      # Show info for searched file
 alias pf="fzf --preview='$bat --theme=base16 --style=numbers,header,changes --color=always {}' --bind k:preview-up,j:preview-down"
 alias mdir="mkdir -p"          # Create parent directories
@@ -220,6 +225,65 @@ alias muf="mamba env update --prune"           # Update & prune the current envi
 alias mua="mamba update --all"                 # Update all installed packages
 alias mue="mamba env update"                   # Update the current environment
 alias muc="mamba update mamba"                 # Update mamba package manager
+
+# Docker #
+alias dbl='docker build'            # Build an image from a Dockerfile
+alias dcin='docker container inspect'  # Display detailed information on one or more containers
+alias dcls='docker container ls'     # List all the running docker containers
+alias dclsa='docker container ls -a' # List all running and stopped containers
+alias dib='docker image build'      # Build an image from a Dockerfile (same as docker build)
+alias dii='docker image inspect'     # Display detailed information on one or more images
+alias dils='docker image ls'         # List docker images
+alias dipu='docker image push'       # Push an image or repository to a remote registry
+alias dipru='docker image prune -a'  # Remove all images not referenced by any container
+alias dirm='docker image rm'         # Remove one or more images
+alias dit='docker image tag'         # Add a name and tag to a particular image
+alias dlo='docker container logs'   # Fetch the logs of a docker container
+alias dnc='docker network create'    # Create a new network
+alias dncn='docker network connect'  # Connect a container to a network
+alias dndcn='docker network disconnect' # Disconnect a container from a network
+alias dni='docker network inspect'   # Return information about one or more networks
+alias dnls='docker network ls'       # List all networks the engine daemon knows about, including those spanning multiple hosts
+alias dnrm='docker network rm'       # Remove one or more networks
+alias dpo='docker container port'     # List port mappings or a specific mapping for the container
+alias dps='docker ps'                # List all the running docker containers
+alias dpsa='docker ps -a'            # List all running and stopped containers
+alias dpu='docker pull'              # Pull an image or a repository from a registry
+alias dr='docker container run'       # Create a new container and start it using the specified command
+alias drit='docker container run -it' # Create a new container and start it in an interactive shell
+alias drm='docker container rm'       # Remove the specified container(s)
+alias drm!='docker container rm -f'   # Force the removal of a running container (uses SIGKILL)
+alias dst='docker container start'    # Start one or more stopped containers
+alias drs='docker container restart'  # Restart one or more containers
+alias dsta='docker stop $(docker ps -q)' # Stop all running containers
+alias dstp='docker container stop'    # Stop one or more running containers
+alias dtop='docker top'               # Display the running processes of a container
+alias dvi='docker volume inspect'     # Display detailed information about one or more volumes
+alias dvls='docker volume ls'         # List all the volumes known to docker
+alias dvprune='docker volume prune'   # Cleanup dangling volumes
+alias dxc='docker container exec'     # Run a new command in a running container
+alias dxcit='docker container exec -it' # Run a new command in a running container in an interactive shell
+
+# Docker Compose #
+alias dco='docker-compose'           # Docker-compose main command
+alias dcb='docker-compose build'      # Build containers
+alias dce='docker-compose exec'       # Execute command inside a container
+alias dcps='docker-compose ps'        # List containers
+alias dcrestart='docker-compose restart' # Restart container
+alias dcrm='docker-compose rm'        # Remove container
+alias dcr='docker-compose run'        # Run a command in container
+alias dcstop='docker-compose stop'    # Stop a container
+alias dcup='docker-compose up'        # Build, (re)create, start, and attach to containers for a service
+alias dcupb='docker-compose up --build' # Same as dcup, but build images before starting containers
+alias dcupd='docker-compose up -d'    # Same as dcup, but starts as daemon
+alias dcupdb='docker-compose up -d --build' # Same as dcup, but build images before starting containers and starts as daemon
+alias dcdn='docker-compose down'      # Stop and remove containers
+alias dcl='docker-compose logs'       # Show logs of container
+alias dclf='docker-compose logs -f'   # Show logs and follow output
+alias dclF='docker-compose logs -f --tail=0' # Just follow recent logs
+alias dcpull='docker-compose pull'     # Pull image of a service
+alias dcstart='docker-compose start'   # Start a container
+alias dck='docker-compose kill'       # Kills containers
 
 # Git #
 function g() { git $1 }             # Shorten git 
