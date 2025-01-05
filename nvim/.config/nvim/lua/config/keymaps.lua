@@ -11,8 +11,13 @@ vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
 -- Jump between markdown headers
-vim.keymap.set("n", "gj", [[/^##\+ .*<CR>]], { buffer = true, silent = true })
-vim.keymap.set("n", "gk", [[?^##\+ .*<CR>]], { buffer = true, silent = true })
+vim.keymap.set("n", "gj", [[/^##\+ .*<CR>]], { buffer = true, silent = true, desc = "Jump to next markdown header" })
+vim.keymap.set(
+  "n",
+  "gk",
+  [[?^##\+ .*<CR>]],
+  { buffer = true, silent = true, desc = "Jump to previous markdown header" }
+)
 
 -- Editing
 -- ###################
@@ -76,7 +81,7 @@ vim.keymap.set("v", "D", '"aD')
 vim.keymap.set("n", "<leader>x", '"+d', { desc = "Cut to clipboard" })
 vim.keymap.set("v", "<leader>x", '"+d', { desc = "Cut to clipboard" })
 --
--- move line up and down
+-- Move line up and down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move Line Down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move Line Up" })
 
