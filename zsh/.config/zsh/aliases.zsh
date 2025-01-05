@@ -338,3 +338,13 @@ alias tdf="tdfgo fonts -vp"                 # Find & preview fonts in tdfgo
 
 # tmux
 alias tn="tmux new -s $(pwd | sed 's/.*\///g')"         # New session named after current path 
+
+# yazi
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	~/.local/bin/yazi/yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
