@@ -315,6 +315,9 @@ function gacp() {
 # Jupyter #
 alias jn="jupyter notebook"
 
+# Lazygit
+alias lg='lazygit'                # Open lazygit
+
 # Neovim/vim #
 alias nv='nvim'                   # Open neovim
 alias nvf='nvim -o `fzf`'         # Edit file by fuzzy search
