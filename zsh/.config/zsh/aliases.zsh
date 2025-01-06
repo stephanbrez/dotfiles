@@ -35,11 +35,12 @@ alias rm="rm -i"                  # Remove a file with confirmation
 alias cp="cp -i"                  # Copy a file with confirmation
 alias mv="mv -i"                  # Move a file with confirmation
 alias du="du -ch"                 # File usage in human readable w/ total
-alias df="df -H --total"          # Disk usage in human readable w/ total
 alias dud="du -d 1 -h"            # Directory usage in human readable
+alias df="df -H --total"          # Total disk usage in human readable w/ total
 alias t="tail -f"                 # Tail a file
 alias lc="find . -type f | wc -l" # Count all files in current directory
 alias lu="du -ah | sort -h"       # Show size of all files and folders in current directory
+alias lb="lsblk -fp"              # List all block devices
 
 # ** Uncomment if not using eza ** #
 # alias l="ls -lFh"                 # List files as a long list, show size, type, human-readable
