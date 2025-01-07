@@ -204,6 +204,3 @@ eval $(thefuck --alias fuck)
 # For completions to work, this must be added after compinit is called
 eval "$(zoxide init --cmd cd zsh)"
 
-
-
-
