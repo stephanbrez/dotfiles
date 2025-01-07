@@ -66,7 +66,7 @@ color_yellow = '#d79921'
 [os]
 style = "fg:color_fg0 bg:color_orange"
 format = "[ $symbol ]($style)"
-disabled = false # Disabled by default
+disabled = false                       # Disabled by default
 
 # You can also replace your username with a neat symbol like  to save some space
 [username]
@@ -103,6 +103,9 @@ vimcmd_visual_symbol = '[](bold fg:color_yellow)'
 symbol = " "
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+[conda]
+disabled = false
 
 [docker_context]
 symbol = " "
@@ -215,6 +218,6 @@ format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
 
 [time]
 disabled = true
-time_format = "%R" # Hour:Minute Format
+time_format = "%R"                                      # Hour:Minute Format
 style = "fg:#11111b bg:#89b4fa"
 format = '[[  $time ](fg:#11111b bg:#89b4fa)]($style)'
