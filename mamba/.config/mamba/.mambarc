@@ -1,0 +1,27 @@
+# ######################################################
+# ##              Basic Mamba Configuration           ##
+# ######################################################
+
+# Env and package caches
+envs_dirs:
+  - ~/.local/share/conda/envs
+# pkgs_dirs:
+#   - ~/.local/share/conda/pkgs
+
+channels:
+  - conda-forge
+
+create_default_packages:
+  - python
+
+# ######################################################
+# ##            Output & Prompt Configuration         ##
+# ######################################################
+
+# Always display environment name in prompt
+env_prompt: ({name})
+
+# Show channel URLs when displaying what is going to be downloaded
+# and in 'conda list'. The default is False.
+show_channel_urls: True
+
