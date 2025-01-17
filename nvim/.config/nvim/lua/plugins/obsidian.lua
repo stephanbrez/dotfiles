@@ -60,7 +60,7 @@ return {
         opts = { buffer = true },
       },
       -- Smart action depending on context, either follow link or toggle checkbox.
-      ["<CR>"] = {
+      ["<leader>oa"] = {
         action = function()
           return require("obsidian").util.smart_action()
         end,
