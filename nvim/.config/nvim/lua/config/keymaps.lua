@@ -5,6 +5,7 @@
 -- Navigation
 -- ###################
 -- vim.keymap.set("i", "<CR>", "<Esc>", { noremap = true, silent = true })
+local wk = require("which-key")
 
 -- Center cursor after scroll
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
@@ -98,6 +99,58 @@ vim.keymap.set("n", "<leader>t", function()
   vim.cmd("terminal python3 -i " .. currentfile)
 end, { desc = "Run File in Python Terminal" })
 
+-- ###################
+-- Markdown
+-- ###################
+wk.add({
+  { "<leader>m", group = "markdown", icon = { icon = " ", color = "red" } },
+  { "<leader>mh", group = "headings", icon = { icon = " ", color = "red" } },
+})
+
+vim.keymap.set("n", "<leader>md", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle Markdown Preview" })
+vim.keymap.set("v", "<leader>mb", "di**<esc>p`]a**", { desc = "Bold Selection" })
+vim.keymap.set("v", "<leader>mi", "di*<esc>p`]a*", { desc = "Italisize Selection" })
+vim.keymap.set("v", "<leader>ml", "di[<esc>p`]a]()<esc>i", { desc = "Auto Link Selection" })
+vim.keymap.set("v", "<leader>mc", "di`<esc>p`]a`", { desc = "Backtick Selection" })
+vim.keymap.set("v", "<leader>mw", "di[[<esc>p`]a]]<esc>", { desc = "Wiki Link Selection" })
+
+vim.keymap.set("n", "<leader>mhi", function()
+  local line = vim.api.nvim_get_current_line() -- Get the current line
+  if line:match("^#+") then -- Check if the line starts with one or more '#'
+    -- Increase heading level by adding another '#'
+    local new_heading = line:gsub("^(#+)", function(h)
+      return h .. "#"
+    end)
+    vim.api.nvim_set_current_line(new_heading) -- Set the new line
+  else
+    -- If it's not a heading, create a new heading
+    vim.api.nvim_set_current_line("# " .. line)
+  end
+end, { desc = "Increase Heading Level" })
+
+vim.keymap.set("n", "<leader>mhI", function()
+  -- Save the current cursor position
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  -- I'm using [[ ]] to escape the special characters in a command
+  vim.cmd([[:g/\(^$\n\s*#\+\s.*\n^$\)/ .+1 s/^#\+\s/#&/]])
+  -- Restore the cursor position
+  vim.api.nvim_win_set_cursor(0, cursor_pos)
+  -- Clear search highlight
+  vim.cmd("nohlsearch")
+end, { desc = "Increase ALL headings" })
+
+vim.keymap.set("n", "<leader>mhD", function()
+  -- Save the current cursor position
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  -- I'm using [[ ]] to escape the special characters in a command
+  vim.cmd([[:g/^\s*#\{2,}\s/ s/^#\(#\+\s.*\)/\1/]])
+  -- Restore the cursor position
+  vim.api.nvim_win_set_cursor(0, cursor_pos)
+  -- Clear search highlight
+  vim.cmd("nohlsearch")
+end, { desc = "Decrease ALL headings" })
+
+-- ###################
 -- Plugins
 -- ###################
 
@@ -105,6 +158,10 @@ end, { desc = "Run File in Python Terminal" })
 vim.keymap.set("n", "<leader>Z", "<cmd>Zi<CR>", { desc = "Open Zoxide" })
 
 -- Obsidian
+wk.add({
+  { "<leader>o", group = "obsidian", icon = { icon = "󰂺 ", color = "blue" } },
+})
+
 vim.keymap.set(
   "n",
   "<leader>oc",
@@ -123,15 +180,11 @@ vim.keymap.set("n", "<leader>oj", "<cmd>ObsidianToday<CR>", { desc = "Create New
 vim.keymap.set("n", "<leader>os", "<cmd>ObsidianSearch<CR>", { desc = "Search Obsidian" })
 vim.keymap.set("n", "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "Quick Switch" })
 
--- Markdown
-vim.keymap.set("n", "<leader>md", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle Markdown Preview" })
-vim.keymap.set("v", "<leader>mb", "di**<esc>p`]a**", { desc = "Bold Selection" })
-vim.keymap.set("v", "<leader>mi", "di*<esc>p`]a*", { desc = "Italisize Selection" })
-vim.keymap.set("v", "<leader>ml", "di[<esc>p`]a]()<esc>i", { desc = "Auto Link Selection" })
-vim.keymap.set("v", "<leader>mc", "di`<esc>p`]a`", { desc = "Backtick Selection" })
-vim.keymap.set("v", "<leader>mw", "di[[<esc>p`]a]]<esc>", { desc = "Wiki Link Selection" })
-
 -- Zen Mode
+wk.add({
+  { "<leader>z", group = "zen-mode", icon = { icon = " ", color = "grey" } },
+})
+
 vim.keymap.set("n", "<leader>zh", function()
   require("zen-mode").toggle({
     window = {
