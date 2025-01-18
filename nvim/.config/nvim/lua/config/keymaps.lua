@@ -103,8 +103,11 @@ end, { desc = "Run File in Python Terminal" })
 -- Markdown
 -- ###################
 wk.add({
-  { "<leader>m", group = "markdown", icon = { icon = " ", color = "red" } },
-  { "<leader>mh", group = "headings", icon = { icon = " ", color = "red" } },
+  {
+    mode = { "n", "v" }, -- both normal and visual mode
+    { "<leader>m", group = "markdown", icon = { icon = " ", color = "red" } },
+    { "<leader>mh", group = "headings", icon = { icon = " ", color = "red" } },
+  },
 })
 
 vim.keymap.set("n", "<leader>md", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle Markdown Preview" })
@@ -127,6 +130,17 @@ vim.keymap.set("n", "<leader>mhi", function()
     vim.api.nvim_set_current_line("# " .. line)
   end
 end, { desc = "Increase Heading Level" })
+
+vim.keymap.set("n", "<leader>mhd", function()
+  local line = vim.api.nvim_get_current_line() -- Get the current line
+  if line:match("^#+") then -- Check if the line starts with one or more '#'
+    -- Decrease heading level by removing one '#'
+    local new_heading = line:gsub("^(#+)", function(h)
+      return h:sub(2) -- Remove the first '#'
+    end)
+    vim.api.nvim_set_current_line(new_heading) -- Set the new line
+  end
+end, { desc = "Decrease Heading Level" })
 
 vim.keymap.set("n", "<leader>mhI", function()
   -- Save the current cursor position
