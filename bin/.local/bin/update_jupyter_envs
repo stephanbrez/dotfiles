@@ -1,0 +1,40 @@
+#!/bin/bash
+# This script updates Jupyter Notebook's environment configuration by:
+#
+# 1. Sets the Jupyter config directory path (`~/.jupyter`)
+# 2. Creates an empty dictionary to store Conda environment names and their paths
+# 3. Loops through all Conda environments to:
+#    - Get each environment name using `conda env list`
+#    - Get the full path for each environment using `conda env info --full-path`
+#    - Builds a dictionary mapping environment names to their paths
+# 4. Uses `conda env list --json` and pipes to Python to:
+#    - Read the full Conda JSON environment info
+#    - Merge in the environment paths from the dictionary created above
+#    - Add paths to each environment's package info
+# 5. Saves the resulting JSON to `~/.jupyter/environments.json`
+#
+# The purpose is to ensure Jupyter knows about all available Conda environments
+# and their correct paths, which is necessary for using different environments
+# as Jupyter kernels.
+#
+# Note: The script assumes standard Conda installation and environment structure.
+JUPYTER_NOTEBOOK_config_dir=~/.jupyter
+
+# Create an empty dictionary to store environment names and their paths
+envs_dict="{}"
+
+for env in $(conda env list | awk 'NR>2 {print $1}'); do
+  env_path=$(conda env info --full-path $env)
+  # Append each environment name and its path to the dictionary
+  envs_dict="${envs_dict} \"${env}\":\"${env_path}\""
+done
+
+# Create the final JSON object by combining the existing JSON with the new environment paths
+conda env list --json | python -c "
+import sys, json
+kls = json.load(sys.stdin)
+envs = json.loads('{$envs_dict}')
+for k in envs:
+    kls['namespaces']['packages'][k].append(envs[k])
+print(json.dumps(kls))
+" > $JUPYTER_NOTEBOOK_config_dir/environments.json
