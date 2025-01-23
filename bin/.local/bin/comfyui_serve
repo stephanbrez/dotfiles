@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+pid=$(pgrep -f -x 'python ~/.local/src/ComfyUI/main.py --listen')
+
+if [ -n "$pid" ]; then
+    echo "ComfyUI is already running."
+    while true; do
+        read -r -p "(y to stop, n to exit): " choice
+        case ${choice:0:1} in
+            [Yy])
+                kill "$pid"
+                deactivate
+                echo "ComfyUI has been stopped."
+                break
+                ;;
+            [Nn])
+                exit 0
+                ;;
+            *)
+                echo "Invalid choice. Please enter 'y' or 'n'"
+                ;;
+        esac
+    done
+else
+    source ~/.local/src/ComfyUI/.venv/bin/activate
+    nohup python ~/.local/src/ComfyUI/main.py --listen >> comfyui.log 2>&1 & disown
+    echo "ComfyUI is now running in the background."
+fi
