@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pid=$(pgrep -f -x 'python ~/.local/src/ComfyUI/main.py --listen')
+pid=$(ps aux | grep '[p]ython.*ComfyUI/main.py --listen' | awk '{print $2}')
 
 if [ -n "$pid" ]; then
     echo "ComfyUI is already running."
