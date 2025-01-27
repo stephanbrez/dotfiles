@@ -32,6 +32,10 @@
 # *No* additional modifier to **focus** things
 # *Shift* modifier for **moving** things
 # *Control* modifier for **editing* things
+#
+# Resizing:
+# Relative to the top left corner of the window
+
 
 # 1 for alt
 set $mod Mod4
@@ -144,10 +148,10 @@ bindsym $mod+Control+h split h
 bindsym $mod+Control+v split v
 
 # resize windows without resize mode with smaller increments
-bindsym $mod+Control+Left resize grow width 4 px or 4 ppt
-bindsym $mod+Control+Down resize shrink height 4 px or 4 ppt
-bindsym $mod+Control+Up resize grow height 4 px or 4 ppt
-bindsym $mod+Control+Right resize shrink width 4 px or 4 ppt
+bindsym $mod+Control+Left resize shrink width 4 px or 4 ppt
+bindsym $mod+Control+Down resize grow height 4 px or 4 ppt
+bindsym $mod+Control+Up resize shrink height 4 px or 4 ppt
+bindsym $mod+Control+Right resize grow width 4 px or 4 ppt
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
