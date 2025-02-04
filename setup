@@ -314,7 +314,7 @@ function install_packages() {
     make CMAKE_BUILD_TYPE=RelWithDebInfo &&
     cd build &&
     cpack -G DEB &&
-    dpkg -i nvim-linux64.deb
+    dpkg -i nvim-linux-x86_64.deb
 
   # ======== install openvpn ======== #
   _echo "installing openvpn"
