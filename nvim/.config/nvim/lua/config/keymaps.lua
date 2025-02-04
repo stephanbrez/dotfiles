@@ -2,6 +2,7 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+-- ###################
 -- Navigation
 -- ###################
 -- vim.keymap.set("i", "<CR>", "<Esc>", { noremap = true, silent = true })
@@ -20,6 +21,7 @@ vim.keymap.set(
   { buffer = true, silent = true, desc = "Jump to previous markdown header" }
 )
 
+-- ###################
 -- Editing
 -- ###################
 -- Autocmd to store the starting line when entering insert mode
@@ -92,6 +94,9 @@ vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("n", "<", "<S-v><<esc>", { desc = "Select line and indent left" })
 vim.keymap.set("n", ">", "<S-v>><esc>", { desc = "Select line and indent right" })
 
+-- ###################
+-- Terminal
+-- ###################
 -- open current file in python interactive session
 vim.keymap.set("n", "<leader>t", function()
   local currentfile = vim.fn.expand("%")
@@ -99,6 +104,35 @@ vim.keymap.set("n", "<leader>t", function()
   vim.cmd("terminal python3 -i " .. currentfile)
 end, { desc = "Run File in Python Terminal" })
 
+local function rename_terminal()
+  -- Get the current buffer number
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- Check if the current buffer is a terminal buffer
+  if vim.bo[bufnr].filetype == "terminal" then
+    -- Execute the fc command to get the most recent command from Zsh history
+    local cmd = "fc -l 1 | tail -n 1"
+    local output = vim.fn.system(cmd)
+
+    if output ~= "" then
+      -- Remove any trailing characters like spaces or newlines
+      local last_command = string.gsub(output, "%s+$", "")
+
+      -- Escape the command to avoid issues with special characters
+      last_command = vim.fn.fnameescape(last_command)
+
+      -- Rename the terminal window
+      vim.cmd("title " .. last_command)
+    else
+      vim.notify("No commands in terminal history", "WARNING")
+    end
+  else
+    vim.notify("Not in a terminal buffer", "ERROR")
+  end
+end
+
+-- Bind the function to a key sequence, e.g., <leader>tr
+vim.keymap.set("n", "<leader>wr", rename_terminal, { desc = "Rename Terminal" })
 -- ###################
 -- Markdown
 -- ###################
@@ -173,7 +207,7 @@ vim.keymap.set("n", "<leader>Z", "<cmd>Zi<CR>", { desc = "Open Zoxide" })
 
 -- Obsidian
 wk.add({
-  { "<leader>o", group = "obsidian", icon = { icon = "󰂺 ", color = "blue" } },
+  { "<leader>o", group = "obsidian", mode = { "n", "v" }, icon = { icon = "󰂺 ", color = "blue" } },
 })
 
 vim.keymap.set(
@@ -187,8 +221,8 @@ vim.keymap.set("n", "<leader>oo", "<cmd>ObsidianOpen<CR>", { desc = "Open in Obs
 vim.keymap.set("n", "<leader>ob", "<cmd>ObsidianBacklinks<CR>", { desc = "Show ObsidianBacklinks" })
 vim.keymap.set("n", "<leader>ou", "<cmd>ObsidianLinks<CR>", { desc = "Show ObsidianLinks" })
 vim.keymap.set("n", "<leader>of", "<cmd>ObsidianFollowLink<CR>", { desc = "Follow Obsidian Link" })
-vim.keymap.set("n", "<leader>ol", "<cmd>ObsidianLink<CR>", { desc = "Create Obsidian Link" })
-vim.keymap.set("n", "<leader>oe", "<cmd>ObsidianExtractNote<CR>", { desc = "Extract to New Note" })
+vim.keymap.set("v", "<leader>ol", "<cmd>ObsidianLink<CR>", { desc = "Create Obsidian Link" })
+vim.keymap.set("v", "<leader>oe", "<cmd>ObsidianExtractNote<CR>", { desc = "Extract to New Note" })
 vim.keymap.set("n", "<leader>on", "<cmd>ObsidianNew<CR>", { desc = "Create New Note" })
 vim.keymap.set("n", "<leader>oj", "<cmd>ObsidianToday<CR>", { desc = "Create New Daily Note" })
 vim.keymap.set("n", "<leader>os", "<cmd>ObsidianSearch<CR>", { desc = "Search Obsidian" })
