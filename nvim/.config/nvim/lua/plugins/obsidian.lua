@@ -90,6 +90,7 @@ return {
       -- vim.fn.jobstart({"open", url})  -- Mac OS
       vim.fn.jobstart({ "xdg-open", url }) -- linux
     end,
+
     ui = {
       enable = false, -- set to false to disable all additional syntax features
       update_debounce = 200, -- update delay after a text change (in milliseconds)
