@@ -258,12 +258,13 @@ workspace $ws10  $output-secondary
 
 #
 # Assign applications to workspaces     
+# Use xprop to get the name
 #########################################
 
 # ======== WS 1 (terminal) ======== #
 
 # ======== WS 2 (browser-primary) ======== #
-assign [class="librewolf"] $ws2
+assign [class="LibreWolf"] $ws2
 
 # ======== WS 3 (browser-secondary) ======== #
 assign [class="firefox"] $ws3
