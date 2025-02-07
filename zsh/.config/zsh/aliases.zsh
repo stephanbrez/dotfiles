@@ -114,7 +114,9 @@ alias 7="cd -7"
 ## Comment if not using zoxide ##
 alias zz="z -"                    # Zoxide last directory
 
+# -----------------
 # Common commands #
+# -----------------
 alias al="echo '------------Your curent aliases are:------------¡'; alias" # List aliases
 alias reload="source $HOME/.zshrc"    # Reload zsh config
 alias sudo="sudo -v; sudo "           # Make sudo work with aliases & refresh the password timeout
@@ -124,8 +126,8 @@ alias grep="grep --color=auto"        # Colorize Grep output
 alias ff="find . -type f -name"       # Find a file with name 
 alias fdir="find . -type d -name"     # Find a directory with name
 alias c="clear"                       # Clear
-alias h="history -i | nl"             # History
-alias hs="history | fzf +s --tac"     # Search terminal history
+alias h="history | nl"		      # History
+alias hs="history 50 | fzf +s --tac"  # Search last 50 terminal history
 alias j="jobs -l"                     # List jobs
 alias p="ps -f"                       # Display current processes
 function find_man() {
