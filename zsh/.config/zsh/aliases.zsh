@@ -9,6 +9,12 @@
 # history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl |  head -n10
 
 # -----------------
+# Extra aliases   #
+# -----------------
+alias_path="$ZSHRC_CONFIG/server_aliases.zsh"
+[[ -f "$alias_path" ]] && source "$alias_path"
+
+# -----------------
 # Quick edit config files #
 # -----------------
 alias starshipcfg="nvim $STARSHIP_CONFIG"         # Edit starship config
