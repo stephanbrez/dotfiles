@@ -1,8 +1,8 @@
 #!/bin/tcsh
 
 # Check if correct number of arguments are provided
-if ($#argv != 1) then
-    echo "Usage: $0 <interface_name>"
+if ($#argv < 1 || $#argv > 2) then
+    echo "Usage: $0 <interface_name> [up|down]"
     exit 1
 endif
 
@@ -15,14 +15,22 @@ if ($status != 0) then
     exit 2
 endif
 
-# Get current interface state
-set current_state = `ifconfig "$interface" | grep -o "status.*" | cut -d' ' -f2`
-
-# Determine new state based on current state
-if ("$current_state" == "running" || "$current_state" == "active") then
-    set new_state = "down"
+# Handle explicit state setting if second parameter is provided
+if ($#argv == 2) then
+    if ("$2" != "up" && "$2" != "down") then
+        echo "Error: Second parameter must be 'up' or 'down'"
+        exit 1
+    endif
+    set new_state = "$2"
 else
-    set new_state = "up"
+    # Get current interface state and toggle it
+    set current_state = `ifconfig "$interface" | grep -o "status.*" | cut -d' ' -f2`
+
+    if ("$current_state" == "running" || "$current_state" == "active") then
+        set new_state = "down"
+    else
+        set new_state = "up"
+    endif
 endif
 
 # Perform the interface state change
@@ -32,4 +40,4 @@ if ($status != 0) then
     exit 1
 endif
 
-echo "Successfully toggled interface $interface to $new_state"
+echo "Successfully set interface $interface to $new_state"
