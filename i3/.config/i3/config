@@ -274,7 +274,7 @@ assign [class="Microsoft-edge"] $ws3
 assign [class="^obsidian$"] $ws4
 
 # ======== WS 5 (comms) ======== #
-
+assign [class="rambox"] $ws5
 #
 # Saved Layouts (https://i3wm.org/docs/layout-saving.html)
 #########################################
