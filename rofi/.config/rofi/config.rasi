@@ -146,3 +146,4 @@ configuration {
   }
 }
 /*@theme "gruvbox-light"*/
+@theme "/home/stephan/.local/share/rofi/themes/rose-pine-dawn.rasi"
