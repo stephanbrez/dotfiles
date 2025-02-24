@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/user/bin/env bash
 # This script updates Jupyter Notebook's environment configuration by:
 #
 # 1. Sets the Jupyter config directory path (`~/.jupyter`)
@@ -18,23 +18,71 @@
 # as Jupyter kernels.
 #
 # Note: The script assumes standard Conda installation and environment structure.
+
+# Exit on error
+set -e
+
 JUPYTER_NOTEBOOK_config_dir=~/.jupyter
 
-# Create an empty dictionary to store environment names and their paths
-envs_dict="{}"
+# Ensure config directory exists
+mkdir -p "$JUPYTER_NOTEBOOK_config_dir"
 
-for env in $(conda env list | awk 'NR>2 {print $1}'); do
-  env_path=$(conda env info --full-path $env)
-  # Append each environment name and its path to the dictionary
-  envs_dict="${envs_dict} \"${env}\":\"${env_path}\""
-done
+# Initialize empty dictionary string
+envs_dict=""
+
+# Store conda env list output in a variable
+conda_output=$(conda env list) || { echo "Failed to get conda environments"; exit 1; }
+
+# Read the output line by line without a pipeline
+while IFS= read -r line; do
+    # Skip if line is empty or contains "envs" header
+    [[ -z "$line" || "$line" =~ ^#.*$ ]] && continue
+
+    # Split line into name and path, handling the * for active environments
+    name=$(echo "$line" | awk '{print $1}')
+    path=$(echo "$line" | awk '{$1=""; print $NF}' | sed 's/^[ *]*//') # Remove leading spaces and *
+
+    # If name is empty or just *, extract it from the path
+    if [[ -z "$name" || "$name" == "*" ]]; then
+        # Get parent directory name from path
+        name=$(basename "$(dirname "$path")")
+    fi
+
+    # Append to dictionary string
+    envs_dict="${envs_dict} \"${name}\":\"${path}\""
+done <<< "$conda_output"
 
 # Create the final JSON object by combining the existing JSON with the new environment paths
 conda env list --json | python -c "
 import sys, json
-kls = json.load(sys.stdin)
-envs = json.loads('{$envs_dict}')
-for k in envs:
-    kls['namespaces']['packages'][k].append(envs[k])
-print(json.dumps(kls))
-" > $JUPYTER_NOTEBOOK_config_dir/environments.json
+
+try:
+    # Load the conda environments JSON
+    kls = json.load(sys.stdin)
+    # Load our environment dictionary
+    envs = json.loads('{' + '${envs_dict# }' + '}')
+
+    # Initialize the namespaces and packages structures if they don't exist
+    if 'namespaces' not in kls:
+        kls['namespaces'] = {}
+    if 'packages' not in kls['namespaces']:
+        kls['namespaces']['packages'] = {}
+
+    # Add or update each environment
+    for k in envs:
+        if k not in kls['namespaces']['packages']:
+            kls['namespaces']['packages'][k] = []
+        if envs[k] not in kls['namespaces']['packages'][k]:
+            kls['namespaces']['packages'][k].append(envs[k])
+
+    # Output the updated JSON
+    print(json.dumps(kls, indent=2))
+except json.JSONDecodeError as e:
+    print('Error parsing JSON:', e, file=sys.stderr)
+    sys.exit(1)
+except Exception as e:
+    print('Unexpected error:', e, file=sys.stderr)
+    sys.exit(1)
+" > "$JUPYTER_NOTEBOOK_config_dir/environments.json" || { echo "Failed to update environments.json"; exit 1; }
+
+echo "Successfully updated Jupyter environments configuration"
