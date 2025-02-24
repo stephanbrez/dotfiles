@@ -11,7 +11,9 @@ end
 vim.api.nvim_create_augroup("RelativeLineNumbers", { clear = true })
 
 -- Create autocommands to toggle relative line numbers
-vim.api.nvim_create_autocmd({ "BufEnter", "InsertEnter" }, {
+-- Disable relative line numbers when entering insert mode or switching away
+-- from a buffer
+vim.api.nvim_create_autocmd({ "BufLeave", "InsertEnter" }, {
   group = "RelativeLineNumbers",
   pattern = "*",
   callback = function()
@@ -19,8 +21,9 @@ vim.api.nvim_create_autocmd({ "BufEnter", "InsertEnter" }, {
   end,
   -- callback = unset_relative_number,
 })
-
-vim.api.nvim_create_autocmd({ "BufLeave", "InsertLeave" }, {
+-- Enable relative line numbers when leaving insert mode or switching to a
+-- buffer
+vim.api.nvim_create_autocmd({ "BufEnter", "InsertLeave" }, {
   group = "RelativeLineNumbers",
   pattern = "*",
   callback = function()
