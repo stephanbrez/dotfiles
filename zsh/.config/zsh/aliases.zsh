@@ -64,7 +64,7 @@ alias lb="lsblk -fp"              # List all block devices
 # alias fcd="cd /**<TAB>"         # CD by fuzzy search
 
 ## eza aliases ##
-alias l="eza -la --icons --group-directories-first --git"
+alias l="eza -la --icons --smart-group --group-directories-first --git"
 alias ls="eza"
 alias la="eza -a --icons"             # List all files
 alias ll="eza -l --icons"             # List files in long list format
@@ -184,6 +184,7 @@ alias cab="conda activate base"                # Activate the base conda environ
 alias ccf="conda env create -f"                 # Create a new conda environment from a YAML file
 alias ccn="conda create -y -n"                 # Create a new conda environment with the given name
 alias ccp="conda create -y -p"                 # Create a new conda environment with the given prefix (path)
+alias cce="conda create -y -p ./envs"                 # Create a new conda environment in ./envs 
 alias cc="conda create -n"                     # Create new virtual environment with given name
 function ccc ()
 {
