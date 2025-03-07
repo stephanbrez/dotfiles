@@ -11,15 +11,16 @@
 # -----------------
 # Extra aliases   #
 # -----------------
-alias_path="$ZSHRC_CONFIG/server_aliases.zsh"
+alias_path="$ZDOTDIR/server_aliases.zsh"
 [[ -f "$alias_path" ]] && source "$alias_path"
 
 # -----------------
 # Quick edit config files #
 # -----------------
-alias starshipcfg="nvim $STARSHIP_CONFIG"         # Edit starship config
-alias zshrc="nvim $HOME/.zshrc"                   # Edit zsh config
-alias zaliases="nvim ~/.config/zsh/aliases.zsh"   # Edit zsh aliases
+alias starshipcfg="nvim $STARSHIP_CONFIG"      # Edit starship config
+alias zprofile="nvim $HOME/.zprofile"          # Edit zsh profile
+alias zshrc="nvim $ZDOTDIR/.zshrc"             # Edit zsh config
+alias zaliases="nvim $ZDOTDIR/aliases.zsh"     # Edit zsh aliases
 
 # -----------------
 # File commands   #
@@ -93,9 +94,9 @@ alias tree4="eza -l --tree --level=4"
 alias tree5="eza -l --tree --level=5"
 alias tree6="eza -l --tree --level=6"
 
-# -----------------
+###################
 # Navigation      #
-# -----------------
+###################
 
 # ** Uncomment if not using oh my zsh ** ##
 ## Quickly get out of current directory ##
@@ -118,7 +119,7 @@ alias zz="z -"                    # Zoxide last directory
 # Common commands #
 # -----------------
 alias al="echo '------------Your curent aliases are:------------¡'; alias" # List aliases
-alias reload="source $HOME/.zshrc"    # Reload zsh config
+alias reload="source $ZDOTDIR/.zshrc"    # Reload zsh config
 alias sudo="sudo -v; sudo "           # Make sudo work with aliases & refresh the password timeout
 alias root="sudo -i"                  # Switch to root user
 alias ffs="sudo !!"                   # Rerun prev command with sudo 
@@ -126,7 +127,7 @@ alias grep="grep --color=auto"        # Colorize Grep output
 alias ff="find . -type f -name"       # Find a file with name 
 alias fdir="find . -type d -name"     # Find a directory with name
 alias c="clear"                       # Clear
-alias h="history | nl"		      # History
+alias h="history | nl"		            # History
 alias hs="history 50 | fzf +s --tac"  # Search last 50 terminal history
 alias j="jobs -l"                     # List jobs
 alias p="ps -f"                       # Display current processes
@@ -324,6 +325,10 @@ function gacp() {
 
 # Jupyter #
 alias jn="jupyter notebook"
+alias ipyk-install='python -m ipykernel install --user --name="$(basename "$CONDA_PREFIX")" --display-name="Python ($(basename "$CONDA_PREFIX"))"'
+function ipyki() {
+  python -m ipykernel install --user --name=$1 --display-name="Python ($1)"
+}
 
 # Lazygit
 alias lg='lazygit'                # Open lazygit
