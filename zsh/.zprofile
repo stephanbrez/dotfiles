@@ -10,6 +10,9 @@
 # env vars to set on login
 # read first
 #
+# TODO:
+# set wget-hsts file location
+#
 # ╔════════════════════════════════════════════════╗
 # ║  ░█▄█░█▀▀░▀█▀░█░█░█▀█░█▀▄░█▀█░█░░░█▀█░█▀▀░█░█  ║
 # ║  ░█░█░█▀▀░░█░░█▀█░█░█░█░█░█░█░█░░░█░█░█░█░░█░  ║
@@ -43,8 +46,17 @@ export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
 ###########################
 #          PATHS          #
 ###########################
-# add scripts to path
-export PATH=$HOME/.local/bin:/usr/local/bin:/opt/nvim/:$PATH
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+export PATH="/usr/local/bin:/opt/nvim/:$PATH"
 # export PATH="$XDG_CONFIG_HOME/scripts:$PATH"
 
 # ======== XDG Compliance ======== #
