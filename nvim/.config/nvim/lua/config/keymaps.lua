@@ -157,6 +157,9 @@ vim.keymap.set("v", "<leader>mc", "di`<esc>p`]a`", { desc = "Backtick Selection"
 vim.keymap.set("v", "<leader>mw", "di[[<esc>p`]a]]<esc>", { desc = "Wiki Link Selection" })
 
 -- ===== Headings =====
+vim.keymap.set("n", "<leader>mj", ":/^#\\+ .*<CR>", { desc = "Jump to next markdown header" })
+vim.keymap.set("n", "<leader>mk", ":?^#\\+ .*<CR>", { desc = "Jump to previous markdown header" })
+
 vim.keymap.set("n", "<leader>mhi", function()
   local line = vim.api.nvim_get_current_line() -- Get the current line
   if line:match("^#+") then -- Check if the line starts with one or more '#'
