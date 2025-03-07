@@ -133,9 +133,12 @@ end
 
 -- Bind the function to a key sequence, e.g., <leader>tr
 vim.keymap.set("n", "<leader>wr", rename_terminal, { desc = "Rename Terminal" })
+
 -- ###################
 -- Markdown
 -- ###################
+
+-- which-key menu groups
 wk.add({
   {
     mode = { "n", "v" }, -- both normal and visual mode
@@ -145,12 +148,15 @@ wk.add({
 })
 
 vim.keymap.set("n", "<leader>md", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle Markdown Preview" })
+
+-- ===== Text Formatting =====
 vim.keymap.set("v", "<leader>mb", "di**<esc>p`]a**", { desc = "Bold Selection" })
 vim.keymap.set("v", "<leader>mi", "di*<esc>p`]a*", { desc = "Italisize Selection" })
 vim.keymap.set("v", "<leader>ml", "di[<esc>p`]a]()<esc>i", { desc = "Auto Link Selection" })
 vim.keymap.set("v", "<leader>mc", "di`<esc>p`]a`", { desc = "Backtick Selection" })
 vim.keymap.set("v", "<leader>mw", "di[[<esc>p`]a]]<esc>", { desc = "Wiki Link Selection" })
 
+-- ===== Headings =====
 vim.keymap.set("n", "<leader>mhi", function()
   local line = vim.api.nvim_get_current_line() -- Get the current line
   if line:match("^#+") then -- Check if the line starts with one or more '#'
@@ -197,6 +203,58 @@ vim.keymap.set("n", "<leader>mhD", function()
   -- Clear search highlight
   vim.cmd("nohlsearch")
 end, { desc = "Decrease ALL headings" })
+
+-- ===== Bullets =====
+-- Toggle bullet point at the beginning of the current line in normal mode
+-- If in a multiline paragraph, make sure the cursor is on the line at the top
+-- "d" is for "dash"
+-- from https://linkarzu.com/posts/neovim/markdown-setup-2025/
+vim.keymap.set("n", "<leader>md", function()
+  -- Get the current cursor position
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local current_buffer = vim.api.nvim_get_current_buf()
+  local start_row = cursor_pos[1] - 1
+  local col = cursor_pos[2]
+  -- Get the current line
+  local line = vim.api.nvim_buf_get_lines(current_buffer, start_row, start_row + 1, false)[1]
+  -- Check if the line already starts with a bullet point
+  if line:match("^%s*%-") then
+    -- Remove the bullet point from the start of the line
+    line = line:gsub("^%s*%-", "")
+    vim.api.nvim_buf_set_lines(current_buffer, start_row, start_row + 1, false, { line })
+    return
+  end
+  -- Search for newline to the left of the cursor position
+  local left_text = line:sub(1, col)
+  local bullet_start = left_text:reverse():find("\n")
+  if bullet_start then
+    bullet_start = col - bullet_start
+  end
+  -- Search for newline to the right of the cursor position and in following lines
+  local right_text = line:sub(col + 1)
+  local bullet_end = right_text:find("\n")
+  local end_row = start_row
+  while not bullet_end and end_row < vim.api.nvim_buf_line_count(current_buffer) - 1 do
+    end_row = end_row + 1
+    local next_line = vim.api.nvim_buf_get_lines(current_buffer, end_row, end_row + 1, false)[1]
+    if next_line == "" then
+      break
+    end
+    right_text = right_text .. "\n" .. next_line
+    bullet_end = right_text:find("\n")
+  end
+  if bullet_end then
+    bullet_end = col + bullet_end
+  end
+  -- Extract lines
+  local text_lines = vim.api.nvim_buf_get_lines(current_buffer, start_row, end_row + 1, false)
+  local text = table.concat(text_lines, "\n")
+  -- Add bullet point at the start of the text
+  local new_text = "- " .. text
+  local new_lines = vim.split(new_text, "\n")
+  -- Set new lines in buffer
+  vim.api.nvim_buf_set_lines(current_buffer, start_row, end_row + 1, false, new_lines)
+end, { desc = "[P]Toggle bullet point (dash)" })
 
 -- ###################
 -- Plugins
