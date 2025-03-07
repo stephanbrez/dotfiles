@@ -85,12 +85,12 @@ vim.keymap.set("n", "<leader>x", '"+d', { desc = "Cut to clipboard" })
 vim.keymap.set("v", "<leader>x", '"+d', { desc = "Cut to clipboard" })
 --
 -- Move line up and down
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move Line Down" })
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move Line Up" })
+-- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move Line Down" })
+-- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move Line Up" })
 
 -- better indenting
-vim.keymap.set("v", "<", "<gv")
-vim.keymap.set("v", ">", ">gv")
+-- vim.keymap.set("v", "<", "<gv")
+-- vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("n", "<", "<S-v><<esc>", { desc = "Select line and indent left" })
 vim.keymap.set("n", ">", "<S-v>><esc>", { desc = "Select line and indent right" })
 
