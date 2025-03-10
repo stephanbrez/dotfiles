@@ -37,7 +37,7 @@ bindkey "^k" kill-line
 # ctrl J & K for going up and down in prev commands
 bindkey "^J" history-search-forward
 bindkey "^K" history-search-backward
-bindkey '^R' fzf-history-widget
+bindkey '^r' fzf-history-widget
 
 # ======== aliases ======== #
 [[ -f $ZDOTDIR/aliases.zsh ]] && source $ZDOTDIR/aliases.zsh 
