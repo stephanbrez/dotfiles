@@ -92,7 +92,6 @@ export PATH="/usr/local/bin:/opt/nvim/:$PATH"
 export SSH_AUTH_SOCK=~/.1password/agent.sock
 
 # ======== emoji-fzf ======== #
-zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
 # Path to the emoji-fzf executable
 EMOJI_FZF_BIN_PATH="emoji-fzf"
 # Bind to Ctrl-K by default. Unset to disable.
