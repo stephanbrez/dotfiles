@@ -106,6 +106,9 @@ zinit wait lucid light-mode for \
 zinit ice depth=1
 zinit light jeffreytse/zsh-vi-mode
 
+# ======== emoji-fzf ======== #
+zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
+
 # Add in snippets
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
