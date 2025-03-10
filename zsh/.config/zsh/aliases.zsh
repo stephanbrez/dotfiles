@@ -119,15 +119,15 @@ alias zz="z -"                    # Zoxide last directory
 # Common commands #
 # -----------------
 alias al="echo '------------Your curent aliases are:------------¡'; alias" # List aliases
-alias reload="source $ZDOTDIR/.zshrc"    # Reload zsh config
-alias sudo="sudo -v; sudo "           # Make sudo work with aliases & refresh the password timeout
-alias root="sudo -i"                  # Switch to root user
-alias ffs="sudo !!"                   # Rerun prev command with sudo 
-alias grep="grep --color=auto"        # Colorize Grep output
-alias ff="find . -type f -name"       # Find a file with name 
-alias fdir="find . -type d -name"     # Find a directory with name
-alias c="clear"                       # Clear
-alias h="history | nl"		            # History
+alias reload="source $HOME/.zprofile"	# Reload zsh config
+alias sudo="sudo -v; sudo "		# Make sudo work with aliases & refresh the password timeout
+alias root="sudo -i"			# Switch to root user
+alias ffs="sudo !!"			# Rerun prev command with sudo 
+alias grep="grep --color=auto"		# Colorize Grep output
+alias ff="find . -type f -name"		# Find a file with name 
+alias fdir="find . -type d -name"	# Find a directory with name
+alias c="clear"				# Clear
+alias h="history | nl"			# History
 alias hs="history 50 | fzf +s --tac"  # Search last 50 terminal history
 alias j="jobs -l"                     # List jobs
 alias p="ps -f"                       # Display current processes
