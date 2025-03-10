@@ -110,11 +110,24 @@ EMOJI_FZF_NO_ALIAS=
 EMOJI_FZF_CLIPBOARD="wl-copy"
 
 # ======== fzf ======== #
+# https://github.com/junegunn/fzf
+
 # use fd instead of find
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --strip-cwd-prefix --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"    # use fd for ctrl-t
-# Preview directories with tree 
+# history widget settings
+# export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview" # separate opts for history widget
+# CTRL-Y to copy the command into clipboard using pbcopy
+export FZF_CTRL_R_OPTS="
+  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
+  --info inline
+  --no-sort
+  --color header:italic
+  --header 'Press CTRL-Y to copy command into clipboard'
+  --preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+# use fd for subdirectories
 export FZF_ALT_C_COMMAND="fd --type d --hidden --follow --exclude .git"
+# Preview directories with eza 
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 # Rose Pine Dawn Theme
@@ -125,8 +138,7 @@ export FZF_DEFAULT_OPTS="
 	--color=spinner:#ea9d34,info:#56949f,separator:#dfdad9
 	--color=pointer:#907aa9,marker:#b4637a,prompt:#797593"
 # export FZF_DEFAULT_OPTS="--style minimal --color 16 --layout=reverse --height 30% --preview='bat -p --color=always {}'"
-export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview" # separate opts for history widget
-export MANPAGER="less -R --use-color -Dd+r -Du+b" # colored man pages
+# export MANPAGER="less -R --use-color -Dd+r -Du+b" # colored man pages
 export STARSHIP_CONFIG=$HOME/.config/starship.toml
 
 # colored less + termcap vars
