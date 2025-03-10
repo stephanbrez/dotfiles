@@ -115,6 +115,16 @@ EMOJI_FZF_CLIPBOARD="wl-copy"
 # use fd instead of find
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --strip-cwd-prefix --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"    # use fd for ctrl-t
+# Preview file content using bat (https://github.com/sharkdp/bat)
+export FZF_CTRL_T_OPTS="
+  --preview 'batcat -n --color=always {}'
+  --bind 'ctrl-/:change-preview-window(down|hidden|)'"
+
+# use fd for subdirectories
+export FZF_ALT_C_COMMAND="fd --type d --hidden --follow --exclude .git"
+# Preview directories with eza 
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
 # history widget settings
 # export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview" # separate opts for history widget
 # CTRL-Y to copy the command into clipboard using pbcopy
@@ -125,10 +135,6 @@ export FZF_CTRL_R_OPTS="
   --color header:italic
   --header 'Press CTRL-Y to copy command into clipboard'
   --preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
-# use fd for subdirectories
-export FZF_ALT_C_COMMAND="fd --type d --hidden --follow --exclude .git"
-# Preview directories with eza 
-export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 # Rose Pine Dawn Theme
 export FZF_DEFAULT_OPTS="
