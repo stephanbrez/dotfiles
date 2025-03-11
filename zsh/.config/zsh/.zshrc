@@ -113,11 +113,13 @@ zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
 
 # Add in snippets
 zinit snippet $ZDOTDIR/aliases.zsh 
+# https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 zinit snippet OMZP::git
-zinit snippet OMZP::sudo
+zinit snippet OMZP::sudo        # Prefix current or previous commands with sudo by pressing esc twice.
 zinit snippet OMZP::1password
 # zinit snippet OMZP::tmux
 zinit snippet OMZP::vi-mode
+# https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/vscode
 zinit snippet OMZP::vscode
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
