@@ -30,7 +30,9 @@ bindkey '^H' autosuggest-clear        # ctrl + H | clear autosuggest
 # emacs keybinds
 bindkey "^a" beginning-of-line
 bindkey "^e" end-of-line
-bindkey "^k" kill-line
+bindkey "^k" kill-line          # Delete from cursor to end of line
+bindkey "^u" kill-whole-line    # Delete entire line
+bindkey "^q" push-line          # Push the current buffer onto the buffer stack and clear the buffer
 # bindkey "^j" backward-word
 # bindkey "^k" forward-word
 # bindkey "^H" backward-kill-word
@@ -40,7 +42,7 @@ bindkey "^K" history-search-backward
 bindkey '^r' fzf-history-widget
 
 # ======== aliases ======== #
-[[ -f $ZDOTDIR/aliases.zsh ]] && source $ZDOTDIR/aliases.zsh 
+# [[ -f $ZDOTDIR/aliases.zsh ]] && source $ZDOTDIR/aliases.zsh 
 
 #########################################
 # Setup                                 #
@@ -110,6 +112,7 @@ zinit light jeffreytse/zsh-vi-mode
 zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
 
 # Add in snippets
+zinit snippet $ZDOTDIR/aliases.zsh 
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
 zinit snippet OMZP::1password
