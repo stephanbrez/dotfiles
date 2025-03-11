@@ -167,6 +167,15 @@ if [[ $OSTYPE == darwin* ]]; then
 else
   alias update="sudo apt update && sudo apt upgrade -y && flatpak update -y" 
 fi
+# Apt
+alias aptcs='apt-cache search'
+alias apti='sudo apt install'
+alias aptr='sudo apt remove'
+alias aptre='sudo apt reinstall'
+alias apts='apt search'
+alias aptsh='sudo apt show'
+alias aptu='sudo apt update'
+alias aptuu='sudo apt update;sudo apt upgrade;'
 
 # Default programs #
 alias -s txt=nvim             # Open txt files with nvim
