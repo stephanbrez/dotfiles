@@ -47,8 +47,8 @@ if [ -n "$pid" ]; then
 		esac
 	done
 else
-	source ~/.local/src/ComfyUI/.venv/bin/activate
-	nohup python ~/.local/src/ComfyUI/main.py --preview-method auto --listen >>~/.local/src/ComfyUI/comfyui.log 2>&1 &
+	source ~/.local/src/ComfyUI/.venv/bin/activate &&
+		nohup python ~/.local/src/ComfyUI/main.py --preview-method auto --listen >>~/.local/src/ComfyUI/comfyui.log 2>&1 &
 	disown
 	echo "ComfyUI is now running in the background."
 fi
