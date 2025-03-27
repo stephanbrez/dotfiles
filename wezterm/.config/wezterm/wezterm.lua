@@ -139,6 +139,7 @@ config.colors = theme.colors()
 -- Keybindings
 config.enable_kitty_keyboard = true
 config.keys = {
+	-- Tabs
 	{
 		key = "t",
 		mods = "SUPER|META",
@@ -146,8 +147,25 @@ config.keys = {
 			cycle_theme.theme_switcher(window, pane)
 		end),
 	},
+	-- Rename tab
+	{
+		key = "e",
+		mods = "CTRL|SHIFT",
+		action = act.PromptInputLine({
+			description = "Enter new name for tab",
+			action = wezterm.action_callback(function(window, pane, line)
+				-- line will be `nil` if they hit escape without entering anything
+				-- An empty string if they just hit enter
+				-- Or the actual line of text they wrote
+				if line then
+					window:active_tab():set_title(line)
+				end
+			end),
+		}),
+	},
 	-- Open launcher
 	{ key = "l", mods = "ALT", action = wezterm.action.ShowLauncher },
+	-- Panes
 	-- Remap pane splitting hotkeys
 	{
 		key = "h",
@@ -163,21 +181,6 @@ config.keys = {
 		key = "d",
 		mods = "CTRL|SHIFT",
 		action = wezterm.action.CloseCurrentPane({ confirm = true }),
-	},
-	{
-		key = "e",
-		mods = "CTRL|SHIFT",
-		action = act.PromptInputLine({
-			description = "Enter new name for tab",
-			action = wezterm.action_callback(function(window, pane, line)
-				-- line will be `nil` if they hit escape without entering anything
-				-- An empty string if they just hit enter
-				-- Or the actual line of text they wrote
-				if line then
-					window:active_tab():set_title(line)
-				end
-			end),
-		}),
 	},
 	-- Workspaces
 	-- Show the launcher in fuzzy selection mode and have it list all workspaces
