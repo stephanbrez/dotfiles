@@ -1,57 +1,54 @@
 #!/usr/bin/env bash
 
 # Define the deactivate function
-deactivate () {
-        if [ -n "${_OLD_VIRTUAL_PATH:-}" ]
-        then
-                PATH="${_OLD_VIRTUAL_PATH:-}"
-                export PATH
-                unset _OLD_VIRTUAL_PATH
-        fi
-        if [ -n "${_OLD_VIRTUAL_PYTHONHOME:-}" ]
-        then
-                PYTHONHOME="${_OLD_VIRTUAL_PYTHONHOME:-}"
-                export PYTHONHOME
-                unset _OLD_VIRTUAL_PYTHONHOME
-        fi
-        hash -r 2> /dev/null
-        if [ -n "${_OLD_VIRTUAL_PS1:-}" ]
-        then
-                PS1="${_OLD_VIRTUAL_PS1:-}"
-                export PS1
-                unset _OLD_VIRTUAL_PS1
-        fi
-        unset VIRTUAL_ENV
-        unset VIRTUAL_ENV_PROMPT
-        if [ ! "${1:-}" = "nondestructive" ]
-        then
-                unset -f deactivate
-        fi
+deactivate() {
+	if [ -n "${_OLD_VIRTUAL_PATH:-}" ]; then
+		PATH="${_OLD_VIRTUAL_PATH:-}"
+		export PATH
+		unset _OLD_VIRTUAL_PATH
+	fi
+	if [ -n "${_OLD_VIRTUAL_PYTHONHOME:-}" ]; then
+		PYTHONHOME="${_OLD_VIRTUAL_PYTHONHOME:-}"
+		export PYTHONHOME
+		unset _OLD_VIRTUAL_PYTHONHOME
+	fi
+	hash -r 2>/dev/null
+	if [ -n "${_OLD_VIRTUAL_PS1:-}" ]; then
+		PS1="${_OLD_VIRTUAL_PS1:-}"
+		export PS1
+		unset _OLD_VIRTUAL_PS1
+	fi
+	unset VIRTUAL_ENV
+	unset VIRTUAL_ENV_PROMPT
+	if [ ! "${1:-}" = "nondestructive" ]; then
+		unset -f deactivate
+	fi
 }
 
 pid=$(ps aux | grep '[p]ython.*ComfyUI/main.py --preview-method auto --listen' | awk '{print $2}')
 
 if [ -n "$pid" ]; then
-    echo "ComfyUI is already running."
-    while true; do
-        read -r -p "(y to stop, n to exit): " choice
-        case ${choice:0:1} in
-            [Yy])
-                kill "$pid"
-                # deactivate
-                echo "ComfyUI has been stopped."
-                break
-                ;;
-            [Nn])
-                exit 0
-                ;;
-            *)
-                echo "Invalid choice. Please enter 'y' or 'n'"
-                ;;
-        esac
-    done
+	echo "ComfyUI is already running."
+	while true; do
+		read -r -p "(y to stop, n to exit): " choice
+		case ${choice:0:1} in
+		[Yy])
+			kill "$pid"
+			# deactivate
+			echo "ComfyUI has been stopped."
+			break
+			;;
+		[Nn])
+			exit 0
+			;;
+		*)
+			echo "Invalid choice. Please enter 'y' or 'n'"
+			;;
+		esac
+	done
 else
-    source ~/.local/src/ComfyUI/.venv/bin/activate
-    nohup python ~/.local/src/ComfyUI/main.py --preview-method auto --listen >> comfyui.log 2>&1 & disown
-    echo "ComfyUI is now running in the background."
+	source ~/.local/src/ComfyUI/.venv/bin/activate
+	nohup python ~/.local/src/ComfyUI/main.py --preview-method auto --listen >>~/.local/src/ComfyUI/comfyui.log 2>&1 &
+	disown
+	echo "ComfyUI is now running in the background."
 fi
