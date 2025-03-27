@@ -48,7 +48,7 @@ if [ -n "$pid" ]; then
 	done
 else
 	source ~/.local/src/ComfyUI/.venv/bin/activate &&
-		nohup python ~/.local/src/ComfyUI/main.py --preview-method auto --listen >>~/.local/src/ComfyUI/comfyui.log 2>&1 &
+		nohup python ~/.local/src/ComfyUI/main.py --preview-method auto --front-end-version Comfy-Org/ComfyUI_frontend@latest --listen >>~/.local/src/ComfyUI/comfyui.log 2>&1 &
 	disown
 	echo "ComfyUI is now running in the background."
 fi
