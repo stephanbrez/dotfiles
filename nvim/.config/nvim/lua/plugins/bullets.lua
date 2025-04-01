@@ -31,5 +31,13 @@ return {
       { "nmap", "<<", "<Plug>(bullets-promote)" },
       { "vmap", "<", "<Plug>(bullets-promote)" },
     }
+    -- You can use fancy markers:
+    vim.g.bullets_checkbox_markers = "✗○◐●✓"
+    -- " - [✗] unchecked
+    -- " - [○] partial
+    -- "   - [✓] checked
+    -- "   - [✗] unchecked
+    -- "   - [✗] unchecked
+    -- "   - [✗] unchecked
   end,
 }
