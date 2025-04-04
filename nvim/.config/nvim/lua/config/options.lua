@@ -18,8 +18,8 @@ vim.opt.backspace = "indent,eol,start"
 
 -- tabs
 -- vim.opt.expandtab = false
--- vim.opt.tabstop = 4
--- vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
 
 -- completions
 -- vim.g.ai_cmp = false
