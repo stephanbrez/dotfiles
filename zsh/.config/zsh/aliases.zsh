@@ -48,8 +48,8 @@ alias t="tail -f"                 # Tail a file
 alias lc="find . -type f | wc -l" # Count all files in current directory
 alias lu="du -ah | sort -h"       # Show size of all files and folders in current directory
 alias lb="lsblk -fp"              # List all block devices
-alias lcf="rename 'y/A-Z/a-z/' "  # Rename lowercase to uppercase
-alias ucf="rename 'y/a-z/A-Z/' "  # Rename uppercase to lowercase
+alias lcf="rename 'y/A-Z/a-z/' "  # Rename uppercase to lowercase
+alias ucf="rename 'y/a-z/A-Z/' "  # Rename lowercase to uppercase
 
 # ** Uncomment if not using eza ** #
 # alias l="ls -lFh"                 # List files as a long list, show size, type, human-readable
