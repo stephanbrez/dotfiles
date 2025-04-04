@@ -404,6 +404,67 @@ alias tdf="tdfgo fonts -vp"                 # Find & preview fonts in tdfgo
 # tmux
 alias tn="tmux new -s $(pwd | sed 's/.*\///g')"         # New session named after current path 
 
+# uv
+# Installing and managing Python itself.
+alias uvpyi="uv python install"         # Install Python versions
+alias uvpyl="uv python list"            # View available Python versions
+alias uvpyf="uv python find"            # Find an installed Python version
+alias uvpyp="uv python pin"             # Pin the current project to use a specific Python version
+alias uvpyu="uv python uninstall"       # Uninstall a Python version
+alias uvpyd="uv python dir"             # Show the uv installed Python versions path
+
+# Scripts
+# Executing standalone Python scripts, e.g., example.py.
+alias uv6="uv run"                      # Run a script
+alias uvas="uv add --script"            # Add a dependency to a script
+alias uvrs="uv remove --script"         # Remove a dependency from a script
+
+# Projects
+# Creating and working on Python projects, i.e., with a pyproject.toml.
+alias uvi="uv init"                 # Create a new Python project
+alias uva="uv add"                  # Add a dependency to the project
+alias uvr="uv remove"               # Remove a dependency from the project
+alias uvs="uv sync"                 # Sync the project's dependencies with the environment
+alias uvl="uv lock"                 # Create a lockfile for the project's dependencies
+# alias uv14="uv run"               # Run a command in the project environment
+alias uvt="uv tree"                 # View the dependency tree for the project
+alias uvb="uv build"                # Build the project into distribution archives
+alias uvp="uv publish"              # Publish the project to a package index
+
+# Tools
+# Running and installing tools published to Python package indexes, e.g., ruff or black.
+# alias uvx="uv tool run"             # Run a tool in a temporary environment
+alias uvti="uv tool install"          # Install a tool user-wide
+alias uvtu="uv tool uninstall"        # Uninstall a tool
+alias uvtl="uv tool list"             # List installed tools
+alias uvtus="uv tool update-shell"    # Update the shell to include tool executables
+alias uvtd="uv tool dir"              # Show the uv tool directory path
+
+# The pip interface
+# Manually managing environments and packages — intended to be used in legacy workflows or cases where the high-level commands do not provide enough control.
+# Creating virtual environments (replacing venv and virtualenv)
+alias uvv="uv venv"                  # Create a new virtual environment
+
+# Managing packages in an environment (replacing pip and pipdeptree)
+alias uvpi="uv pip install"           # Install packages into the current environment
+alias uvps="uv pip show"              # Show details about an installed package
+alias uvpf="uv pip freeze"            # List installed packages and their versions
+alias uvpc="uv pip check"             # Check that the current environment has compatible packages
+alias uvpl="uv pip list"              # List installed packages
+alias uvpu="uv pip uninstall"         # Uninstall packages
+alias uvpt="uv pip tree"              # View the dependency tree for the environment
+
+# Locking packages in an environment (replacing pip-tools)
+alias uvpc="uv pip compile"           # Compile requirements into a lockfile
+alias uvps="uv pip sync"              # Sync an environment with a lockfile
+
+# Utility
+# Managing and inspecting uv's state, such as the cache, storage directories, or performing a self-update:
+alias uvcc="uv cache clean"           # Remove cache entries
+alias uvcp="uv cache prune"           # Remove outdated cache entries
+alias uvcd="uv cache dir"             # Show the uv cache directory path
+alias uvu="uv self update"           # Update uv to the latest version
+
 # yazi
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
