@@ -86,7 +86,7 @@ exec workspace 4; exec $default-terminal, exec obsidian; workspace 1
 
 # ======== Run  ======== #
 # start a terminal
-bindsym $mod+Return exec $default-terminal 
+bindsym $mod+Shift+Return exec $default-terminal 
 bindsym $mod+Shift+w exec $default-web-browser
 
 # start dmenu (a program launcher)
@@ -137,6 +137,8 @@ bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
+bindsym $mod+BackSpace focus right
+bindsym $mod+Return focus left
 
 # move focused window
 bindsym $mod+Shift+Left move left
