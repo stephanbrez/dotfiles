@@ -42,7 +42,7 @@ bindkey "^K" history-search-backward
 bindkey '^r' fzf-history-widget
 
 # ======== aliases ======== #
-# [[ -f $ZDOTDIR/aliases.zsh ]] && source $ZDOTDIR/aliases.zsh 
+[[ -f $ZDOTDIR/aliases.zsh ]] && source $ZDOTDIR/aliases.zsh 
 
 #########################################
 # Setup                                 #
