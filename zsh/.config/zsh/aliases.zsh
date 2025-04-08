@@ -191,7 +191,8 @@ alias tarl="tar -tvf"           # List tar contents
 alias tar.gz="tar -zvtf"       # List tar.gz contents
 alias acel="unace l"            # List ace contents
 # Extract
-function extract {
+function extract () 
+{
   if [ -z "$1" ]; then
     echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
   else
@@ -219,8 +220,9 @@ function extract {
     fi
   fi
 }
-alias extr='extract '
-function extract_and_remove {
+alias extr="extract"
+function extract_and_remove () 
+{
   extract $1
   rm -f $1
 }
