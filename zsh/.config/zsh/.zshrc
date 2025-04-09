@@ -44,6 +44,9 @@ bindkey '^r' fzf-history-widget
 # ======== aliases ======== #
 [[ -f $ZDOTDIR/aliases.zsh ]] && source $ZDOTDIR/aliases.zsh 
 
+# ======== functions ======== #
+[[ -f $ZDOTDIR/functions.zsh ]] && source $ZDOTDIR/functions.zsh 
+
 #########################################
 # Setup                                 #
 #########################################
@@ -137,7 +140,7 @@ zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 
 
 
 #########################################
-# Other plugins & tools									#
+# Other plugins & tools					#
 #########################################
 # see .zprofile for settings
 
