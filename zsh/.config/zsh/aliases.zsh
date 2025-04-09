@@ -34,10 +34,6 @@ fi
 alias mf="fzf | xargs ls -l"      # Show info for searched file
 alias pf="fzf --preview='$bat --theme=base16 --style=numbers,header,changes --color=always {}' --bind k:preview-up,j:preview-down"
 alias mdir="mkdir -p"          # Create parent directories
-function mcd() { 
-  mkdir -pv $1
-  cd $1
-}                                 # Make directory and navigate to it
 alias rm="rm -i"                  # Remove a file with confirmation
 alias cp="cp -i"                  # Copy a file with confirmation
 alias mv="mv -i"                  # Move a file with confirmation
@@ -133,12 +129,6 @@ alias h="history | nl"			# History
 alias hs="history 50 | fzf +s --tac"  # Search last 50 terminal history
 alias j="jobs -l"                     # List jobs
 alias p="ps -f"                       # Display current processes
-function find_man() {
-    man $1 | grep -- $2
-}
-function find_alias() {
-  alias | grep -- $1
-}
 
 # -----------------
 # Global aliases  #
@@ -188,45 +178,10 @@ alias -s txt=nvim             # Open txt files with nvim
 alias zipl="unzip -l"           # List zip contents
 alias rarl="unrar l"            # List rar contents
 alias tarl="tar -tvf"           # List tar contents
-alias tar.gz="tar -zvtf"       # List tar.gz contents
-alias acel="unace l"            # List ace contents
-# Extract
-function extract () 
-{
-  if [ -z "$1" ]; then
-    echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
-  else
-    if [ -f $1 ]; then
-      case $1 in
-        *.tar.bz2)   tar xvjf $1    ;;
-        *.tar.gz)    tar xvzf $1    ;;
-        *.tar.xz)    tar xvJf $1    ;;
-        *.lzma)      unlzma $1      ;;
-        *.bz2)       bunzip2 $1     ;;
-        *.rar)       unrar x -ad $1 ;;
-        *.gz)        gunzip $1      ;;
-        *.tar)       tar xvf $1     ;;
-        *.tbz2)      tar xvjf $1    ;;
-        *.tgz)       tar xvzf $1    ;;
-        *.zip)       unzip $1       ;;
-        *.Z)         uncompress $1  ;;
-        *.7z)        7z x $1        ;;
-        *.xz)        unxz $1        ;;
-        *.exe)       cabextract $1  ;;
-        *)           echo "extract: '$1' - unknown archive method" ;;
-      esac
-    else
-      echo "$1 - file does not exist"
-    fi
-  fi
-}
-alias extr="extract"
-function extract_and_remove () 
-{
-  extract $1
-  rm -f $1
-}
-alias extrr='extract_and_remove '
+alias tar.gz="tar -zvtf"            # List tar.gz contents
+alias acel="unace l"                # List ace contents
+alias extr="extract"                # functions.zsh
+alias extrr='extract_and_remove '   # functions.zsh
 
 # Anaconda #
 alias ca="conda activate"                      # Activate the specified conda environment
@@ -467,15 +422,6 @@ alias uvcp="uv cache prune"           # Remove outdated cache entries
 alias uvcd="uv cache dir"             # Show the uv cache directory path
 alias uvu="uv self update"           # Update uv to the latest version
 
-# yazi
-function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	~/.local/bin/yazi/yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd"
-	fi
-	rm -f -- "$tmp"
-}
 
 # Utils
 alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
