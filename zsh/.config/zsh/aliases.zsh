@@ -21,6 +21,7 @@ alias starshipcfg="nvim $STARSHIP_CONFIG"      # Edit starship config
 alias zprofile="nvim $HOME/.zprofile"          # Edit zsh profile
 alias zshrc="nvim $ZDOTDIR/.zshrc"             # Edit zsh config
 alias zaliases="nvim $ZDOTDIR/aliases.zsh"     # Edit zsh aliases
+alias zfunctions="nvim $ZDOTDIR/functions.zsh" # Edit zsh functions
 
 # -----------------
 # File commands   #
@@ -117,7 +118,7 @@ alias zz="z -"                    # Zoxide last directory
 # Common commands #
 # -----------------
 alias al="echo '------------Your curent aliases are:------------¡'; alias" # List aliases
-alias reload="source $HOME/.zprofile"	# Reload zsh config
+alias reload="exec zsh -l"  	# Reload zsh config
 alias sudo="sudo -v; sudo "		# Make sudo work with aliases & refresh the password timeout
 alias root="sudo -i"			# Switch to root user
 alias ffs="sudo !!"			# Rerun prev command with sudo 
