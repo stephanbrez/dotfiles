@@ -199,17 +199,17 @@ truncation_symbol = "…/"
 [c]
 symbol = " "
 style = "bg:base13"
-format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
+format = '[ $symbol ($version) ]($style)'
 
 [elixir]
 symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+style = "bg:base13"
+format = '[ $symbol ($version) ]($style)'
 
 [elm]
 symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+style = "bg:base13"
+format = '[ $symbol ($version) ]($style)'
 
 [git_branch]
 symbol = ""
@@ -223,57 +223,59 @@ format = '[[($all_status$ahead_behind )](fg:base00 bg:base12)]($style)'
 [golang]
 symbol = ""
 style = "bg:base13"
-format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
+format = '[ $symbol( $version) ]($style)'
 
 [haskell]
 symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+style = "bg:base13"
+format = '[ $symbol ($version) ]($style)'
 
 [java]
 symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+style = "bg:base13"
+format = '[ $symbol ($version) ]($style)'
 
 [julia]
 symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+style = "bg:base13"
+format = '[ $symbol ($version) ]($style)'
 
 [nodejs]
 symbol = ""
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+style = "bg:base13"
+format = '[ $symbol( $version) ]($style)'
 
 [nim]
 symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+style = "bg:base13"
+format = '[ $symbol( $version) ]($style)'
 
 [python]
 symbol = " "
 style = "bg:base13"
-format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
+format = '[ $symbol( $version) ]($style)'
 
 [rust]
 symbol = ""
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+style = "bg:base13"
+format = '[ $symbol ($version) ]($style)'
 
 [conda]
+style = "bg:base03"
+format = '[ $symbol $environment ]($style)'
 disabled = false
 
 [docker_context]
 symbol = " "
 style = "bg:base03"
-format = '[[ $symbol( $context) ](fg:#83a598 bg:base03)]($style)'
+format = '[ $symbol $context ]($style)'
 
 # --- section --- #
 [time]
-disabled = true
-time_format = "%R"                                      # Hour:Minute Format
-style = "fg:#11111b bg:#89b4fa"
-format = '[[  $time ](fg:#11111b bg:#89b4fa)]($style)'
+disabled = false
+time_format = "%R"             # Hour:Minute Format
+style = "bg:base02"
+format = '[  $time ]($style)'
 
 # --- section --- #
 [character]
