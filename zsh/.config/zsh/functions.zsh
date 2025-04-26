@@ -55,6 +55,11 @@ function mcd() {
   cd $1
 }                                 
 
+# Jupyter
+function ipyki() {
+  python -m ipykernel install --user --name=$1 --display-name="Python ($1)"
+}
+
 # yazi
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
