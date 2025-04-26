@@ -177,7 +177,7 @@ format = '[$user ]($style)'
 [hostname]
 ssh_only = false
 style = "fg:base00 bg:base09"
-format = '[$ssh_symbol](bold fg:base07 bg:base09)[ on $hostname ]($style)'
+format = '[$ssh_symbol](bold fg:base07 bg:base09)[$hostname ]($style)'
 disabled = false
 
 # --- section --- #
@@ -199,70 +199,70 @@ truncation_symbol = "…/"
 [c]
 symbol = " "
 style = "bg:base13"
-format = '[ $symbol ($version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [elixir]
 symbol = " "
 style = "bg:base13"
-format = '[ $symbol ($version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [elm]
 symbol = " "
 style = "bg:base13"
-format = '[ $symbol ($version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [git_branch]
-symbol = ""
+symbol = " "
 style = "bg:base12"
-format = '[[ $symbol $branch ](fg:base00 bg:base12)]($style)'
+format = '[[ $symbol($branch) ](fg:base00 bg:base12)]($style)'
 
 [git_status]
 style = "bg:base12"
-format = '[[($all_status$ahead_behind )](fg:base00 bg:base12)]($style)'
+format = '[[($all_status($ahead_behind) )](fg:base00 bg:base12)]($style)'
 
 [golang]
-symbol = ""
+symbol = " "
 style = "bg:base13"
-format = '[ $symbol( $version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [haskell]
 symbol = " "
 style = "bg:base13"
-format = '[ $symbol ($version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [java]
 symbol = " "
 style = "bg:base13"
-format = '[ $symbol ($version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [julia]
 symbol = " "
 style = "bg:base13"
-format = '[ $symbol ($version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [nodejs]
-symbol = ""
+symbol = " "
 style = "bg:base13"
-format = '[ $symbol( $version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [nim]
 symbol = " "
 style = "bg:base13"
-format = '[ $symbol( $version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [python]
 symbol = " "
 style = "bg:base13"
-format = '[ $symbol( $version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [rust]
-symbol = ""
+symbol = " "
 style = "bg:base13"
-format = '[ $symbol ($version) ]($style)'
+format = '[ $symbol($version) ]($style)'
 
 [conda]
 style = "bg:base03"
-format = '[ $symbol $environment ]($style)'
+format = '[ $symbol($environment) ]($style)'
 disabled = false
 
 [docker_context]
