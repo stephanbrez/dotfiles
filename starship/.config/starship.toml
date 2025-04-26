@@ -12,11 +12,11 @@
 #                                                           \▓▓
 
 format = """
-[ ](base15)\
+[ ](base09)\
 $os\
 $username\
 $hostname\
-[](bg:base10 fg:base15)\
+[](bg:base10 fg:base09)\
 $directory\
 [](fg:base10 bg:base12)\
 $git_branch\
@@ -35,8 +35,8 @@ $nim\
 $rust\
 [](fg:base13 bg:base03)\
 $docker_context\
-[](fg:base03 bg:base01)\
-[ ](fg:base01)\
+[](fg:base03 bg:base02)\
+[ ](fg:base02)\
 \n$character
 """
 
@@ -119,15 +119,15 @@ base15 = '#cecacd'
 # An alternative to the username module which displays a symbol that
 # represents the current operating system
 [os]
-style = "fg:base00 bg:base15"
+style = "fg:base00 bg:base09"
 format = "[ $symbol ]($style)"
 disabled = false               # Disabled by default
 
 # You can also replace your username with a neat symbol like  to save some space
 [username]
 show_always = true
-style_user = "fg:base00 bg:base15"
-style_root = "fg:base00 bg:base15"
+style_user = "fg:base00 bg:base09"
+style_root = "fg:base00 bg:base09"
 format = '[$user ]($style)'
 
 [directory]
@@ -208,8 +208,8 @@ format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
 
 [hostname]
 ssh_only = false
-style = "fg:base00 bg:base15"
-format = '[$ssh_symbol](bold fg:base07 bg:base15)[ on $hostname ]($style)'
+style = "fg:base00 bg:base09"
+format = '[$ssh_symbol](bold fg:base07 bg:base09)[ on $hostname ]($style)'
 disabled = false
 
 [os.symbols]
