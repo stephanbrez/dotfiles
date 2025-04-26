@@ -23,7 +23,6 @@ $git_branch\
 $git_status\
 [](fg:base12 bg:base13)\
 $c\
-$conda\
 $elixir\
 $elm\
 $golang\
@@ -35,12 +34,15 @@ $nim\
 $rust\
 [](fg:base13 bg:base03)\
 $docker_context\
+$conda\
 [](fg:base03 bg:base02)\
+$time\
 [ ](fg:base02)\
 \n$character
 """
 
-# [ ](fg:blue)\
+# Use this in place of the "[ ](fg:base02)\" for a pointy end
+# [ ](fg:base02)\
 
 # move the rest of the prompt to the right
 # right_format = """$all"""
@@ -116,100 +118,12 @@ base13 = '#907aa9' # iris
 base14 = '#ea9d34'
 base15 = '#cecacd'
 
-# An alternative to the username module which displays a symbol that
-# represents the current operating system
+
+# --- section --- #
+# Display a symbol that represents the current operating system
 [os]
 style = "fg:base00 bg:base09"
 format = "[ $symbol ]($style)"
-disabled = false               # Disabled by default
-
-# You can also replace your username with a neat symbol like  to save some space
-[username]
-show_always = true
-style_user = "fg:base00 bg:base09"
-style_root = "fg:base00 bg:base09"
-format = '[$user ]($style)'
-
-[directory]
-style = "fg:base00 bg:base10"
-format = "[ $path ]($style)"
-truncation_length = 3
-truncation_symbol = "…/"
-
-# Here is how you can shorten some long paths by text replacement
-# similar to mapped_locations in Oh My Posh:
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
-# Keep in mind that the order matters. For example:
-
-[character]
-disabled = false
-success_symbol = '[](bold fg:base11)'
-error_symbol = '[](bold fg:base08)'
-vimcmd_symbol = '[](bold fg:base11)'
-vimcmd_replace_one_symbol = '[](bold fg:base14)'
-vimcmd_replace_symbol = '[](bold fg:base14)'
-vimcmd_visual_symbol = '[](bold fg:base10)'
-
-[c]
-symbol = " "
-style = "bg:base13"
-format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
-
-[conda]
-disabled = false
-
-[docker_context]
-symbol = " "
-style = "bg:base03"
-format = '[[ $symbol( $context) ](fg:#83a598 bg:base03)]($style)'
-
-[elixir]
-symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
-
-[elm]
-symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
-
-[git_branch]
-symbol = ""
-style = "bg:base12"
-format = '[[ $symbol $branch ](fg:base00 bg:base12)]($style)'
-
-[git_status]
-style = "bg:base12"
-format = '[[($all_status$ahead_behind )](fg:base00 bg:base12)]($style)'
-
-[golang]
-symbol = ""
-style = "bg:base13"
-format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
-
-[haskell]
-symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
-
-[java]
-symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
-
-[julia]
-symbol = " "
-style = "fg:#11111b bg:#cba6f7"
-format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
-
-[hostname]
-ssh_only = false
-style = "fg:base00 bg:base09"
-format = '[$ssh_symbol](bold fg:base07 bg:base09)[ on $hostname ]($style)'
 disabled = false
 
 [os.symbols]
@@ -253,6 +167,79 @@ Ubuntu = " "
 Unknown = " "
 Windows = "󰍲 "
 
+# You can also replace your username with a neat symbol like  to save some space
+[username]
+show_always = true
+style_user = "fg:base00 bg:base09"
+style_root = "fg:base00 bg:base09"
+format = '[$user ]($style)'
+
+[hostname]
+ssh_only = false
+style = "fg:base00 bg:base09"
+format = '[$ssh_symbol](bold fg:base07 bg:base09)[ on $hostname ]($style)'
+disabled = false
+
+# --- section --- #
+[directory]
+style = "fg:base00 bg:base10"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+# Here is how you can shorten some long paths by text replacement
+# similar to mapped_locations in Oh My Posh:
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+# --- section --- #
+[c]
+symbol = " "
+style = "bg:base13"
+format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
+
+[elixir]
+symbol = " "
+style = "fg:#11111b bg:#cba6f7"
+format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+
+[elm]
+symbol = " "
+style = "fg:#11111b bg:#cba6f7"
+format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+
+[git_branch]
+symbol = ""
+style = "bg:base12"
+format = '[[ $symbol $branch ](fg:base00 bg:base12)]($style)'
+
+[git_status]
+style = "bg:base12"
+format = '[[($all_status$ahead_behind )](fg:base00 bg:base12)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:base13"
+format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
+
+[haskell]
+symbol = " "
+style = "fg:#11111b bg:#cba6f7"
+format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+
+[java]
+symbol = " "
+style = "fg:#11111b bg:#cba6f7"
+format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+
+[julia]
+symbol = " "
+style = "fg:#11111b bg:#cba6f7"
+format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
+
 [nodejs]
 symbol = ""
 style = "fg:#11111b bg:#cba6f7"
@@ -273,8 +260,27 @@ symbol = ""
 style = "fg:#11111b bg:#cba6f7"
 format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
 
+[conda]
+disabled = false
+
+[docker_context]
+symbol = " "
+style = "bg:base03"
+format = '[[ $symbol( $context) ](fg:#83a598 bg:base03)]($style)'
+
+# --- section --- #
 [time]
 disabled = true
 time_format = "%R"                                      # Hour:Minute Format
 style = "fg:#11111b bg:#89b4fa"
 format = '[[  $time ](fg:#11111b bg:#89b4fa)]($style)'
+
+# --- section --- #
+[character]
+disabled = false
+success_symbol = '[](bold fg:base11)'
+error_symbol = '[](bold fg:base08)'
+vimcmd_symbol = '[](bold fg:base11)'
+vimcmd_replace_one_symbol = '[](bold fg:base14)'
+vimcmd_replace_symbol = '[](bold fg:base14)'
+vimcmd_visual_symbol = '[](bold fg:base10)'
