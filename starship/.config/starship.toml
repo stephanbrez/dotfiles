@@ -175,7 +175,7 @@ style_root = "fg:base00 bg:base09"
 format = '[$user ]($style)'
 
 [hostname]
-ssh_only = false
+ssh_only = true
 style = "fg:base00 bg:base09"
 format = '[$ssh_symbol](bold fg:base07 bg:base09)[$hostname ]($style)'
 disabled = false
