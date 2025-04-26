@@ -12,15 +12,16 @@
 #                                                           \▓▓
 
 format = """
-[](color_orange)\
+[ ](base15)\
 $os\
 $username\
-[](bg:color_yellow fg:color_orange)\
+$hostname\
+[](bg:base10 fg:base15)\
 $directory\
-[](fg:color_yellow bg:color_aqua)\
+[](fg:base10 bg:base12)\
 $git_branch\
 $git_status\
-[](fg:color_aqua bg:color_blue)\
+[](fg:base12 bg:base13)\
 $c\
 $conda\
 $elixir\
@@ -32,10 +33,10 @@ $julia\
 $nodejs\
 $nim\
 $rust\
-[](fg:color_blue bg:color_bg3)\
+[](fg:base13 bg:base03)\
 $docker_context\
-[](fg:color_bg3 bg:color_bg1)\
-[ ](fg:color_bg1)\
+[](fg:base03 bg:base01)\
+[ ](fg:base01)\
 \n$character
 """
 
@@ -47,36 +48,90 @@ $docker_context\
 # Disable the blank line at the start of the prompt
 # add_newline = false
 
-palette = 'gruvbox_dark'
+palette = 'rose-pine-dawn'
 
 [palettes.gruvbox_dark]
-color_fg0 = '#fbf1c7'
-color_bg1 = '#3c3836'
-color_bg3 = '#665c54'
-color_blue = '#458588'
-color_aqua = '#689d6a'
-color_green = '#98971a'
-color_orange = '#d65d0e'
-color_purple = '#b16286'
-color_red = '#cc241d'
-color_yellow = '#d79921'
+base00 = '#fbf1c7'
+base01 = '#3c3836'
+base03 = '#665c54'
+base13 = '#458588'
+base12 = '#689d6a'
+base11 = '#98971a'
+base15 = '#d65d0e'
+base14 = '#b16286'
+base08 = '#cc241d'
+base10 = '#d79921'
+
+[palettes.gruvbox_dark_med]
+base00 = '#282828' # ----
+base01 = '#3c3836' # ---
+base02 = '#504945' # --
+base03 = '#665c54' # -
+base04 = '#bdae93' # +
+base05 = '#d5c4a1' # ++
+base06 = '#ebdbb2' # +++
+base07 = '#fbf1c7' # ++++
+base08 = '#fb4934' # red
+base09 = '#fe8019' # orange
+base10 = '#fabd2f' # yellow
+base11 = '#b8bb26' # green
+base12 = '#8ec07c' # aqua/cyan
+base13 = '#83a598' # blue
+base14 = '#d3869b' # purple
+base15 = '#d65d0e' # brown
+
+[palettes.gruvbox_light_med]
+base00 = '#fbf1c7' # ----
+base01 = '#ebdbb2' # ---
+base02 = '#d5c4a1' # --
+base03 = '#bdae93' # -
+base04 = '#665c54' # +
+base05 = '#504945' # ++
+base06 = '#3c3836' # +++
+base07 = '#282828' # ++++
+base08 = '#9d0006' # red
+base09 = '#af3a03' # orange
+base10 = '#b57614' # yellow
+base11 = '#79740e' # green
+base12 = '#427b58' # aqua/cyan
+base13 = '#076678' # blue
+base14 = '#8f3f71' # purple
+base15 = '#d65d0e' # brown
+
+[palettes.rose-pine-dawn]
+base00 = '#faf4ed' # base
+base01 = '#fffaf3' # surface
+base02 = '#f2e9de' # overlay
+base03 = '#9893a5' # muted
+base04 = '#797593' # subtle
+base05 = '#575279' # text
+base06 = '#575279'
+base07 = '#cecacd' # highlight high
+base08 = '#b4637a' # love
+base09 = '#ea9d34' # gold
+base10 = '#d7827e' # rose
+base11 = '#286983' # pine
+base12 = '#56949f' # foam
+base13 = '#907aa9' # iris
+base14 = '#ea9d34'
+base15 = '#cecacd'
 
 # An alternative to the username module which displays a symbol that
 # represents the current operating system
 [os]
-style = "fg:color_fg0 bg:color_orange"
+style = "fg:base00 bg:base15"
 format = "[ $symbol ]($style)"
-disabled = false                       # Disabled by default
+disabled = false               # Disabled by default
 
 # You can also replace your username with a neat symbol like  to save some space
 [username]
 show_always = true
-style_user = "fg:color_fg0 bg:color_orange"
-style_root = "fg:color_fg0 bg:#color_orange"
+style_user = "fg:base00 bg:base15"
+style_root = "fg:base00 bg:base15"
 format = '[$user ]($style)'
 
 [directory]
-style = "fg:color_fg0 bg:color_yellow"
+style = "fg:base00 bg:base10"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -92,25 +147,25 @@ truncation_symbol = "…/"
 
 [character]
 disabled = false
-success_symbol = '[](bold fg:color_green)'
-error_symbol = '[](bold fg:color_red)'
-vimcmd_symbol = '[](bold fg:color_green)'
-vimcmd_replace_one_symbol = '[](bold fg:color_purple)'
-vimcmd_replace_symbol = '[](bold fg:color_purple)'
-vimcmd_visual_symbol = '[](bold fg:color_yellow)'
+success_symbol = '[](bold fg:base11)'
+error_symbol = '[](bold fg:base08)'
+vimcmd_symbol = '[](bold fg:base11)'
+vimcmd_replace_one_symbol = '[](bold fg:base14)'
+vimcmd_replace_symbol = '[](bold fg:base14)'
+vimcmd_visual_symbol = '[](bold fg:base10)'
 
 [c]
 symbol = " "
-style = "bg:color_blue"
-format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+style = "bg:base13"
+format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
 
 [conda]
 disabled = false
 
 [docker_context]
 symbol = " "
-style = "bg:color_bg3"
-format = '[[ $symbol( $context) ](fg:#83a598 bg:color_bg3)]($style)'
+style = "bg:base03"
+format = '[[ $symbol( $context) ](fg:#83a598 bg:base03)]($style)'
 
 [elixir]
 symbol = " "
@@ -124,17 +179,17 @@ format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
 
 [git_branch]
 symbol = ""
-style = "bg:color_aqua"
-format = '[[ $symbol $branch ](fg:color_fg0 bg:color_aqua)]($style)'
+style = "bg:base12"
+format = '[[ $symbol $branch ](fg:base00 bg:base12)]($style)'
 
 [git_status]
-style = "bg:color_aqua"
-format = '[[($all_status$ahead_behind )](fg:color_fg0 bg:color_aqua)]($style)'
+style = "bg:base12"
+format = '[[($all_status$ahead_behind )](fg:base00 bg:base12)]($style)'
 
 [golang]
 symbol = ""
-style = "bg:color_blue"
-format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+style = "bg:base13"
+format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
 
 [haskell]
 symbol = " "
@@ -152,7 +207,9 @@ style = "fg:#11111b bg:#cba6f7"
 format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
 
 [hostname]
-ssh_only = true
+ssh_only = false
+style = "fg:base00 bg:base15"
+format = '[$ssh_symbol](bold fg:base07 bg:base15)[ on $hostname ]($style)'
 disabled = false
 
 [os.symbols]
@@ -208,8 +265,8 @@ format = '[[ $symbol ($version) ](fg:#11111b bg:#cba6f7)]($style)'
 
 [python]
 symbol = " "
-style = "bg:color_blue"
-format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+style = "bg:base13"
+format = '[[ $symbol( $version) ](fg:base00 bg:base13)]($style)'
 
 [rust]
 symbol = ""
