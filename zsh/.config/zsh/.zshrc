@@ -114,6 +114,10 @@ zinit snippet $ZDOTDIR/aliases.zsh
 zinit snippet $ZDOTDIR/functions.zsh
 
 zinit snippet OMZP::aliases
+if [[ ! -f $(dirname $ZINIT_HOME)/snippets/OMZP::aliases/cheatsheet.py ]]; then
+    curl -o "$(dirname $ZINIT_HOME)/snippets/OMZP::aliases/cheatsheet.py" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/aliases/cheatsheet.py"
+    curl -o "$(dirname $ZINIT_HOME)/snippets/OMZP::aliases/termcolor.py" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/aliases/termcolor.py"
+fi
 zinit snippet OMZP::git         # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 zinit snippet OMZP::pip
 zinit snippet OMZP::sudo        # Prefix current or previous commands with sudo by pressing esc twice.
