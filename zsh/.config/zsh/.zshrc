@@ -20,6 +20,7 @@
 if [ -f /usr/bin/fastfetch ]; then
 	fastfetch -c examples/7.jsonc
 fi
+# Additional aliases & functions sourced by zinit below
 
 # ======== keybinds ======== #
 # see available keybinds: https://zsh.sourceforge.io/Doc/Release/Key-Bindings.html
@@ -40,12 +41,6 @@ bindkey "^q" push-line          # Push the current buffer onto the buffer stack 
 bindkey "^J" history-search-forward
 bindkey "^K" history-search-backward
 bindkey '^r' fzf-history-widget
-
-# ======== aliases ======== #
-[[ -f $ZDOTDIR/aliases.zsh ]] && source $ZDOTDIR/aliases.zsh 
-
-# ======== functions ======== #
-[[ -f $ZDOTDIR/functions.zsh ]] && source $ZDOTDIR/functions.zsh 
 
 #########################################
 # Setup                                 #
@@ -116,14 +111,16 @@ zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
 
 # Add in snippets
 zinit snippet $ZDOTDIR/aliases.zsh 
-# https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
-zinit snippet OMZP::git
+zinit snippet $ZDOTDIR/functions.zsh
+
+zinit snippet OMZP::aliases
+zinit snippet OMZP::git         # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
+zinit snippet OMZP::pip
 zinit snippet OMZP::sudo        # Prefix current or previous commands with sudo by pressing esc twice.
 zinit snippet OMZP::1password
 # zinit snippet OMZP::tmux
-zinit snippet OMZP::vi-mode
-# https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/vscode
-zinit snippet OMZP::vscode
+# zinit snippet OMZP::vi-mode
+zinit snippet OMZP::vscode      # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/vscode
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
