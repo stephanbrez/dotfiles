@@ -195,18 +195,19 @@ alias cc="conda create -n"                     # Create new virtual environment 
 function ccc ()
 {
   conda create --clone $1 --name $2
-}                                              # Clone the specified conda env
-alias cconf="conda config"                     # View or modify conda configuration
-alias css="conda config --show-source"         # Show the locations of conda configuration sources
-alias cda="conda deactivate"                   # Deactivate the current conda environment
-alias cel="conda env list"                     # List all available conda environments
-alias ci="conda install"                       # Install given package
-alias ciy="conda install -y"                   # Install given package without confirmation
-alias cl="conda list"                          # List installed packages in the current environment
-alias cle="conda list --export"                # Export the list of installed packages in the current environment
+}                                               # Clone the specified conda env
+alias cconf="conda config"                      # View or modify conda configuration
+alias css="conda config --show-source"          # Show the locations of conda configuration sources
+alias cda="conda deactivate"                    # Deactivate the current conda environment
+alias cel="conda env list"                      # List all available conda environments
+alias ci="conda install"                        # Install given package
+alias ciy="conda install -y"                    # Install given package without confirmation
+alias cl="conda list"                           # List installed packages in the current environment
+alias cle="conda list --export"                 # Export the list of installed packages in the current environment
 alias cles="conda list --explicit > spec-file.txt"  # Export the list of installed packages in the current environment to a spec file
-alias cr="conda remove"                        # Remove given package
+alias cr="conda remove"                         # Remove given package
 alias cra="conda remove -y --all -n"            # Remove all packages in the specified environment
+alias crp="conda remove -y --all -p"            # Remove environment at specified path
 alias cs="conda search"                        # Search conda repositories for package
 alias cu="conda update"                        # Update the specified package(s)
 alias cua="conda update --all"                 # Update all installed packages
@@ -235,6 +236,7 @@ alias mle="mamba list --export"                # Export the list of installed pa
 alias mles="mamba list --explicit > spec-file.txt"  # Export the list of installed packages in the current environment to a spec file
 alias mr="mamba remove"                        # Remove given package
 alias mra="mamba remove -y -all -n"            # Remove all packages in the specified environment
+alias mrp="mamba remove -y --all -p"           # Remove environment at specified path
 alias ms="mamba search"                        # Search mamba repositories for package
 alias mu="mamba update"                        # Update the specified package(s)
 alias muf="mamba env update --prune"           # Update & prune the current environment based on environment file
