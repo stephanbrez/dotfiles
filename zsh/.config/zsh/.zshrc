@@ -95,11 +95,18 @@ source "${ZINIT_HOME}/zinit.zsh"
 # https://zdharma-continuum.github.io/zinit/wiki/For-Syntax/
 zinit wait lucid light-mode for \
   atinit"zicompinit; zicdreplay" \
-      zsh-users/zsh-syntax-highlighting \
+        zsh-users/zsh-syntax-highlighting \
+        OMZP::aliases \
+        OMZP::pip \
+        OMZP::sudo \
+        OMZP::vscode \
   atload"_zsh_autosuggest_start" \
       zsh-users/zsh-autosuggestions \
   blockf atpull'zinit creinstall -q .' \
-      zsh-users/zsh-completions
+      zsh-users/zsh-completions \
+  as"completion" \
+        OMZP::docker/completions/_docker \
+        OMZP::pip/_pip
 
 # ZVM plugin
 # https://github.com/jeffreytse/zsh-vi-mode
@@ -113,18 +120,19 @@ zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
 zinit snippet $ZDOTDIR/aliases.zsh 
 zinit snippet $ZDOTDIR/functions.zsh
 
-zinit snippet OMZP::aliases
+# zinit snippet OMZP::aliases
 if [[ ! -f $(dirname $ZINIT_HOME)/snippets/OMZP::aliases/cheatsheet.py ]]; then
     curl -o "$(dirname $ZINIT_HOME)/snippets/OMZP::aliases/cheatsheet.py" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/aliases/cheatsheet.py"
     curl -o "$(dirname $ZINIT_HOME)/snippets/OMZP::aliases/termcolor.py" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/refs/heads/master/plugins/aliases/termcolor.py"
 fi
+
 zinit snippet OMZP::git         # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
-zinit snippet OMZP::pip
-zinit snippet OMZP::sudo        # Prefix current or previous commands with sudo by pressing esc twice.
+# zinit snippet OMZP::pip
+# zinit snippet OMZP::sudo        # Prefix current or previous commands with sudo by pressing esc twice.
 zinit snippet OMZP::1password
 # zinit snippet OMZP::tmux
 # zinit snippet OMZP::vi-mode
-zinit snippet OMZP::vscode      # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/vscode
+# zinit snippet OMZP::vscode      # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/vscode
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
