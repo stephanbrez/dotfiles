@@ -7,6 +7,18 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "ssh_connections": [
+    {
+      "host": "populus.birchcrown.com",
+      "projects": [
+        {
+          "paths": [
+            "~/.local/src/pytorch_tuts"
+          ]
+        }
+      ]
+    }
+  ],
   "assistant": {
     "default_model": {
       "provider": "zed.dev",
@@ -40,7 +52,7 @@
     }
   },
   "features": {
-    "inline_completion_provider": "copilot"
+    // "inline_completion_provider": "supermaven"
   },
   "telemetry": {
     "metrics": false
