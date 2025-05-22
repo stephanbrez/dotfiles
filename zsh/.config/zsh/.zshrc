@@ -105,7 +105,6 @@ zinit wait lucid light-mode for \
   blockf atpull'zinit creinstall -q .' \
       zsh-users/zsh-completions \
   as"completion" \
-        OMZP::docker/completions/_docker \
         OMZP::pip/_pip
 
 # ZVM plugin
@@ -115,6 +114,9 @@ zinit light jeffreytse/zsh-vi-mode
 
 # ======== emoji-fzf ======== #
 zinit light-mode wait lucid for pschmitt/emoji-fzf.zsh
+
+zinit ice as"completion"
+zinit snippet https://github.com/docker/cli/blob/master/contrib/completion/zsh/_docker
 
 # Add in snippets
 zinit snippet $ZDOTDIR/aliases.zsh 
@@ -127,12 +129,8 @@ if [[ ! -f $(dirname $ZINIT_HOME)/snippets/OMZP::aliases/cheatsheet.py ]]; then
 fi
 
 zinit snippet OMZP::git         # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
-# zinit snippet OMZP::pip
 # zinit snippet OMZP::sudo        # Prefix current or previous commands with sudo by pressing esc twice.
-zinit snippet OMZP::1password
 # zinit snippet OMZP::tmux
-# zinit snippet OMZP::vi-mode
-# zinit snippet OMZP::vscode      # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/vscode
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
