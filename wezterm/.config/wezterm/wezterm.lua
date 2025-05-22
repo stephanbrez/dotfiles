@@ -30,7 +30,7 @@
 local wezterm = require("wezterm")
 local mux = wezterm.mux
 local cycle_theme = require("cycle_theme")
-local theme = wezterm.plugin.require("https://github.com/neapsix/wezterm").dawn
+-- local theme = wezterm.plugin.require("https://github.com/neapsix/wezterm").dawn
 local act = wezterm.action
 
 -- Automatically match schemes based on OS settings
@@ -43,9 +43,11 @@ end
 
 function Scheme_for_appearance(appearance)
 	if appearance:find("Dark") then
-		return "Rosé Pine Moon (base16)"
+		return "One Light (base16)"
+		-- return "Rosé Pine Moon (base16)"
 	else
-		return "Rosé Pine Dawn (base16)"
+		return "OneDark (base16)"
+		-- return "Rosé Pine Dawn (base16)"
 	end
 end
 
@@ -133,20 +135,23 @@ end) --
 --
 --
 -- Auto light/dark mode:
-config.colors = theme.colors()
+-- config.color_scheme = "Everforest Light (Gogh)"
+config.color_scheme = "Zenbones"
+-- config.color_scheme = "Monokai (light) (terminal.sexy)"
+-- config.colors = theme.colors()
 -- config.color_scheme = Scheme_for_appearance(get_appearance())
 
 -- Keybindings
 config.enable_kitty_keyboard = true
 config.keys = {
 	-- Tabs
-	{
-		key = "t",
-		mods = "SUPER|META",
-		action = wezterm.action_callback(function(window, pane)
-			cycle_theme.theme_switcher(window, pane)
-		end),
-	},
+	-- {
+	-- 	key = "t",
+	-- 	mods = "SUPER|META",
+	-- 	action = wezterm.action_callback(function(window, pane)
+	-- 		cycle_theme.theme_switcher(window, pane)
+	-- 	end),
+	-- },
 	-- Rename tab
 	{
 		key = "e",
