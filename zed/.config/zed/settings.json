@@ -12,17 +12,21 @@
       "host": "populus.birchcrown.com",
       "projects": [
         {
-          "paths": [
-            "~/.local/src/pytorch_tuts"
-          ]
+          "paths": ["~/.local/src/pytorch_tuts"]
         }
       ]
     }
   ],
-  "assistant": {
+  // ========== AI ==========
+  "agent": {
+    "inline_assistant_model": {
+      "provider": "zed.dev",
+      "model": "claude-3-7-sonnet-latest"
+    },
+    "default_profile": "write",
     "default_model": {
       "provider": "zed.dev",
-      "model": "claude-3-5-sonnet-latest"
+      "model": "claude-3-7-sonnet-latest"
     },
     "version": "2"
   },
@@ -64,14 +68,37 @@
       "fz": ""
     }
   },
-  "autosave": "on_window_change",
-  "tab_size": 2,
+  "autosave": "on_focus_change",
+  "tab_size": 4,
+  "preferred_line_length": 80,
+  "soft_wrap": "bounded",
+  // ========== UI ==========
+  "active_pane_modifiers": {
+    "magnification": 1.0,
+    "border_size": 0.0,
+    "inactive_opacity": 0.9
+  },
+  "tabs": {
+    "close_position": "right",
+    "file_icons": true,
+    "git_status": false,
+    "activate_on_close": "history",
+    "show_close_button": "hover",
+    "show_diagnostics": "off"
+  },
+  "indent_guides": {
+    "enabled": true,
+    "line_width": 1,
+    "active_line_width": 2,
+    "coloring": "indent_aware"
+    //    "background_coloring": "indent_aware"
+  },
   "ui_font_size": 16,
   "buffer_font_family": "DejaVuSansM Nerd Font Mono",
   "buffer_font_size": 16,
   "theme": {
     "mode": "system",
-    "light": "Rosé Pine Dawn",
+    "light": "Mariana Breakers",
     "dark": "One Dark"
   }
 }
