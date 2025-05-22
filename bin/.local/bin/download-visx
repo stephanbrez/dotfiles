@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Written by symmetricalboy - https://community.firebasestudio.dev/u/symmetricalboy
+# Usage: ./download-vsix.sh publisher.extension
+
+# Check if an extension ID is provided as an argument
+if [ -z "$1" ]; then
+	echo "Usage: $0 <extension_id>"
+	exit 1
+fi
+extension_id="$1"
+
+publisher=$(echo "$extension_id" | cut -d'.' -f1)
+extension=$(echo "$extension_id" | cut -d'.' -f2)
+download_url="https://${publisher}.gallery.vsassets.io/_apis/public/gallery/publisher/${publisher}/extension/${extension}/latest/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage"
+
+# Construct the filename with the extension ID
+vsix_filename="${extension_id}.vsix"
+vsix_filepath="./$vsix_filename"
+
+# Download the VSIX file using the constructed URL, overwriting if it exists
+curl -L -o "$vsix_filepath" "$download_url"
+echo "Downloaded $vsix_filepath"
+
+# Install the VSIX using the 'code' command
+codium --install-extension "$vsix_filepath"
+
+echo "Installed $extension_name extension"
+rm "$vsix_filepath"
