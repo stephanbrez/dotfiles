@@ -21,12 +21,12 @@
   "agent": {
     "inline_assistant_model": {
       "provider": "zed.dev",
-      "model": "claude-3-7-sonnet-latest"
+      "model": "claude-sonnet-4-latest"
     },
     "default_profile": "write",
     "default_model": {
       "provider": "zed.dev",
-      "model": "claude-3-7-sonnet-latest"
+      "model": "claude-sonnet-4-thinking-latest"
     },
     "version": "2"
   },
