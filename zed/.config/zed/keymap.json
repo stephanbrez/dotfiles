@@ -6,52 +6,60 @@
 // To see the default key bindings run `zed: open default keymap`
 // from the command palette.
 [
-  {
-    "context": "Workspace",
-    "bindings": {
-      // "shift shift": "file_finder::Toggle"
+    {
+        "context": "Workspace",
+        "bindings": {
+            // "shift shift": "file_finder::Toggle"
+        }
+    },
+    {
+        "context": "Editor",
+        "bindings": {
+            // "j k": ["workspace::SendKeystrokes", "escape"]
+        }
+    },
+    {
+        "context": "Dock",
+        "bindings": {
+            "ctrl-w h": "workspace::ActivatePaneLeft",
+            "ctrl-w l": "workspace::ActivatePaneRight",
+            "ctrl-w k": "workspace::ActivatePaneUp",
+            "ctrl-w j": "workspace::ActivatePaneDown"
+            // ... or other keybindings
+        }
+    },
+    {
+        "context": "VimControl && !menu",
+        "bindings": {
+            // Put key bindings here if you want them to work in normal & visual mode.
+            "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
+            "alt-k": "vim::LineUp",
+            "alt-j": "vim::LineDown",
+            "x": "editor::Cut",
+            "d": "editor::Delete", // override default behavior to bypass clipboard
+            "d d": "editor::DeleteLine"
+        }
+    },
+    {
+        "context": "vim_mode == normal && !menu",
+        "bindings": {}
+    },
+    {
+        "context": "vim_mode == visual && !menu",
+        "bindings": {}
+    },
+    {
+        "context": "vim_mode == insert",
+        "bindings": {
+            // "j k": "vim::NormalBefore" // In insert mode, make jk escape to normal mode.
+        }
+    },
+    {
+        "context": "EmptyPane || SharedScreen",
+        "bindings": {
+            // Put key bindings here (in addition to the context above) if you want them to
+            // work when no editor exists.
+            // "space f": "file_finder::Toggle"
+        }
     }
-  },
-  {
-    "context": "Editor",
-    "bindings": {
-      // "j k": ["workspace::SendKeystrokes", "escape"]
-    }
-  },
-  {
-    "context": "Dock",
-    "bindings": {
-      "ctrl-w h": ["workspace::ActivatePaneInDirection", "Left"],
-      "ctrl-w l": ["workspace::ActivatePaneInDirection", "Right"],
-      "ctrl-w k": ["workspace::ActivatePaneInDirection", "Up"],
-      "ctrl-w j": ["workspace::ActivatePaneInDirection", "Down"]
-      // ... or other keybindings
-    }
-  },
-  {
-    "context": "VimControl && !menu",
-    "bindings": {
-      // Put key bindings here if you want them to work in normal & visual mode.
-    }
-  },
-  {
-    "context": "vim_mode == normal && !menu",
-    "bindings": {
-      "shift-y": ["workspace::SendKeystrokes", "y $"] // Use neovim's yank behavior: yank to end of line.
-    }
-  },
-  {
-    "context": "vim_mode == insert",
-    "bindings": {
-      // "j k": "vim::NormalBefore" // In insert mode, make jk escape to normal mode.
-    }
-  },
-  {
-    "context": "EmptyPane || SharedScreen",
-    "bindings": {
-      // Put key bindings here (in addition to the context above) if you want them to
-      // work when no editor exists.
-      // "space f": "file_finder::Toggle"
-    }
-  }
 ]
