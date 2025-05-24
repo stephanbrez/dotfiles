@@ -71,6 +71,11 @@ export PATH="/usr/local/bin:/opt/nvim/:$PATH"
 # export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
 # export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 # export CARGO_HOME="$XDG_DATA_HOME/cargo"
+export JUPYTER_CONFIG_DIR="$XDG_CONFIG_HOME/jupyter"
+export CONDA_ROOT="/opt/conda/";
+export CONDA_EXE="$CONDA_ROOT/bin/conda";
+export MAMBA_EXE="$CONDA_ROOT/bin/mamba";
+export MAMBA_ROOT_PREFIX="$XDG_DATA_HOME/conda";
 # export GOPATH="$XDG_DATA_HOME/go"
 # export GOBIN="$GOPATH/bin"
 # export GOMODCACHE="$XDG_CACHE_HOME/go/mod"
@@ -90,9 +95,6 @@ export PATH="/usr/local/bin:/opt/nvim/:$PATH"
 
 # ======== 1Password ======== #
 export SSH_AUTH_SOCK=~/.1password/agent.sock
-
-# ======== auto-py-env ======== #
-
 
 # ======== emoji-fzf ======== #
 # Path to the emoji-fzf executable
