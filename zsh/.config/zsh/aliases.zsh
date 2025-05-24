@@ -385,15 +385,16 @@ alias uvrms="uv remove --script"        # Remove a dependency from a script
 
 # Projects
 # Creating and working on Python projects, i.e., with a pyproject.toml.
-alias uvi="uv init"                 # Create a new Python project
-alias uva="uv add"                  # Add a dependency to the project
-alias uvrm="uv remove"              # Remove a dependency from the project
-alias uvs="uv sync"                 # Sync the project's dependencies with the environment
-alias uvl="uv lock"                 # Create a lockfile for the project's dependencies
-# alias uv14="uv run"               # Run a command in the project environment
-alias uvt="uv tree"                 # View the dependency tree for the project
-alias uvb="uv build"                # Build the project into distribution archives
-alias uvp="uv publish"              # Publish the project to a package index
+alias uvi="uv init"                     # Create a new Python project
+alias uva="uv add"                      # Add a dependency to the project
+alias uvrm="uv remove"                  # Remove a dependency from the project
+alias uvs="uv sync"                     # Sync the project's dependencies with the environment
+alias uvl="uv lock"                     # Create a lockfile for the project's dependencies
+alias uvup="uv lock --upgrade-package"  # Upgrade a specific package while keeping the rest of the environment locked
+# alias uv14="uv run"                   # Run a command in the project environment
+alias uvt="uv tree"                     # View the dependency tree for the project
+alias uvb="uv build"                    # Build the project into distribution archives
+alias uvp="uv publish"                  # Publish the project to a package index
 
 # Tools
 # Running and installing tools published to Python package indexes, e.g., ruff or black.
