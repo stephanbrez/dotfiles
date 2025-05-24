@@ -35,14 +35,15 @@
             "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
             "alt-k": "vim::LineUp",
             "alt-j": "vim::LineDown",
-            "x": "editor::Cut",
-            "d": "editor::Delete", // override default behavior to bypass clipboard
-            "d d": "editor::DeleteLine"
+            "x x": "editor::Cut", // Cut line
+            "d d": "editor::DeleteLine" // Delete line without clipboard
         }
     },
     {
         "context": "vim_mode == normal && !menu",
-        "bindings": {}
+        "bindings": {
+            "x": ["workspace::SendKeystrokes", "v x"] // Cut character
+        }
     },
     {
         "context": "vim_mode == visual && !menu",
