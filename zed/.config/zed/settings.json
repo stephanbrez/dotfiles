@@ -7,98 +7,98 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "ssh_connections": [
-    {
-      "host": "populus.birchcrown.com",
-      "projects": [
+    "ssh_connections": [
         {
-          "paths": ["~/.local/src/pytorch_tuts"]
+            "host": "populus.birchcrown.com",
+            "projects": [
+                {
+                    "paths": ["~/.local/src/pytorch_tuts"]
+                }
+            ]
         }
-      ]
-    }
-  ],
-  // ========== AI ==========
-  "agent": {
-    "inline_assistant_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4-latest"
-    },
-    "default_profile": "write",
-    "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4-thinking-latest"
-    },
-    "version": "2"
-  },
-  "language_models": {
-    "ollama": {
-      "api_url": "http://192.168.20.10:11434",
-      "available_models": [
-        {
-          "name": "codestral:latest",
-          "display_name": "codestral 32K",
-          "keep_alive": "120s",
-          "max_tokens": 32768
+    ],
+    // ========== AI ==========
+    "agent": {
+        "inline_assistant_model": {
+            "provider": "zed.dev",
+            "model": "claude-sonnet-4-latest"
         },
-        {
-          "name": "deepseek-r1:32b",
-          "display_name": "deepseek-R1-Distill-Qwen32B 32K",
-          "keep_alive": "120s",
-          "max_tokens": 32768
+        "default_profile": "write",
+        "default_model": {
+            "provider": "zed.dev",
+            "model": "claude-sonnet-4-latest"
         },
-        {
-          "name": "qwen2.5-coder",
-          "display_name": "qwen 2.5 coder 32K",
-          "keep_alive": "120s",
-          "max_tokens": 32768
+        "version": "2"
+    },
+    "language_models": {
+        "ollama": {
+            "api_url": "http://populus.birchcrown.com:11434",
+            "available_models": [
+                {
+                    "name": "codestral:latest",
+                    "display_name": "codestral 32K",
+                    "keep_alive": "120s",
+                    "max_tokens": 32768
+                },
+                {
+                    "name": "deepseek-r1:32b",
+                    "display_name": "deepseek-R1-Distill-Qwen32B 32K",
+                    "keep_alive": "120s",
+                    "max_tokens": 32768
+                },
+                {
+                    "name": "qwen2.5-coder",
+                    "display_name": "qwen 2.5 coder 32K",
+                    "keep_alive": "120s",
+                    "max_tokens": 32768
+                }
+            ]
         }
-      ]
+    },
+    "features": {
+        // "inline_completion_provider": "supermaven"
+    },
+    "telemetry": {
+        "metrics": false
+    },
+    "vim_mode": true,
+    "vim": {
+        "toggle_relative_line_numbers": true,
+        "custom_digraphs": {
+            "fz": ""
+        }
+    },
+    "autosave": "on_focus_change",
+    "tab_size": 4,
+    "preferred_line_length": 80,
+    "soft_wrap": "bounded",
+    // ========== UI ==========
+    "active_pane_modifiers": {
+        "magnification": 1.0,
+        "border_size": 0.0,
+        "inactive_opacity": 0.9
+    },
+    "tabs": {
+        "close_position": "right",
+        "file_icons": true,
+        "git_status": false,
+        "activate_on_close": "history",
+        "show_close_button": "hover",
+        "show_diagnostics": "off"
+    },
+    "indent_guides": {
+        "enabled": true,
+        "line_width": 1,
+        "active_line_width": 2,
+        "coloring": "indent_aware",
+        "background_coloring": "indent_aware"
+    },
+    "ui_font_size": 16,
+    "buffer_font_family": "DejaVuSansM Nerd Font Mono",
+    "buffer_font_size": 16,
+    "theme": {
+        "mode": "system",
+        "light": "Mariana Breakers",
+        "dark": "One Dark"
     }
-  },
-  "features": {
-    // "inline_completion_provider": "supermaven"
-  },
-  "telemetry": {
-    "metrics": false
-  },
-  "vim_mode": true,
-  "vim": {
-    "toggle_relative_line_numbers": true,
-    "custom_digraphs": {
-      "fz": ""
-    }
-  },
-  "autosave": "on_focus_change",
-  "tab_size": 4,
-  "preferred_line_length": 80,
-  "soft_wrap": "bounded",
-  // ========== UI ==========
-  "active_pane_modifiers": {
-    "magnification": 1.0,
-    "border_size": 0.0,
-    "inactive_opacity": 0.9
-  },
-  "tabs": {
-    "close_position": "right",
-    "file_icons": true,
-    "git_status": false,
-    "activate_on_close": "history",
-    "show_close_button": "hover",
-    "show_diagnostics": "off"
-  },
-  "indent_guides": {
-    "enabled": true,
-    "line_width": 1,
-    "active_line_width": 2,
-    "coloring": "indent_aware"
-    //    "background_coloring": "indent_aware"
-  },
-  "ui_font_size": 16,
-  "buffer_font_family": "DejaVuSansM Nerd Font Mono",
-  "buffer_font_size": 16,
-  "theme": {
-    "mode": "system",
-    "light": "Mariana Breakers",
-    "dark": "One Dark"
-  }
 }
