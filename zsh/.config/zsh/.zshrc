@@ -220,6 +220,10 @@ zinit light starship/starship
 # Thefuck
 eval $(thefuck --alias fuck)
 
+# ======== uv ======== #
+# uv completions
+eval $(uv generate-shell-completion zsh)
+
 # ======== zoxide ======== #
 # init & replace cd
 # For completions to work, this must be added after compinit is called
