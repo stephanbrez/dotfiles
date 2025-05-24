@@ -303,6 +303,12 @@ alias dcpull='docker-compose pull'     # Pull image of a service
 alias dcstart='docker-compose start'   # Start a container
 alias dck='docker-compose kill'       # Kills containers
 
+# Emoji FZF
+alias emojifzf="fzf --preview 'echo {} | emoji -s' --preview-window=down:50%:wrap --bind 'ctrl-y:execute-silent(echo {} | xsel --clipboard --input)+abort'"
+alias emojicat='emoji | xsel | xargs cat'
+alias emoj="emoji-fzf preview --prepend | fzf | awk '{ print \$1 }'"
+alias emo='emoji | xsel -b'
+
 # Git #
 function g() { git $1 }             # Shorten git 
 alias gb="git branch"
@@ -373,15 +379,15 @@ alias uvpyd="uv python dir"             # Show the uv installed Python versions 
 
 # Scripts
 # Executing standalone Python scripts, e.g., example.py.
-alias uv6="uv run"                      # Run a script
+alias uvr="uv run"                      # Run a script
 alias uvas="uv add --script"            # Add a dependency to a script
-alias uvrs="uv remove --script"         # Remove a dependency from a script
+alias uvrms="uv remove --script"        # Remove a dependency from a script
 
 # Projects
 # Creating and working on Python projects, i.e., with a pyproject.toml.
 alias uvi="uv init"                 # Create a new Python project
 alias uva="uv add"                  # Add a dependency to the project
-alias uvr="uv remove"               # Remove a dependency from the project
+alias uvrm="uv remove"              # Remove a dependency from the project
 alias uvs="uv sync"                 # Sync the project's dependencies with the environment
 alias uvl="uv lock"                 # Create a lockfile for the project's dependencies
 # alias uv14="uv run"               # Run a command in the project environment
