@@ -136,7 +136,7 @@ alias p="ps -f"                       # Display current processes
 # -----------------
 alias -g H="| head"               # Pipes output to head which outputs the first part of a file
 alias -g T="| tail"               # Pipes output to tail which outputs the last part of a file
-alias -g G="| grep"               # Pipes output to grep to search for some word
+alias -g G="| rg"                 # Pipes output to ripgrep to search for some word
 alias -g L="| less"               # Pipes output to less, useful for paging
 alias -g M="| most"               # Pipes output to more, useful for paging
 alias -g LL="2>&1 | less"         # Writes stderr to stdout and passes it to less
