@@ -24,7 +24,8 @@
             "ctrl-w h": "workspace::ActivatePaneLeft",
             "ctrl-w l": "workspace::ActivatePaneRight",
             "ctrl-w k": "workspace::ActivatePaneUp",
-            "ctrl-w j": "workspace::ActivatePaneDown"
+            "ctrl-w j": "workspace::ActivatePaneDown",
+            "ctrl-w t": "terminal_panel::ToggleFocus"
             // ... or other keybindings
         }
     },
@@ -32,9 +33,18 @@
         "context": "VimControl && !menu",
         "bindings": {
             // Put key bindings here if you want them to work in normal & visual mode.
+            // AI
+            "ctrl-y": "agent::Keep",
+            "ctrl-n": "agent::Reject",
+            "ctrl-shift-y": "agent::KeepAll",
+            "ctrl-shift-n": "agent::RejectAll",
+            "shift-ctrl-r": "agent::OpenAgentDiff",
+            // Buffers
+            "space b": "tab_switcher::Toggle",
+            // Editor
             "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
-            "alt-k": "vim::LineUp",
-            "alt-j": "vim::LineDown",
+            "alt-k": "editor::MoveLineUp",
+            "alt-j": "editor::MoveLineDown",
             "x x": "editor::Cut", // Cut line
             "d d": "editor::DeleteLine" // Delete line without clipboard
         }
@@ -47,7 +57,9 @@
     },
     {
         "context": "vim_mode == visual && !menu",
-        "bindings": {}
+        "bindings": {
+            "d": "editor::Delete"
+        }
     },
     {
         "context": "vim_mode == insert",
