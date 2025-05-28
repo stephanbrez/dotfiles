@@ -72,6 +72,24 @@
     "tab_size": 4,
     "preferred_line_length": 80,
     "soft_wrap": "bounded",
+    // ========== Git ==========
+    "git": {
+        "inline_blame": {
+            "enabled": true,
+            "min_column": 80
+        }
+    },
+    // ========== LSP ==========
+    "languages": {
+        "Python": {
+            "language_servers": ["pyright", "pylsp"]
+        },
+        "Markdown": {}
+    },
+    // ========== Terminal ==========
+    "terminal": {
+        "font_family": "DejaVuSansM Nerd Font Mono"
+    },
     // ========== UI ==========
     "active_pane_modifiers": {
         "magnification": 1.0,
@@ -93,12 +111,37 @@
         "coloring": "indent_aware",
         "background_coloring": "indent_aware"
     },
+    "wrap_guides": [80],
+    "show_wrap_guides": true,
     "ui_font_size": 16,
+    "ui_font_features": {
+        "calt": true
+    },
     "buffer_font_family": "DejaVuSansM Nerd Font Mono",
     "buffer_font_size": 16,
     "theme": {
         "mode": "system",
         "light": "Mariana Breakers",
         "dark": "One Dark"
+    },
+    "diagnostics": {
+        "include_warnings": true,
+        "inline": {
+            "enabled": true,
+            "update_debounce_ms": 150,
+            "padding": 4,
+            "min_column": 80,
+            "max_severity": null
+        }
+    },
+    "inlay_hints": {
+        "enabled": false,
+        "show_type_hints": true,
+        "show_parameter_hints": true,
+        "show_other_hints": true,
+        "show_background": false,
+        "edit_debounce_ms": 700,
+        "scroll_debounce_ms": 50,
+        "toggle_on_modifiers_press": null
     }
 }
