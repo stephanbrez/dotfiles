@@ -122,6 +122,7 @@ alias reload="exec zsh -l"  	# Reload zsh config
 alias sudo="sudo -v; sudo "		# Make sudo work with aliases & refresh the password timeout
 alias root="sudo -i"			# Switch to root user
 alias ffs="sudo !!"			# Rerun prev command with sudo 
+alias ffa="!:0"                # Rerun prev command without arguments
 alias grep="grep --color=auto"		# Colorize Grep output
 alias ff="find . -type f -name"		# Find a file with name 
 alias fdir="find . -type d -name"	# Find a directory with name
@@ -160,7 +161,7 @@ if [[ $OSTYPE == darwin* ]]; then
 else
   alias update="sudo apt update && sudo apt upgrade -y && flatpak update -y" 
 fi
-# Apt
+# --- Apt ---
 alias aptcs='apt-cache search'
 alias apti='sudo apt install'
 alias aptr='sudo apt remove'
@@ -170,11 +171,11 @@ alias aptsh='sudo apt show'
 alias aptu='sudo apt update'
 alias aptuu='sudo apt update;sudo apt upgrade;'
 
-# Default programs #
+# --- Default programs ---
 alias -s txt=nvim             # Open txt files with nvim
 # alias vi='vim'                  # Open vim instead of vi
 
-# Archives #
+# --- Archives ---
 # List contents
 alias zipl="unzip -l"           # List zip contents
 alias rarl="unrar l"            # List rar contents
@@ -184,7 +185,7 @@ alias acel="unace l"                # List ace contents
 alias extr="extract"                # functions.zsh
 alias extrr='extract_and_remove '   # functions.zsh
 
-# Anaconda #
+# --- Anaconda ---
 alias ca="conda activate"                      # Activate the specified conda environment
 alias cab="conda activate base"                # Activate the base conda environment
 alias ccf="conda env create -f"                 # Create a new conda environment from a YAML file
@@ -244,7 +245,7 @@ alias mua="mamba update --all"                 # Update all installed packages
 alias mue="mamba env update"                   # Update the current environment
 alias muc="mamba update mamba"                 # Update mamba package manager
 
-# Docker #
+# --- Docker ---
 alias dbl='docker build'            # Build an image from a Dockerfile
 alias dcin='docker container inspect'  # Display detailed information on one or more containers
 alias dcls='docker container ls'     # List all the running docker containers
@@ -282,7 +283,7 @@ alias dvprune='docker volume prune'   # Cleanup dangling volumes
 alias dxc='docker container exec'     # Run a new command in a running container
 alias dxcit='docker container exec -it' # Run a new command in a running container in an interactive shell
 
-# Docker Compose #
+# --- Docker Compose ---
 alias dc='docker-compose'             # Docker-compose main command
 alias dcb='docker-compose build'      # Build containers
 alias dce='docker-compose exec'       # Execute command inside a container
@@ -303,13 +304,13 @@ alias dcpull='docker-compose pull'     # Pull image of a service
 alias dcstart='docker-compose start'   # Start a container
 alias dck='docker-compose kill'       # Kills containers
 
-# Emoji FZF
+# --- Emoji FZF ---
 alias emojifzf="fzf --preview 'echo {} | emoji -s' --preview-window=down:50%:wrap --bind 'ctrl-y:execute-silent(echo {} | xsel --clipboard --input)+abort'"
 alias emojicat='emoji | xsel | xargs cat'
 alias emoj="emoji-fzf preview --prepend | fzf | awk '{ print \$1 }'"
 alias emo='emoji | xsel -b'
 
-# Git #
+# --- Git ---
 function g() { git $1 }             # Shorten git 
 alias gb="git branch"
 alias gc="git commit -m"
@@ -336,28 +337,28 @@ function gacp() {
   git push
 }
 
-# Jupyter #
+# --- Jupyter ---
 alias jn="jupyter notebook"
 alias ipyk-install='python -m ipykernel install --user --name="$(basename "$CONDA_PREFIX")" --display-name="Python ($(basename "$CONDA_PREFIX"))"'
 # More in $ZDOTDIR/functions.zsh
 
-# Lazygit
+# --- Lazygit ---
 alias lg='lazygit'                # Open lazygit
 
-# Neovim/vim #
+# --- Neovim/vim ---
 alias nv='nvim'                   # Open neovim
 alias nvf='nvim -o `fzf`'         # Edit file by fuzzy search
 alias sv='sudo vi'                # Open vi as sudo
 
-# openvpn
+# --- openvpn ---
 alias ovpnstop="openvpn3 session-manage --disconnect"
 alias ovpnc="1password && openvpn3 session-start --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn"
 alias ovpnd="openvpn3 session-manage --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn --disconnect"
 
-# PKM #
+# --- PKM ---
 alias pkm="cd ~/Documents/BC_PKM/ && nv"
 
-#ssh
+# --- ssh ---
 alias sshkey="cat ~/.ssh/id_rsa.pub"                    # View ssh key
 alias sshcfg="vi ~/.ssh/config"                         # Edit ssh key
 alias sshcpkey='command cat ~/.ssh/id_rsa.pub | pbcopy' # Copy ssh key
@@ -365,10 +366,10 @@ alias sshcpkey='command cat ~/.ssh/id_rsa.pub | pbcopy' # Copy ssh key
 #tdf
 alias tdf="tdfgo fonts -vp"                 # Find & preview fonts in tdfgo
 
-# tmux
+# --- tmux ---
 alias tn="tmux new -s $(pwd | sed 's/.*\///g')"         # New session named after current path 
 
-# uv
+# --- uv ---
 # Installing and managing Python itself.
 alias uvpyi="uv python install"         # Install Python versions
 alias uvpyl="uv python list"            # View available Python versions
@@ -431,5 +432,11 @@ alias uvcd="uv cache dir"             # Show the uv cache directory path
 alias uvu="uv self update"           # Update uv to the latest version
 
 
-# Utils
+# --- Utils ---
 alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
+
+# --- Wezterm ---
+alias wts="wezterm cli spawn --domain-name SSHMUX:"     # Connect to a remote host in a new tab
+alias wtssh="wezterm connect SSHMUX:"                   # Connect to a remote host in a new window
+alias wtd="wezterm disconnect"                          # Disconnect from a wezterm session
+
