@@ -253,18 +253,6 @@ config.keys = {
 	},
 }
 --
--- SSH
-config.ssh_domains = {
-	{
-		-- This name identifies the domain
-		name = "populus",
-		-- The hostname or address to connect to. Will be used to match settings
-		-- from your ssh config file
-		remote_address = "populus.birchcrown.com",
-		-- The username to use on the remote host
-		username = "stephan",
-	},
-}
 -- end config
 
 -- Maximize the window on startup
