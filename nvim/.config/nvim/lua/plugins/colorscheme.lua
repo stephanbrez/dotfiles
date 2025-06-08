@@ -1,6 +1,20 @@
 return {
   -- add gruvbox
   -- { "ellisonleao/gruvbox.nvim" },
+  {
+    "zenbones-theme/zenbones.nvim",
+    -- Optionally install Lush. Allows for more configuration or extending the colorscheme
+    -- If you don't want to install lush, make sure to set g:zenbones_compat = 1
+    -- In Vim, compat mode is turned on as Lush only works in Neovim.
+    dependencies = "rktjmp/lush.nvim",
+    lazy = false,
+    priority = 1000,
+    -- you can set set configuration options here
+    config = function()
+      --     vim.g.zenbones_darken_comments = 45
+      vim.cmd.colorscheme("forestbones")
+    end,
+  },
   { "rose-pine/neovim", name = "rose-pine", dark_variant = "moon" },
   { "sainnhe/gruvbox-material" },
   {
@@ -27,26 +41,12 @@ return {
     end,
   },
   {
-    "zenbones-theme/zenbones.nvim",
-    -- Optionally install Lush. Allows for more configuration or extending the colorscheme
-    -- If you don't want to install lush, make sure to set g:zenbones_compat = 1
-    -- In Vim, compat mode is turned on as Lush only works in Neovim.
-    dependencies = "rktjmp/lush.nvim",
-    lazy = false,
-    priority = 1000,
-    -- you can set set configuration options here
+    "loctvl842/monokai-pro.nvim",
+    priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
-      --     vim.g.zenbones_darken_comments = 45
-      vim.cmd.colorscheme("forestbones")
+      require("monokai-pro").setup()
     end,
-  },
-  -- {
-  --   "loctvl842/monokai-pro.nvim",
-  --   priority = 1000, -- make sure to load this before all the other start plugins
-  --   config = function()
-  --     require("monokai-pro").setup()
-  --   end,
-  -- }, -- set LazyVim theme
+  }, -- set LazyVim theme
   {
     "LazyVim/LazyVim",
     opts = {

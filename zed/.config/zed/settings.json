@@ -8,15 +8,22 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
     "ssh_connections": [
+    {
+      "host": "populus.birchcrown.com",
+      "projects": [
         {
-            "host": "populus.birchcrown.com",
-            "projects": [
-                {
-                    "paths": ["~/.local/src/pytorch_tuts"]
-                }
-            ]
+          "paths": [
+            "/home/stephan/.local/src/3d-reconstruction-from-monocular-multi-food-images"
+          ]
+        },
+        {
+          "paths": [
+            "~/.local/src/pytorch_tuts"
+          ]
         }
-    ],
+      ]
+    }
+  ],
     // ========== AI ==========
     "agent": {
         "inline_assistant_model": {
