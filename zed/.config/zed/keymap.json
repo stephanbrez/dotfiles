@@ -40,8 +40,12 @@
             "ctrl-shift-n": "agent::RejectAll",
             "shift-ctrl-r": "agent::OpenAgentDiff",
             // Buffers
-            "space b": "tab_switcher::Toggle",
+            "space ,": "tab_switcher::Toggle",
+            // Files
+            "space f": "file_finder::Toggle",
+            "space e": "project_panel::ToggleFocus",
             // Editor
+            "space o": "outline::Toggle",
             "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
             "alt-k": "editor::MoveLineUp",
             "alt-j": "editor::MoveLineDown",
@@ -58,7 +62,8 @@
     {
         "context": "vim_mode == visual && !menu",
         "bindings": {
-            "d": "editor::Delete"
+            "d": "editor::Delete",
+            "shift-p": ["vim::Paste", { "preserve_clipboard": false }] // Paste without adding selection to clipboard
         }
     },
     {
