@@ -436,7 +436,6 @@ alias uvu="uv self update"           # Update uv to the latest version
 alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
 
 # --- Wezterm ---
-alias wts="wezterm cli spawn --domain-name SSHMUX:"     # Connect to a remote host from .ssh/config file in a new tab
 alias wtc="wezterm connect --new-tab "                  # Connect to a remote host from .wezterm.lua file in a new tab
 alias wtd="wezterm disconnect"                          # Disconnect from a wezterm session
 
