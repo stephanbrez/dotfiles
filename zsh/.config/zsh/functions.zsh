@@ -60,6 +60,13 @@ function ipyki() {
   python -m ipykernel install --user --name=$1 --display-name="Python ($1)"
 }
 
+# Wezterm
+# Connect to a remote host from .ssh/config file in a new tab
+function wts() {
+    wezterm cli spawn --domain-name SSHMUX:$1
+}
+
+
 # yazi
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
