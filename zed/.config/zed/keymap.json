@@ -62,8 +62,7 @@
     {
         "context": "vim_mode == visual && !menu",
         "bindings": {
-            "d": "editor::Delete",
-            "shift-p": ["vim::Paste", { "preserve_clipboard": false }] // Paste without adding selection to clipboard
+            "d": "editor::Delete"
         }
     },
     {
