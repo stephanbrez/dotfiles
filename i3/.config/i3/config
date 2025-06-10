@@ -350,6 +350,6 @@ include $HOME/.local/share/themes/rose-pine/i3/rose-pine-dawn.theme
 # client.urgent           $u-bgcolor      $u-bgcolor      $text           $u-bgcolor
 
 # Display Wallpaper
-exec_always feh --bg-max --image-bg "#191724" $HOME/.local/share/themes/rose-pine/wallpapers-main/rose_pine_shape.png
+exec_always feh --bg-max --image-bg "#faf4ed" $HOME/.local/share/themes/rose-pine/wallpapers-main/leafy-dawn.png
 
 
