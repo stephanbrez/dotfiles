@@ -45,7 +45,7 @@
             "space f": "file_finder::Toggle",
             "space e": "project_panel::ToggleFocus",
             // Editor
-            "space o": "outline::Toggle",
+            "space o": "outline_panel::ToggleFocus", // Toggle outline panel
             "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
             "alt-k": "editor::MoveLineUp",
             "alt-j": "editor::MoveLineDown",
