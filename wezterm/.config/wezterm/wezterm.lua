@@ -136,7 +136,7 @@ end) --
 --
 -- Auto light/dark mode:
 -- config.color_scheme = "Everforest Light (Gogh)"
-config.color_scheme = "Zenbones"
+config.color_scheme = "Seoulbones_light"
 -- config.color_scheme = "Monokai (light) (terminal.sexy)"
 -- config.colors = theme.colors()
 -- config.color_scheme = Scheme_for_appearance(get_appearance())
