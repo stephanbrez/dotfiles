@@ -48,6 +48,13 @@ alias lb="lsblk -fp"              # List all block devices
 alias lcf="rename 'y/A-Z/a-z/' "  # Rename uppercase to lowercase
 alias ucf="rename 'y/a-z/A-Z/' "  # Rename lowercase to uppercase
 
+# alias chmod commands
+alias 000='chmod -R 000'
+alias 644='chmod -R 644'
+alias 666='chmod -R 666'
+alias 755='chmod -R 755'
+alias 777='chmod -R 777'
+
 # ** Uncomment if not using eza ** #
 # alias l="ls -lFh"                 # List files as a long list, show size, type, human-readable
 # alias la="ls -GhAlF"              # List almost all files as a long list show size, type, human-readable 
