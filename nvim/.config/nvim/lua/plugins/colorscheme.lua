@@ -17,36 +17,36 @@ return {
   },
   { "rose-pine/neovim", name = "rose-pine", dark_variant = "moon" },
   { "sainnhe/gruvbox-material" },
-  {
-    "sainnhe/everforest",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      -- Optionally configure and load the colorscheme
-      -- directly inside the plugin declaration.
-      vim.g.everforest_enable_italic = true
-      vim.g.everforest_background = "hard"
-      vim.cmd.colorscheme("everforest")
-    end,
-  },
-  {
-    "navarasu/onedark.nvim",
-    priority = 1000, -- make sure to load this before all the other start plugins
-    config = function()
-      require("onedark").setup({
-        style = "darker",
-      })
-      -- Enable theme
-      -- require("onedark").load()
-    end,
-  },
-  {
-    "loctvl842/monokai-pro.nvim",
-    priority = 1000, -- make sure to load this before all the other start plugins
-    config = function()
-      require("monokai-pro").setup()
-    end,
-  }, -- set LazyVim theme
+  -- {
+  --   "sainnhe/everforest",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     -- Optionally configure and load the colorscheme
+  --     -- directly inside the plugin declaration.
+  --     vim.g.everforest_enable_italic = true
+  --     vim.g.everforest_background = "hard"
+  --     vim.cmd.colorscheme("everforest")
+  --   end,
+  -- },
+  -- {
+  --   "navarasu/onedark.nvim",
+  --   priority = 1000, -- make sure to load this before all the other start plugins
+  --   config = function()
+  --     require("onedark").setup({
+  --       style = "darker",
+  --     })
+  --     -- Enable theme
+  --     -- require("onedark").load()
+  --   end,
+  -- },
+  -- {
+  --   "loctvl842/monokai-pro.nvim",
+  --   priority = 1000, -- make sure to load this before all the other start plugins
+  --   config = function()
+  --     require("monokai-pro").setup()
+  --   end,
+  -- }, -- set LazyVim theme
   {
     "LazyVim/LazyVim",
     opts = {
