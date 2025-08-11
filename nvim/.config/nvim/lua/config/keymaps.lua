@@ -6,7 +6,6 @@
 -- Navigation
 -- ###################
 -- vim.keymap.set("i", "<CR>", "<Esc>", { noremap = true, silent = true })
--- local wk = require("which-key")
 
 -- Center cursor after scroll
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
@@ -138,15 +137,6 @@ vim.keymap.set("n", "<leader>wr", rename_terminal, { desc = "Rename Terminal" })
 -- Markdown
 -- ###################
 
--- which-key menu groups
--- wk.add({
---     {
---         mode = { "n", "v" }, -- both normal and visual mode
---         { "<leader>m", group = "markdown", icon = { icon = " ", color = "red" } },
---         { "<leader>mh", group = "headings", icon = { icon = " ", color = "red" } },
---     },
--- })
-
 vim.keymap.set("n", "<leader>md", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle Markdown Preview" })
 
 -- ===== Text Formatting =====
@@ -270,10 +260,6 @@ vim.keymap.set("n", "<leader>Z", "<cmd>Zi<CR>", { desc = "Open Zoxide" })
 vim.keymap.set("n", "<leader>k", "<Plug>(bullets-toggle-checkbox)", { desc = "Toggle Checkbox" })
 
 -- Obsidian
--- wk.add({
---     { "<leader>o", group = "obsidian", mode = { "n", "v" }, icon = { icon = "󰂺 ", color = "blue" } },
--- })
-
 vim.keymap.set(
     "n",
     "<leader>oc",
@@ -293,10 +279,6 @@ vim.keymap.set("n", "<leader>os", "<cmd>ObsidianSearch<CR>", { desc = "Search Ob
 vim.keymap.set("n", "<leader>oq", "<cmd>ObsidianQuickSwitch<CR>", { desc = "Quick Switch" })
 
 -- Zen Mode
--- wk.add({
---     { "<leader>z", group = "zen-mode", icon = { icon = " ", color = "grey" } },
--- })
-
 vim.keymap.set("n", "<leader>zh", function()
     require("zen-mode").toggle({
         window = {
