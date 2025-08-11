@@ -13,20 +13,20 @@ vim.g.maplocalleader = " "
 -- ###################
 
 -- Window Management
-vim.keymap.set("n", "<leader>w", "<cmd>lua require('vscode').actionvim.('workbench.action.openWindow')<CR>",
+vim.keymap.set("n", "<leader>w", "<cmd>lua require('vscode').action('workbench.action.openWindow')<CR>",
     { desc = "Open window" })
 
 -- Window Navigation
-vim.keymap.set("n", "<C-h>", "<cmd>lua require('vscode').actionvim.('workbench.action.navigateLeft')<CR>",
+vim.keymap.set("n", "<C-h>", "<cmd>lua require('vscode').action('workbench.action.navigateLeft')<CR>",
     { desc = "Navigate left" })
-vim.keymap.set("n", "<C-l>", "<cmd>lua require('vscode').actionvim.('workbench.action.navigateRight')<CR>",
+vim.keymap.set("n", "<C-l>", "<cmd>lua require('vscode').action('workbench.action.navigateRight')<CR>",
     { desc = "Navigate right" })
 vim.keymap.set("n", "<C-j>", "<cmd>lua require('vscode').action('workbench.action.navigateDown')<CR>",
     { desc = "Navigate down" })
 vim.keymap.set("n", "<C-k>", "<cmd>lua require('vscode').action('workbench.action.navigateUp')<CR>",
     { desc = "Navigate up" })
 -- View Modes
-vim.keymap.set("n", "<leader>z", "<cmd>lua require('vscode').actionvim.('workbench.action.toggleZenMode')<CR>",
+vim.keymap.set("n", "<leader>z", "<cmd>lua require('vscode').action('workbench.action.toggleZenMode')<CR>",
     { desc = "Toggle zen mode" })
 
 -- Split Management
@@ -40,47 +40,48 @@ vim.keymap.set("n", "<leader>wc", "<cmd>lua require('vscode').action('workbench.
 -- Panel and Explorer Toggles
 vim.keymap.set("n", "<leader>up", "<cmd>lua require('vscode').action('workbench.action.togglePanel')<CR>",
     { desc = "Toggle panel" })
-vim.keymap.set("n", "<leader>u", "<cmd>lua require('vscode').actionvim.('workbench.action.toggleSidebarVisibility')<CR>",
+vim.keymap.set("n", "<leader>u", "<cmd>lua require('vscode').action('workbench.action.toggleSidebarVisibility')<CR>",
     { desc = "Toggle sidebar visibility" })
-vim.keymap.set("n", "<leader>u", "<cmd>lua require('vscode').actionvim.('workbench.action.toggleGlobalActivityBar')<CR>",
+vim.keymap.set("n", "<leader>u", "<cmd>lua require('vscode').action('workbench.action.toggleGlobalActivityBar')<CR>",
     { desc = "Toggle global activity bar" })
-vim.keymap.set("n", "<leader>e", "<cmd>lua require('vscode').actionvim.('workbench.files.action.focusFilesExplorer')<CR>",
+vim.keymap.set("n", "<leader>e", "<cmd>lua require('vscode').action('workbench.files.action.focusFilesExplorer')<CR>",
     { desc = "Focus explorer" })
-vim.keymap.set("n", "<leader>fe", "<cmd>lua require('vscode').actionvim.('workbench.action.toggleFileExplorer')<CR>",
+vim.keymap.set("n", "<leader>fe", "<cmd>lua require('vscode').action('workbench.action.toggleFileExplorer')<CR>",
     { desc = "Toggle file explorer" })
-vim.keymap.set("n", "<leader>t", "<cmd>lua require('vscode').actionvim.('workbench.action.terminal.toggleTerminal')<CR>",
+vim.keymap.set("n", "<leader>t", "<cmd>lua require('vscode').action('workbench.action.terminal.toggleTerminal')<CR>",
     { desc = "Toggle terminal" })
-vim.keymap.set("n", "<leader>tn", "<cmd>lua require('vscode').actionvim.('workbench.action.createTerminalEditor')<CR>",
+vim.keymap.set("n", "<leader>tn", "<cmd>lua require('vscode').action('workbench.action.createTerminalEditor')<CR>",
     { desc = "Create new terminal" })
 
 -- Settings and Help
-vim.keymap.set("n", "<leader>l", "<cmd>lua require('vscode').actionvim.('workbench.action.openLog')<CR>",
+vim.keymap.set("n", "<leader>l", "<cmd>lua require('vscode').action('workbench.action.openLog')<CR>",
     { desc = "Open log" })
+
 
 -- ###################
 -- Editor Navigation
 -- ###################
 
 -- Tab and Editor Management
-vim.keymap.set("n", "<S-l>", "<cmd>lua require('vscode').actionvim.('workbench.action.nextEditor')<CR>",
+vim.keymap.set("n", "<S-l>", "<cmd>lua require('vscode').action('workbench.action.nextEditor')<CR>",
     { desc = "Next editor" })
-vim.keymap.set("n", "<S-h>", "<cmd>lua require('vscode').actionvim.('workbench.action.previousEditor')<CR>",
+vim.keymap.set("n", "<S-h>", "<cmd>lua require('vscode').action('workbench.action.previousEditor')<CR>",
     { desc = "Previous editor" })
-vim.keymap.set("n", "<S-j>", "<cmd>lua require('vscode').actionvim.('workbench.action.nextEditorInGroup')<CR>",
+vim.keymap.set("n", "<S-j>", "<cmd>lua require('vscode').action('workbench.action.nextEditorInGroup')<CR>",
     { desc = "Next editor in group" })
-vim.keymap.set("n", "<S-k>", "<cmd>lua require('vscode').actionvim.('workbench.action.previousEditorInGroup')<CR>",
+vim.keymap.set("n", "<S-k>", "<cmd>lua require('vscode').action('workbench.action.previousEditorInGroup')<CR>",
     { desc = "Previous editor in group" })
-vim.keymap.set("n", "<leader>bo", "<cmd>lua require('vscode').actionvim.('workbench.action.closeOtherEditors')<CR>",
+vim.keymap.set("n", "<leader>bo", "<cmd>lua require('vscode').action('workbench.action.closeOtherEditors')<CR>",
     { desc = "Close other editors" })
-vim.keymap.set("n", "<leader>qq", "<cmd>lua require('vscode').actionvim.('workbench.action.closeActiveEditor')<CR>",
+vim.keymap.set("n", "<leader>qq", "<cmd>lua require('vscode').action('workbench.action.closeActiveEditor')<CR>",
     { desc = "Close active editor" })
-vim.keymap.set("n", "<leader>,", "<cmd>lua require('vscode').actionvim.('workbench.action.showAllEditors')<CR>",
+vim.keymap.set("n", "<leader>,", "<cmd>lua require('vscode').action('workbench.action.showAllEditors')<CR>",
     { desc = "Show all editors" })
 
 -- Code Navigation
-vim.keymap.set("n", "gr", "<cmd>lua require('vscode').actionvim.('editor.action.goToReferences')<CR>",
+vim.keymap.set("n", "gr", "<cmd>lua require('vscode').action('editor.action.goToReferences')<CR>",
     { desc = "Go to references" })
-vim.keymap.set("n", "gi", "<cmd>lua require('vscode').actionvim.('editor.action.goToImplementation')<CR>",
+vim.keymap.set("n", "gi", "<cmd>lua require('vscode').action('editor.action.goToImplementation')<CR>",
     { desc = "Go to implementation" })
 
 -- ###################
@@ -101,23 +102,23 @@ vim.keymap.set("n", "za", "<cmd>lua require('vscode').call('editor.toggleFold')<
     { desc = "Toggle fold current section" })
 
 -- Code Information and Hints
-vim.keymap.set("i", "<c-k>", "<cmd>lua require('vscode').actionvim.('editor.action.triggerParameterHints')<CR>",
+vim.keymap.set("n", "<C-space>", "<cmd>lua require('vscode').action('editor.action.triggerSuggest')<CR>",
+    { desc = "Trigger completion" })
+vim.keymap.set("i", "<C-k>", "<cmd>lua require('vscode').action('editor.action.triggerParameterHints')<CR>",
     { desc = "Trigger parameter hints" })
 
 -- Code Actions
-vim.keymap.set({ "n", "v" }, "<leader>ca", "<cmd>lua require('vscode').actionvim.('editor.action.quickFix')<CR>",
+vim.keymap.set({ "n", "v" }, "<leader>ca", "<cmd>lua require('vscode').action('editor.action.quickFix')<CR>",
     { desc = "Quick fix actions" })
-vim.keymap.set("n", "<leader>cA", "<cmd>lua require('vscode').actionvim.('editor.action.sourceAction')<CR>",
+vim.keymap.set("n", "<leader>cA", "<cmd>lua require('vscode').action('editor.action.sourceAction')<CR>",
     { desc = "Open source action" })
-vim.keymap.set("n", "<leader>cr", "<cmd>lua require('vscode').actionvim.('editor.action.rename')<CR>",
+vim.keymap.set("n", "<leader>cr", "<cmd>lua require('vscode').action('editor.action.rename')<CR>",
     { desc = "Rename symbol" })
-vim.keymap.set("n", "<leader>ci", "<cmd>lua require('vscode').action('editor.action.triggerSuggest')<CR>",
-    { desc = "Trigger suggestions" })
 
 -- Formatting
-vim.keymap.set("v", "<leader>cf", "<cmd>lua require('vscode').action('editor.action.formatSelection')<CR>",
+vim.keymap.set("v", "<leader>cF", "<cmd>lua require('vscode').action('editor.action.formatSelection')<CR>",
     { desc = "Format selection" })
-vim.keymap.set({ "n", "v" }, "<leader>cF", "<cmd>lua require('vscode').action('editor.action.formatDocument')<CR>",
+vim.keymap.set({ "n", "v" }, "<leader>cf", "<cmd>lua require('vscode').action('editor.action.formatDocument')<CR>",
     { desc = "Format document" })
 
 -- ###################
@@ -127,9 +128,10 @@ vim.keymap.set({ "n", "v" }, "<leader>cF", "<cmd>lua require('vscode').action('e
 -- File Search and Navigation
 vim.keymap.set("n", "<leader><space>", "<cmd>lua require('vscode').action('workbench.action.quickOpen')<CR>",
     { desc = "Find files" })
-vim.keymap.set({ "n", "v" }, "<leader>ff", "<cmd>lua require('vscode').actionvim.('workbench.action.quickOpen')<CR>",
+vim.keymap.set({ "n", "v" }, "<leader>ff", "<cmd>lua require('vscode').action('workbench.action.quickOpen')<CR>",
     { desc = "Quick open files" })
-vim.keymap.set("n", "<leader>/", "<cmd>lua require('vscode').actionvim.('workbench.action.quickTextSearch')<CR>",
+-- Text Search
+vim.keymap.set("n", "<leader>/", "<cmd>lua require('vscode').action('workbench.action.quickTextSearch')<CR>",
     { desc = "Quick text search" })
 vim.keymap.set("n", "<leader>sg", "<cmd>lua require('vscode').action('workbench.action.findInFiles')<CR>",
     { desc = "Grep files" })
@@ -143,7 +145,7 @@ vim.keymap.set("n", "<leader>sS", "<cmd>lua require('vscode').action('workbench.
     { desc = "Workspace symbols" })
 
 -- Special File Operations
-vim.keymap.set("n", "<leader><Cr>", "<cmd>lua require('vscode').actionvim.('oil-code.open')<CR>",
+vim.keymap.set("n", "<leader><Cr>", "<cmd>lua require('vscode').action('oil-code.open')<CR>",
     { desc = "Open oil code" })
 
 -- ###################
@@ -151,27 +153,27 @@ vim.keymap.set("n", "<leader><Cr>", "<cmd>lua require('vscode').actionvim.('oil-
 -- ###################
 
 -- Debugging
-vim.keymap.set("n", "<leader>b", "<cmd>lua require('vscode').actionvim.('editor.debug.action.toggleBreakpoint')<CR>",
+vim.keymap.set("n", "<leader>b", "<cmd>lua require('vscode').action('editor.debug.action.toggleBreakpoint')<CR>",
     { desc = "Toggle breakpoint" })
 
 -- Code Execution
-vim.keymap.set({ "n", "v" }, "<leader>pr", "<cmd>lua require('vscode').actionvim.('code-runner.run')<CR>",
+vim.keymap.set({ "n", "v" }, "<leader>pr", "<cmd>lua require('vscode').action('code-runner.run')<CR>",
     { desc = "Run code" })
 
 -- ###################
 -- Problems & Diagnostics
 -- ###################
 
--- Problem Navigation
+-- Diagnostics Navigation
 vim.keymap.set("n", "]d", "<cmd>lua require('vscode').action('editor.action.marker.nextInFiles')<CR>",
     { desc = "Next diagnostic" })
 vim.keymap.set("n", "[d", "<cmd>lua require('vscode').action('editor.action.marker.prevInFiles')<CR>",
     { desc = "Previous diagnostic" })
 
--- Problem Panel
+-- Debugging Panel
 vim.keymap.set("n", "<leader>xx", "<cmd>lua require('vscode').action('workbench.actions.view.problems')<CR>",
     { desc = "Open problems" })
-vim.keymap.set({ "n", "v" }, "<leader>xl", "<cmd>lua require('vscode').actionvim.('workbench.action.problems.focus')<CR>",
+vim.keymap.set({ "n", "v" }, "<leader>xl", "<cmd>lua require('vscode').action('workbench.action.problems.focus')<CR>",
     { desc = "Focus problems panel" })
 vim.keymap.set("n", "<leader>xc", "<cmd>lua require('vscode').action('workbench.actions.problems.clear')<CR>",
     { desc = "Clear problems" })
