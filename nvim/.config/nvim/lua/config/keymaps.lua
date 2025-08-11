@@ -312,7 +312,7 @@ vim.keymap.set("n", "<leader>zl", function()
     })
 end, { desc = "Toggle Zen Mode with Line Numbers" })
 
--- if vim.g.vscode then
---     print("⚡connected to neovim!💯‼️🤗😎")
---     require "vscode_keymaps"
--- end
+if vim.g.vscode then
+    print("⚡connected to neovim!💯‼️🤗😎")
+    require("config.vscode_keymaps")
+end
