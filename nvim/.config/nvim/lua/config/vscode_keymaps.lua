@@ -1,9 +1,9 @@
-local opts = { noremap = true, silent = true }
-
--- remap leader key
-vim.keymap.set("n", "<Space>", "", opts)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
+-- ###############################
+-- VSCode Keymaps
+-- for use with VSCode NeoVim Extension
+-- ###############################
+--
+-- local opts = { noremap = true, silent = true }
 
 -- for alternative syntax:
 -- vim.keymap.set("", "", function () vscode.call(""") end, {})
