@@ -8,22 +8,20 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
     "ssh_connections": [
-    {
-      "host": "populus.birchcrown.com",
-      "projects": [
         {
-          "paths": [
-            "/home/stephan/.local/src/3d-reconstruction-from-monocular-multi-food-images"
-          ]
-        },
-        {
-          "paths": [
-            "~/.local/src/pytorch_tuts"
-          ]
+            "host": "populus.birchcrown.com",
+            "projects": [
+                {
+                    "paths": [
+                        "/home/stephan/.local/src/3d-reconstruction-from-monocular-multi-food-images"
+                    ]
+                },
+                {
+                    "paths": ["~/.local/src/pytorch_tuts"]
+                }
+            ]
         }
-      ]
-    }
-  ],
+    ],
     // ========== AI ==========
     "agent": {
         "inline_assistant_model": {
@@ -34,8 +32,7 @@
         "default_model": {
             "provider": "zed.dev",
             "model": "claude-sonnet-4"
-        },
-        "version": "2"
+        }
     },
     "language_models": {
         "ollama": {
