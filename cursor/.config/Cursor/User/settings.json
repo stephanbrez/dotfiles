@@ -1,0 +1,287 @@
+{
+    "window.commandCenter": true,
+    "cursor.cpp.enablePartialAccepts": true,
+    "cursor.terminal.usePreviewBox": true,
+    "files.autoSave": "onWindowChange",
+    "window.autoDetectColorScheme": true,
+    "workbench.preferredLightColorTheme": "base16-da-one-paper",
+    "workbench.activityBar.location": "bottom",
+    "sync.gist": "b08080a1e63a6de41f8e08980a9c4ec8",
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1
+    },
+    "window.customTitleBarVisibility": "auto",
+    "customizeUI.activityBar" : "bottom",
+    "customizeUI.stylesheet": {
+        // Let the quick pick take the full window height, so that more bindings
+        // are visible.
+        ".quick-input-widget > .quick-input-list > .monaco-list":
+            "max-height: 100vh !important;",
+        // Colorize icons uniformly and add some extra padding
+        ".quick-input-widget > .quick-input-list .codicon":
+            "color: #83a598 !important; padding-right: 5px;",
+        // Colorize entries starting with a `+` differently
+        ".quick-input-widget > .quick-input-list .monaco-list-row[aria-label*=\" +\"] .label-description":
+            "color: #8ec07c;",
+    },
+    "vspacecode.bindingOverrides": [
+        /* ===================== TOP-LEVEL (single-key leader actions) ===================== */
+        { "keys": "e",   "name": "Explorer",            "type": "command", "command": "workbench.view.explorer" },                 /* <leader>e */
+        { "keys": "/",   "name": "Search in Files",     "type": "command", "command": "workbench.action.findInFiles" },            /* <leader>/ */
+        { "keys": "-",   "name": "Split Below",         "type": "command", "command": "workbench.action.splitEditorDown" },        /* <leader>- */
+        { "keys": "|",   "name": "Split Right",         "type": "command", "command": "workbench.action.splitEditorRight" },       /* <leader>| */
+        { "keys": ":",   "name": "Command Palette",     "type": "command", "command": "workbench.action.showCommands" },           /* <leader>: */
+        { "keys": ",",   "name": "Buffers (MRU)",       "type": "command", "command": "workbench.action.showAllEditorsByMostRecentlyUsed" }, /* <leader>, */
+
+
+        /* ===================== FILES  <leader>f ===================== */
+        {
+        "keys": "f",
+        "name": "Files…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "f", "name": "Find File (Quick Open)",       "type": "command", "command": "workbench.action.quickOpen" },            /* ff */
+            { "key": "F", "name": "Find File (in CWD-ish)",       "type": "command", "command": "workbench.action.quickOpen" },            /* fF (approx) */
+            { "key": "r", "name": "Open Recent",                  "type": "command", "command": "workbench.action.openRecent" },           /* fr */
+            { "key": "e", "name": "Explorer (Focus)",             "type": "command", "command": "workbench.view.explorer" },               /* fe */
+            { "key": "g", "name": "Search Editor (Project Grep)", "type": "command", "command": "search.action.openNewEditor" },           /* fg ≈ snacks grep editor */
+            { "key": "p", "name": "Projects/Workspaces",          "type": "command", "command": "workbench.action.openRecent" },            /* fp */
+            { "key": "t", "name": "Toggle Terminal",     "type": "command", "command": "workbench.action.terminal.toggleTerminal" },/* ft */
+            { "key": "T", "name": "New Terminal",        "type": "command", "command": "workbench.action.terminal.new" }           /* fT */
+        ]
+        },
+
+        /* ===================== BUFFERS  <leader>b ===================== */
+        {
+        "keys": "b",
+        "name": "Buffers…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "b", "name": "Buffers (MRU)",             "type": "command", "command": "workbench.action.showAllEditorsByMostRecentlyUsed" }, /* bb */
+            { "key": "d", "name": "Delete Buffer",             "type": "command", "command": "workbench.action.closeActiveEditor" },                 /* bd */
+            { "key": "D", "name": "Delete Buffer & Window",    "type": "command", "command": "workbench.action.closeActiveEditor" },                 /* bD (approx) */
+            { "key": "o", "name": "Delete Other Buffers",      "type": "command", "command": "workbench.action.closeOtherEditors" },                 /* bo */
+            { "key": "l", "name": "Delete Buffers to Left",    "type": "command", "command": "workbench.action.closeEditorsToTheLeft" },             /* bl */
+            { "key": "r", "name": "Delete Buffers to Right",   "type": "command", "command": "workbench.action.closeEditorsToTheRight" },            /* br */
+            { "key": "p", "name": "Pin Editor",                "type": "command", "command": "workbench.action.pinEditor" },                         /* bp (no native toggle) */
+            { "key": "P", "name": "Close Others (≈ non-pinned)","type": "command", "command": "workbench.action.closeOtherEditors" }                 /* bP approx */
+        ]
+        },
+
+        /* ===================== WINDOWS  <leader>w  (splits, resize, layout) ===================== */
+        {
+        "keys": "w",
+        "name": "Windows…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "-", "name": "Split Below",                         "type": "command", "command": "workbench.action.splitEditorDown" },      /* w- */
+            { "key": "|", "name": "Split Right",                         "type": "command", "command": "workbench.action.splitEditorRight" },     /* w| */
+            { "key": "d", "name": "Close Group",                         "type": "command", "command": "workbench.action.closeGroup" },           /* wd */
+            { "key": "m", "name": "Maximize Editor",                     "type": "command", "command": "workbench.action.maximizeEditor" },       /* wm */
+            { "key": "=", "name": "Even Layout",                         "type": "command", "command": "workbench.action.evenEditorWidths" },     /* w= */
+            { "key": ">", "name": "Increase View Size",                  "type": "command", "command": "workbench.action.increaseViewSize" },     /* w> */
+            { "key": "<", "name": "Decrease View Size",                  "type": "command", "command": "workbench.action.decreaseViewSize" },     /* w< */
+            { "key": "o", "name": "Toggle Vertical/Horizontal Layout",   "type": "command", "command": "workbench.action.toggleEditorGroupLayout" }/* wo */
+        ]
+        },
+
+        /* ---------- WINDOWS extras (focus/move/layout presets) ---------- */
+        {
+            "keys": "w",
+            "name": "Windows…",
+            "type": "bindings",
+            "bindings": [
+                /* Focus editor groups */
+                { "key": "h", "name": "Focus Left Group",   "type": "command", "command": "workbench.action.focusLeftGroup" },
+                { "key": "l", "name": "Focus Right Group",  "type": "command", "command": "workbench.action.focusRightGroup" },
+                { "key": "k", "name": "Focus Above Group",  "type": "command", "command": "workbench.action.focusAboveGroup" },
+                { "key": "j", "name": "Focus Below Group",  "type": "command", "command": "workbench.action.focusBelowGroup" },
+            
+                /* Move active editor to other groups */
+                { "key": "H", "name": "Move Editor to Left Group",   "type": "command", "command": "workbench.action.moveEditorToLeftGroup" },
+                { "key": "L", "name": "Move Editor to Right Group",  "type": "command", "command": "workbench.action.moveEditorToRightGroup" },
+                { "key": "K", "name": "Move Editor to Above Group",  "type": "command", "command": "workbench.action.moveEditorToAboveGroup" },
+                { "key": "J", "name": "Move Editor to Below Group",  "type": "command", "command": "workbench.action.moveEditorToBelowGroup" },
+            
+                /* Next/previous group (auto-creates as needed) */
+                { "key": ">", "name": "Move Editor to Next Group",   "type": "command", "command": "workbench.action.moveEditorToNextGroup" },
+                { "key": "<", "name": "Move Editor to Previous Group","type": "command", "command": "workbench.action.moveEditorToPreviousGroup" },
+            
+                /* Quick layout presets */
+                { "key": "1", "name": "Layout: Single",        "type": "command", "command": "workbench.action.editorLayoutSingle" },
+                { "key": "2", "name": "Layout: Two Columns",   "type": "command", "command": "workbench.action.editorLayoutTwoColumns" },
+                { "key": "3", "name": "Layout: Three Columns", "type": "command", "command": "workbench.action.editorLayoutThreeColumns" },
+                { "key": "R", "name": "Layout: Two Rows",      "type": "command", "command": "workbench.action.editorLayoutTwoRows" },
+                { "key": "G", "name": "Layout: 2x2 Grid",      "type": "command", "command": "workbench.action.editorLayoutTwoByTwoGrid" }
+            ]
+        },
+        
+        /* ===================== TABS  <leader><tab> ===================== */
+        {
+        "keys": "<tab>",
+        "name": "Tabs…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "l",      "name": "Last Tab",            "type": "command", "command": "workbench.action.openPreviousRecentlyUsedEditor" }, /* <tab>l (approx) */
+            { "key": "o",      "name": "Close Other Tabs",    "type": "command", "command": "workbench.action.closeOtherEditors" },              /* <tab>o */
+            { "key": "f",      "name": "First Tab",           "type": "command", "command": "workbench.action.firstEditorInGroup" },             /* <tab>f */
+            { "key": "<tab>",  "name": "New Tab (Untitled)",  "type": "command", "command": "workbench.action.files.newUntitledFile" },          /* <tab><tab> */
+            { "key": "]",      "name": "Next Tab",            "type": "command", "command": "workbench.action.nextEditor" },                     /* <tab>] */
+            { "key": "d",      "name": "Close Tab",           "type": "command", "command": "workbench.action.closeActiveEditor" },              /* <tab>d */
+            { "key": "[",      "name": "Previous Tab",        "type": "command", "command": "workbench.action.previousEditor" }                  /* <tab>[ */
+        ]
+        },
+
+        /* ===================== SEARCH  <leader>s ===================== */
+        {
+        "keys": "s",
+        "name": "Search…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "/", "name": "Search in Files",                "type": "command", "command": "workbench.action.findInFiles" },          /* s/ */
+            { "key": "g", "name": "Search Editor (New)",            "type": "command", "command": "search.action.openNewEditor" },           /* sg */
+            { "key": "k", "name": "Keyboard Shortcuts",             "type": "command", "command": "workbench.action.openGlobalKeybindings" },/* sk */
+            { "key": "h", "name": "Show All Symbols",               "type": "command", "command": "workbench.action.showAllSymbols" },       /* sh */
+            { "key": "d", "name": "Diagnostics (Problems Focus)",   "type": "command", "command": "workbench.action.problems.focus" }        /* sd ≈ snacks s d */
+        ]
+        },
+        
+        /* ---------- SEARCH extras: TODO/FIXME Search Editor preset ---------- */
+        {
+        "keys": "s.t",
+        "name": "Search: TODO/FIXME",
+        "type": "command",
+        "command": "search.action.openNewEditor",
+        "args": { "triggerSearch": false, "focusResults": false } // caret in query box; type:  TODO|FIXME
+        },
+        
+        /* ===================== GOTO <leader>g ===================== (LazyVim “goto” family) */
+        {
+        "keys": "g",
+        "name": "Goto…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "d", "name": "Go to Definition", "type": "command", "command": "editor.action.revealDefinition" },
+            { "key": "D", "name": "Peek Definition", "type": "command", "command": "editor.action.peekDefinition" },
+            { "key": "r", "name": "Go to References", "type": "command", "command": "editor.action.referenceSearch.trigger" },
+            { "key": "i", "name": "Go to Implementation", "type": "command", "command": "editor.action.goToImplementation" },
+            { "key": "t", "name": "Go to Type Definition", "type": "command", "command": "editor.action.goToTypeDefinition" },
+            { "key": "l", "name": "Go to Line…", "type": "command", "command": "workbench.action.gotoLine" },
+            { "key": "s", "name": "Go to Symbol in File…", "type": "command", "command": "workbench.action.gotoSymbol" }
+        ]
+        },
+
+        /* ===================== CODE/LSP <leader>c ===================== */
+        {
+        "keys": "c",
+        "name": "Code…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "a", "name": "Code Action (Quick Fix / Refactor)", "type": "command", "command": "editor.action.quickFix" },
+            { "key": "r", "name": "Rename Symbol", "type": "command", "command": "editor.action.rename" },
+            { "key": "f", "name": "Format Document", "type": "command", "command": "editor.action.formatDocument" },    /* <leader>cf */
+            { "key": "s", "name": "Symbols (Problems/Outline via Trouble≈Breadcrumbs)", "type": "command", "command": "breadcrumbs.focusAndSelect" }
+        ]
+        },
+
+        /* ===================== DIAGNOSTICS / TROUBLE  <leader>x ===================== */
+        {
+        "keys": "x",
+        "name": "Diagnostics…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "x", "name": "Problems: Focus",        "type": "command", "command": "workbench.action.problems.focus" },       /* xx */
+            { "key": "l", "name": "Problems: Show Panel",   "type": "command", "command": "workbench.actions.view.problems" },       /* xl */
+            { "key": "q", "name": "Quick Fix",              "type": "command", "command": "editor.action.quickFix" },                /* xq */
+            { "key": "n", "name": "Next Problem (in Files)","type": "command", "command": "editor.action.marker.nextInFiles" },      /* xn */
+            { "key": "p", "name": "Prev Problem (in Files)", "type": "command", "command": "editor.action.marker.prevInFiles" }      /* xp */
+        ]
+        },
+
+        /* ===================== UI TOGGLES  <leader>u ===================== */
+        {
+        "keys": "u",
+        "name": "UI…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "z", "name": "Zen Mode",                       "type": "command", "command": "workbench.action.toggleZenMode" },
+            { "key": "Z", "name": "Maximize Editor (Zoom-ish)",     "type": "command", "command": "workbench.action.maximizeEditor" },
+            { "key": "c", "name": "Toggle Centered Layout",         "type": "command", "command": "workbench.action.toggleCenteredLayout" }, /* verified cmd id */
+            { "key": "w", "name": "Toggle Word Wrap",               "type": "command", "command": "editor.action.toggleWordWrap" },
+            { "key": "b", "name": "Toggle Breadcrumbs",             "type": "command", "command": "breadcrumbs.toggle" },
+            { "key": "m", "name": "Toggle Minimap",                 "type": "command", "command": "editor.action.toggleMinimap" },
+            { "key": "s", "name": "Toggle Render Whitespace",       "type": "command", "command": "toggleRenderWhitespace" },
+            { "key": "a", "name": "Toggle Activity Bar",            "type": "command", "command": "workbench.action.toggleActivityBarVisibility" },
+            { "key": "S", "name": "Toggle Sidebar (Primary)",       "type": "command", "command": "workbench.action.toggleSidebarVisibility" },
+            { "key": "B", "name": "Toggle Secondary Sidebar",       "type": "command", "command": "workbench.action.toggleAuxiliaryBar" },
+            { "key": "p", "name": "Toggle Panel",                   "type": "command", "command": "workbench.action.togglePanel" },
+            { "key": "t", "name": "Toggle Status Bar",              "type": "command", "command": "workbench.action.toggleStatusbarVisibility" }
+        ]
+        },
+        /* ---------- UI → Panel position & focus utilities ---------- */
+        {
+        "keys": "u.P",
+        "name": "Panel Position…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "l", "name": "Move Panel Left",   "type": "command", "command": "workbench.action.positionPanelLeft" },
+            { "key": "r", "name": "Move Panel Right",  "type": "command", "command": "workbench.action.positionPanelRight" },
+            { "key": "b", "name": "Move Panel Bottom", "type": "command", "command": "workbench.action.positionPanelBottom" },
+            { "key": "t", "name": "Move Panel Top",    "type": "command", "command": "workbench.action.positionPanelTop" },
+            { "key": "f", "name": "Focus Panel",       "type": "command", "command": "workbench.action.focusPanel" },
+            { "key": "p", "name": "Previous Panel View","type": "command", "command": "workbench.action.previousPanelView" },
+            { "key": "n", "name": "Next Panel View",   "type": "command", "command": "workbench.action.nextPanelView" }
+        ]
+        },
+        
+        /* ===================== GIT  <leader>g ===================== */
+        {
+        "keys": "g",
+        "name": "Git…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "s", "name": "Source Control",            "type": "command", "command": "workbench.view.scm" },                   /* gs */
+            { "key": "d", "name": "Open Changes (Diff)",       "type": "command", "command": "workbench.scm.focus" },                  /* gd approx */
+            { "key": "c", "name": "Commit (Git: Commit)",      "type": "command", "command": "git.commit" },                          /* gc */
+            { "key": "b", "name": "Toggle File Blame (GitLens)","type": "command", "command": "gitlens.toggleFileBlame" }             /* gb (optional) */
+        ]
+        },
+        {
+            "keys": "g.h",
+            "name": "Git Hunk-ish…",
+            "type": "bindings",
+            "bindings": [
+                { "key": "b", "name": "Blame (GitLens, if installed)", "type": "command", "command": "gitlens.toggleFileBlame" },
+                { "key": "p", "name": "Open File Blame (Inline, if installed)", "type": "command", "command": "gitlens.toggleLineBlame" }
+            ]
+        },
+
+        /* ===================== TERMINAL  <leader>t ===================== */
+        {
+        "keys": "t",
+        "name": "Terminal…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "t", "name": "Toggle Terminal", "type": "command", "command": "workbench.action.terminal.toggleTerminal" }, /* tt */
+            { "key": "n", "name": "New Terminal",    "type": "command", "command": "workbench.action.terminal.new" },            /* tn */
+            { "key": "k", "name": "Kill Terminal",   "type": "command", "command": "workbench.action.terminal.kill" },           /* tk */
+            { "key": "e", "name": "Focus Active Editor Group", "type": "command", "command": "workbench.action.focusActiveEditorGroup" },
+            { "key": "f", "name": "Focus Terminal",  "type": "command", "command": "workbench.action.terminal.focus" }           /* tf */
+        ]
+        },
+
+        /* ===================== QUIT / SESSIONS-ISH  <leader>q ===================== */
+        {
+        "keys": "q",
+        "name": "Quit/Windows…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "s", "name": "Save All & Close Window", "type": "commands", "commands": ["workbench.action.files.saveAll", "workbench.action.closeWindow"] }, /* qs ≈ persistence */
+            { "key": "l", "name": "Open Recent (Restore)",   "type": "command",  "command": "workbench.action.openRecent" },                                        /* ql */
+            { "key": "d", "name": "Close Window (Don’t Save)","type": "command", "command": "workbench.action.closeWindow" },                                       /* qd */
+            { "key": "q", "name": "Quit",                    "type": "command",  "command": "workbench.action.quit" }                                                /* qq (dup for menu context) */
+        ]
+        }
+    ],
+    "terminal.integrated.inheritEnv": false
+}
