@@ -153,11 +153,18 @@ export FZF_DEFAULT_OPTS="
 export STARSHIP_CONFIG=$HOME/.config/starship.toml
 
 # colored less + termcap vars
-export LESS="R --use-color -Dd+r -Du+b"
+export LESS="-R use-color -Dd+r$-Du+b"
+# Start blink → set text to bold red
 export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"
+# Start bold → set text to bold cyan
 export LESS_TERMCAP_md="$(printf '%b' '[1;36m')"
+# End all modes (reset to normal text)
 export LESS_TERMCAP_me="$(printf '%b' '[0m')"
+# Start standout (reverse video or highlight) → blue background + yellow text
 export LESS_TERMCAP_so="$(printf '%b' '[01;44;33m')"
+# End standout → reset formatting
 export LESS_TERMCAP_se="$(printf '%b' '[0m')"
+# Start underline → bold green
 export LESS_TERMCAP_us="$(printf '%b' '[1;32m')"
+# End underline → reset formatting
 export LESS_TERMCAP_ue="$(printf '%b' '[0m')"
