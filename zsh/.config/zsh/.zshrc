@@ -221,9 +221,9 @@ eval $(thefuck --alias fuck)
 # ======== uv ======== #
 # uv completions
 eval $(uv generate-shell-completion zsh)
+. "$XDG_DATA_HOME/../bin/env"
 
 # ======== zoxide ======== #
 # init & replace cd
 # For completions to work, this must be added after compinit is called
 eval "$(zoxide init --cmd cd zsh)"
-

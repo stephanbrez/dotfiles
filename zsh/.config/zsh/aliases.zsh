@@ -397,6 +397,7 @@ alias uvi="uv init"                     # Create a new Python project
 alias uva="uv add"                      # Add a dependency to the project
 alias uvrm="uv remove"                  # Remove a dependency from the project
 alias uvs="uv sync"                     # Sync the project's dependencies with the environment
+alias uvsrc="source .venv/bin/activate" # Activate the python env in the current working directory
 alias uvl="uv lock"                     # Create a lockfile for the project's dependencies
 alias uvup="uv lock --upgrade-package"  # Upgrade a specific package while keeping the rest of the environment locked
 # alias uv14="uv run"                   # Run a command in the project environment
