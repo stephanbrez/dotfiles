@@ -153,7 +153,7 @@ export FZF_DEFAULT_OPTS="
 export STARSHIP_CONFIG=$HOME/.config/starship.toml
 
 # colored less + termcap vars
-export LESS="-R use-color -Dd+r$-Du+b"
+export LESS="-R -Dd+r$-Du+b"
 # Start blink → set text to bold red
 export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"
 # Start bold → set text to bold cyan
