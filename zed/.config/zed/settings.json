@@ -13,64 +13,45 @@
             "projects": [
                 {
                     "paths": [
-                        "/home/stephan/.local/src/3d-reconstruction-from-monocular-multi-food-images"
-                    ]
+                        "/home/stephan/.local/src/3d-reconstruction-from-monocular-multi-food-images",
+                    ],
                 },
                 {
-                    "paths": ["~/.local/src/pytorch_tuts"]
-                }
-            ]
-        }
+                    "paths": ["~/.local/src/pytorch_tuts"],
+                },
+            ],
+        },
     ],
     // ========== AI ==========
     "agent": {
         "inline_assistant_model": {
             "provider": "zed.dev",
-            "model": "claude-sonnet-4"
+            "model": "claude-sonnet-4",
         },
         "default_profile": "write",
         "default_model": {
-            "provider": "zed.dev",
-            "model": "claude-sonnet-4"
-        }
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-5-latest",
+        },
     },
     "language_models": {
         "ollama": {
-            "api_url": "http://populus.birchcrown.com:11434",
-            "available_models": [
-                {
-                    "name": "codestral:latest",
-                    "display_name": "codestral 32K",
-                    "keep_alive": "120s",
-                    "max_tokens": 32768
-                },
-                {
-                    "name": "deepseek-r1:32b",
-                    "display_name": "deepseek-R1-Distill-Qwen32B 32K",
-                    "keep_alive": "120s",
-                    "max_tokens": 32768
-                },
-                {
-                    "name": "qwen2.5-coder",
-                    "display_name": "qwen 2.5 coder 32K",
-                    "keep_alive": "120s",
-                    "max_tokens": 32768
-                }
-            ]
-        }
+            "api_url": "http://192.168.20.10:11434",
+            "available_models": [],
+        },
     },
     "features": {
         // "inline_completion_provider": "supermaven"
     },
     "telemetry": {
-        "metrics": false
+        "metrics": false,
     },
     "vim_mode": true,
     "vim": {
         "toggle_relative_line_numbers": true,
         "custom_digraphs": {
-            "fz": ""
-        }
+            "fz": "",
+        },
     },
     "autosave": "on_focus_change",
     "tab_size": 4,
@@ -79,26 +60,26 @@
     // ========== Git ==========
     "git": {
         "inline_blame": {
-            "enabled": true,
-            "min_column": 80
-        }
+            "enabled": false,
+            "min_column": 80,
+        },
     },
     // ========== LSP ==========
     "languages": {
         "Python": {
-            "language_servers": ["pyright", "pylsp"]
+            "language_servers": ["pyright", "pylsp"],
         },
-        "Markdown": {}
+        "Markdown": {},
     },
     // ========== Terminal ==========
     "terminal": {
-        "font_family": "DejaVuSansM Nerd Font Mono"
+        "font_family": "DejaVuSansM Nerd Font Mono",
     },
     // ========== UI ==========
     "active_pane_modifiers": {
         "magnification": 1.0,
         "border_size": 0.0,
-        "inactive_opacity": 0.9
+        "inactive_opacity": 0.9,
     },
     "tabs": {
         "close_position": "right",
@@ -106,27 +87,32 @@
         "git_status": false,
         "activate_on_close": "history",
         "show_close_button": "hover",
-        "show_diagnostics": "off"
+        "show_diagnostics": "off",
     },
     "indent_guides": {
         "enabled": true,
         "line_width": 1,
         "active_line_width": 2,
         "coloring": "indent_aware",
-        "background_coloring": "indent_aware"
+        "background_coloring": "indent_aware",
     },
     "wrap_guides": [80],
     "show_wrap_guides": true,
     "ui_font_size": 16,
     "ui_font_features": {
-        "calt": true
+        "calt": true,
     },
     "buffer_font_family": "DejaVuSansM Nerd Font Mono",
     "buffer_font_size": 16,
+    "buffer_font_weight": 400,
     "theme": {
         "mode": "system",
-        "light": "Mariana Breakers",
-        "dark": "One Dark"
+        "light": "Zedokai Light",
+        "dark": "One Dark",
+    },
+    "icon_theme": "Colored Zed Icons Theme Light",
+    "project_panel": {
+        "entry_spacing": "standard",
     },
     "diagnostics": {
         "include_warnings": true,
@@ -135,8 +121,8 @@
             "update_debounce_ms": 150,
             "padding": 4,
             "min_column": 80,
-            "max_severity": null
-        }
+            "max_severity": null,
+        },
     },
     "inlay_hints": {
         "enabled": false,
@@ -146,6 +132,6 @@
         "show_background": false,
         "edit_debounce_ms": 700,
         "scroll_debounce_ms": 50,
-        "toggle_on_modifiers_press": null
-    }
+        "toggle_on_modifiers_press": null,
+    },
 }
