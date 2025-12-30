@@ -25,12 +25,43 @@
 #########################################
 # Script setup                          #
 #########################################
-myhome=$(dirname "$(readlink -f "$0")")
-me=$(basename "$myhome")
+# ─── Detect user and directories ───
+# ❗ IMPORTANT: This script should be run with sudo, not as raw root
+# Running with sudo preserves the original user context
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+	echo "Error: This script must be run with sudo"
+	echo "Usage: sudo ./setup"
+	exit 1
+fi
+
+# Get the real user (the one who ran sudo)
+if [ -n "$SUDO_USER" ]; then
+	# Normal case: script run with sudo
+	me="$SUDO_USER"
+	myhome=$(eval echo "~$SUDO_USER")
+else
+	# Edge case: Running as raw root (Docker, CI, or bad practice)
+	# Check if we're in a container or CI environment
+	if [ -f /.dockerenv ] || [ -n "$CI" ]; then
+		# Allow running as root in containers/CI
+		me="root"
+		myhome="/root"
+	else
+		# Not in container - this is bad practice
+		echo "Error: Running as raw root is not supported"
+		echo "Please run with sudo as a regular user: sudo ./setup"
+		exit 1
+	fi
+fi
+
 basedir="$myhome/.dotfiles"
 bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
 ARCH=$(uname -m)
+
+# Run commands as the actual user (not root)
 ASME="sudo -u $me"
 
 # ─── Architecture mapping for different package formats ───
@@ -53,7 +84,9 @@ auto_yes=false
 # Parse command-line arguments
 show_help() {
 	cat <<-EOF
-		Usage: $0 [OPTIONS]
+		Usage: sudo $0 [OPTIONS]
+
+		❗ This script must be run with sudo to install system packages.
 
 		Options:
 		  -v          Verbose mode - show detailed output
@@ -62,11 +95,11 @@ show_help() {
 		  -h          Show this help message
 
 		Examples:
-		  $0 -v       Run with verbose output
-		  $0 -n       Preview what would be done (no changes made)
-		  $0 -vn      Verbose dry-run
-		  $0 -y       Run non-interactively (auto-accept prompts)
-		  $0 -ny      Dry-run without prompts (for testing)
+		  sudo $0 -v       Run with verbose output
+		  sudo $0 -n       Preview what would be done (no changes made)
+		  sudo $0 -vn      Verbose dry-run
+		  sudo $0 -y       Run non-interactively (auto-accept prompts)
+		  sudo $0 -ny      Dry-run without prompts (for testing)
 	EOF
 	exit 0
 }
@@ -171,7 +204,8 @@ function linux_package() {
 # pkgcommands[1] = "$pkgmgr $pkgupdate"
 
 # ======== sanity check ======== #
-log_message "INFO" "setting up dotfiles for '$me' in '$basedir'" "true"
+log_message "INFO" "Detected user: $me (home: $myhome)" "true"
+log_message "INFO" "Setting up dotfiles in '$basedir'" "true"
 if $auto_yes; then
 	log_message "INFO" "Auto-yes mode enabled, continuing..." "true"
 else
