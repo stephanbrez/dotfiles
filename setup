@@ -32,21 +32,63 @@ bindir="$myhome/.local/bin"
 repourl="https://github.com/stephanbrez/dotfiles.git"
 ARCH=$(uname -m)
 ASME="sudo -u $me"
+
+# ─── Architecture mapping for different package formats ───
+# uname -m returns: x86_64, aarch64, armv7l, etc.
+# dpkg uses: amd64, arm64, armhf, etc.
+# GitHub releases vary: x86_64, arm64, aarch64, etc.
+case "$ARCH" in
+x86_64) ARCH_DEB="amd64" ARCH_GH="x86_64" ;;
+aarch64) ARCH_DEB="arm64" ARCH_GH="arm64" ;;
+armv7l) ARCH_DEB="armhf" ARCH_GH="armv7" ;;
+*) ARCH_DEB="$ARCH" ARCH_GH="$ARCH" ;;
+esac
 # ======== end user options ======== #
 
-# Initialize verbose mode to off
+# Initialize modes
 verbose_mode=false
+dry_run=false
+auto_yes=false
 
 # Parse command-line arguments
-while getopts "v" option; do
+show_help() {
+	cat <<-EOF
+		Usage: $0 [OPTIONS]
+
+		Options:
+		  -v          Verbose mode - show detailed output
+		  -n          Dry-run mode - print commands without executing
+		  -y          Auto-yes mode - skip interactive prompts (for CI/testing)
+		  -h          Show this help message
+
+		Examples:
+		  $0 -v       Run with verbose output
+		  $0 -n       Preview what would be done (no changes made)
+		  $0 -vn      Verbose dry-run
+		  $0 -y       Run non-interactively (auto-accept prompts)
+		  $0 -ny      Dry-run without prompts (for testing)
+	EOF
+	exit 0
+}
+
+while getopts "vnyh" option; do
 	case $option in
 	v) verbose_mode=true ;;
+	n) dry_run=true ;;
+	y) auto_yes=true ;;
+	h) show_help ;;
 	*)
-		echo "Usage: $0 [-v]"
+		echo "Usage: $0 [-v] [-n] [-y] [-h]"
 		exit 1
 		;;
 	esac
 done
+
+if $dry_run; then
+	echo "═══════════════════════════════════════════════"
+	echo "  DRY-RUN MODE - No changes will be made"
+	echo "═══════════════════════════════════════════════"
+fi
 echo "Verbose mode is $verbose_mode"
 
 # ======== helper functions ======== #
@@ -56,6 +98,19 @@ function fail() {
 	printf "\r\033[2K  [ \033[01;31mFAIL\033[0m ] %s\n" "$1"
 	echo ''
 	exit
+}
+
+# ─── Dry-run helper functions ───
+# Print what would be done in dry-run mode
+dry_print() {
+	printf "  [ \033[36mDRY\033[0m ] %s\n" "$1"
+}
+
+# Check if we should skip execution (dry-run mode)
+# Usage: if should_run; then actual_command; fi
+# Or:    should_run && actual_command
+should_run() {
+	! $dry_run
 }
 
 log_message() {
@@ -87,7 +142,14 @@ function linux_package() {
 		pkgmgr="apt"
 		pkginstall="install -y"
 		pkgupdate="update"
-		DARCH=$(dpk --print-architecture)
+		# ─── Detect Debian vs Ubuntu ───
+		if [ -f /etc/os-release ]; then
+			DISTRO_ID=$(grep "^ID=" /etc/os-release | cut -d'=' -f2 | tr -d '"')
+			DISTRO_VERSION=$(grep "^VERSION_ID=" /etc/os-release | cut -d'=' -f2 | tr -d '"')
+		else
+			DISTRO_ID="debian"
+			DISTRO_VERSION="unknown"
+		fi
 	elif [ -x "$(command -v dnf)" ]; then
 		pkgmgr="dnf"
 		pkginstall="install -y"
@@ -110,25 +172,34 @@ function linux_package() {
 
 # ======== sanity check ======== #
 log_message "INFO" "setting up dotfiles for '$me' in '$basedir'" "true"
-while true; do
-	user "Do you want to continue? (y/n): "
-	read -r -n1 yn
-	echo # Move to a new line after reading input
-	case $yn in
-	y | Y)
-		log_message "INFO" "Continuing..." "true"
-		break
-		;;
-	n | N) fail "Exiting." ;;
-	*) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true" ;;
-	esac
-done
+if $auto_yes; then
+	log_message "INFO" "Auto-yes mode enabled, continuing..." "true"
+else
+	while true; do
+		user "Do you want to continue? (y/n): "
+		read -r -n1 yn
+		echo # Move to a new line after reading input
+		case $yn in
+		y | Y)
+			log_message "INFO" "Continuing..." "true"
+			break
+			;;
+		n | N) fail "Exiting." ;;
+		*) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true" ;;
+		esac
+	done
+fi
 
 _echo "creating directories"
-$ASME mkdir -p \
-	"$myhome"/.{config,local} \
-	"$myhome"/.local/{bin,cache,lib,share,src,state}
-$ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
+if should_run; then
+	$ASME mkdir -p \
+		"$myhome"/.{config,local} \
+		"$myhome"/.local/{bin,cache,lib,share,src,state}
+	$ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
+else
+	dry_print "Would create ~/.config, ~/.local and subdirectories"
+	dry_print "Would symlink ~/Documents to ~/.local/docs"
+fi
 
 #########################################
 # Install Packages                      #
@@ -166,30 +237,31 @@ function install_packages() {
 	esac
 
 	_echo "updating package manager"
-	"$pkgmgr" "$pkgupdate"
+	if should_run; then
+		"$pkgmgr" "$pkgupdate"
+	else
+		dry_print "Would run: $pkgmgr $pkgupdate"
+	fi
 
 	# install all the things \o/
 	_echo "installing packages"
-	# build package list
+	# ═════ Distro-neutral packages ═════
 	pkgInstall=(
 		# command line tools
 		bat
 		btop
 		diffutils
 		doxygen
-		fd-find
 		findutils
 		fzf
 		gawk
 		gh
 		git
 		luarocks
-		mawk
 		mc
-		# neovim - Debian version is too old
+		# neovim - installed separately (build from source for apt, pkg mgr for others)
 		ripgrep
 		shellcheck
-		silversearcher-ag
 		stow
 		thefuck
 		tldr
@@ -200,32 +272,23 @@ function install_packages() {
 		automake
 		bash
 		bash-completion
-		build-essential
 		ca-certificates
 		cmake
 		coreutils
 		curl
-		docker.io
+		# docker - installed separately from official Docker repos
 		e2fsprogs
 		ethtool
-		exfatprogs
 		flatpak
 		gcc
 		gettext
-		golang
-		golang-doc
-		golang-src
-		gpg
 		meson
 		ninja-build
 		npm
 		pipx
 		pkgconf
 		python3
-		# python3-neovim - Debian will force old neovim install
 		python3-pip
-		python3-venv
-		secure-delete
 		unzip
 		util-linux
 		wget
@@ -235,157 +298,300 @@ function install_packages() {
 	)
 	case $pkgmgr in
 	apt*)
-		# Debian specific stuff
-		eval "$pkgmgr $pkginstall apt-utils dash debianutils dpkg python3-dev exfat-fuse ttf-dejavu"
+		# ═════ Debian/Ubuntu specific packages ═════
+		# Common for all apt-based distros
+		apt_common="apt-utils bash-completion build-essential dash debianutils dpkg python3-dev python3-venv fd-find silversearcher-ag mawk gpg secure-delete"
+
+		case "$DISTRO_ID" in
+		ubuntu)
+			# Ubuntu-specific packages
+			log_message "INFO" "Installing Ubuntu-specific packages..." "true"
+			# Ubuntu 20.04+ uses exfatprogs, older use exfat-fuse
+			if [[ "${DISTRO_VERSION%%.*}" -ge 20 ]]; then
+				if should_run; then
+					eval "$pkgmgr $pkginstall $apt_common fonts-dejavu exfatprogs"
+				else
+					dry_print "Would install: $apt_common fonts-dejavu exfatprogs"
+				fi
+			else
+				if should_run; then
+					eval "$pkgmgr $pkginstall $apt_common fonts-dejavu exfat-fuse"
+				else
+					dry_print "Would install: $apt_common fonts-dejavu exfat-fuse"
+				fi
+			fi
+			;;
+		debian)
+			# Debian-specific packages
+			log_message "INFO" "Installing Debian-specific packages..." "true"
+			if should_run; then
+				eval "$pkgmgr $pkginstall $apt_common ttf-dejavu exfat-fuse"
+			else
+				dry_print "Would install: $apt_common ttf-dejavu exfat-fuse"
+			fi
+			;;
+		*)
+			# Fallback for other Debian-based distros (Linux Mint, Pop!_OS, etc.)
+			log_message "INFO" "Installing packages for $DISTRO_ID..." "true"
+			if should_run; then
+				eval "$pkgmgr $pkginstall $apt_common fonts-dejavu exfat-fuse"
+			else
+				dry_print "Would install: $apt_common fonts-dejavu exfat-fuse"
+			fi
+			;;
+		esac
 		;;
 	dnf*)
-		# Fedora specific stuff
-		eval "$pkgmgr $pkginstall dejavu-fonts fuse-exfat python3-devel python3-neovim neovim"
+		# ═════ Fedora/RHEL specific packages ═════
+		log_message "INFO" "Installing Fedora-specific packages..." "true"
+		# fd (not fd-find), the_silver_searcher (not silversearcher-ag), Development Tools group
+		if should_run; then
+			eval "$pkgmgr groupinstall -y 'Development Tools'"
+			eval "$pkgmgr $pkginstall dejavu-fonts exfat-utils fd-find the_silver_searcher gnupg2 srm python3-neovim neovim"
+		else
+			dry_print "Would install group: Development Tools"
+			dry_print "Would install: dejavu-fonts exfat-utils fd-find the_silver_searcher gnupg2 srm python3-neovim neovim"
+		fi
 		;;
 	esac
-	eval "$pkgmgr $pkginstall ${pkgInstall[*]}"
+
+	# Install distro-neutral packages
+	if should_run; then
+		eval "$pkgmgr $pkginstall ${pkgInstall[*]}"
+	else
+		dry_print "Would install distro-neutral packages: ${pkgInstall[*]}"
+	fi
 
 	# manually add apt sources
-	mkdir -p /etc/apt/keyrings
-	# add flatpak repo
-	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+	if should_run; then
+		mkdir -p /etc/apt/keyrings
+		# add flatpak repo
+		flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+	else
+		dry_print "Would create /etc/apt/keyrings and add flatpak repo"
+	fi
+
+	# ======== install Docker ======== #
+	_echo "installing Docker from official repository"
+	if [[ "$pkgmgr" == "apt" ]]; then
+		# ─── Docker for Debian/Ubuntu ───
+		if should_run; then
+			# Add Docker's official GPG key
+			curl -fsSL "https://download.docker.com/linux/$DISTRO_ID/gpg" -o /etc/apt/keyrings/docker.asc
+			chmod a+r /etc/apt/keyrings/docker.asc
+
+			# Add Docker repository
+			distro=$(lsb_release -c | awk '{print $2}')
+			echo "deb [arch=$ARCH_DEB signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$DISTRO_ID $distro stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+			# Install Docker Engine
+			apt update && apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+			systemctl enable --now docker
+			log_message "SUCCESS" "Docker installed from official repository"
+		else
+			dry_print "Would add Docker GPG key and repository for $DISTRO_ID"
+			dry_print "Would install: docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
+			dry_print "Would enable docker service"
+		fi
+	elif [[ "$pkgmgr" == "dnf" ]]; then
+		# ─── Docker for Fedora ───
+		if should_run; then
+			dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo
+			dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+			systemctl enable --now docker
+			log_message "SUCCESS" "Docker installed from official repository"
+		else
+			dry_print "Would add Docker CE repository for Fedora"
+			dry_print "Would install: docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
+			dry_print "Would enable docker service"
+		fi
+	else
+		log_message "WARNING" "Docker installation not configured for $pkgmgr" "true"
+	fi
 
 	# ======== install 1password ======== #
 	_echo "installing 1password"
-	curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg &&
-		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | tee /etc/apt/sources.list.d/1password.list
-	mkdir -p /etc/debsig/policies/AC2D62742012EA22/ &&
-		curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
-	mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 &&
-		curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
-	apt update && apt install -y 1password 1password-cli
+	if should_run; then
+		curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg &&
+			echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | tee /etc/apt/sources.list.d/1password.list
+		mkdir -p /etc/debsig/policies/AC2D62742012EA22/ &&
+			curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
+		mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 &&
+			curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
+		apt update && apt install -y 1password 1password-cli
+	else
+		dry_print "Would add 1password repository and install 1password 1password-cli"
+	fi
 
 	# ======== install eza ======== #
 	_echo "installing eza"
-	wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-	echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | tee /etc/apt/sources.list.d/gierens.list
-	chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-	apt update && apt install -y eza
+	if should_run; then
+		wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+		echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | tee /etc/apt/sources.list.d/gierens.list
+		chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+		apt update && apt install -y eza
+	else
+		dry_print "Would add eza repository and install eza"
+	fi
 
 	# ======== install miniconda ======== #
-	curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor -o /usr/share/keyrings/conda-archive-keyring.gpg &&
-		# Check whether fingerprint is correct (will output an error message otherwise)
-		gpg --keyring /usr/share/keyrings/conda-archive-keyring.gpg --no-default-keyring --fingerprint 34161F5BF5EB1D4BFBBB8F0A8AEB4F8B29D82806
-	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" | tee -a /etc/apt/sources.list.d/conda.list >/dev/null
-	apt update && apt install -y conda
+	_echo "installing miniconda"
+	if should_run; then
+		curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor -o /usr/share/keyrings/conda-archive-keyring.gpg &&
+			# Check whether fingerprint is correct (will output an error message otherwise)
+			gpg --keyring /usr/share/keyrings/conda-archive-keyring.gpg --no-default-keyring --fingerprint 34161F5BF5EB1D4BFBBB8F0A8AEB4F8B29D82806
+		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" | tee -a /etc/apt/sources.list.d/conda.list >/dev/null
+		apt update && apt install -y conda
+	else
+		dry_print "Would add conda repository and install conda"
+	fi
 
 	# ======== install fastfetch ======== #
 	_echo "installing fastfetch"
-	curl -Lo fastfetch-linux.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb" &&
-		dpkg -i fastfetch-linux.deb &&
-		rm -rf fastfetch-linux.deb
+	if should_run; then
+		curl -Lo fastfetch-linux.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb" &&
+			dpkg -i fastfetch-linux.deb &&
+			rm -rf fastfetch-linux.deb
+	else
+		dry_print "Would download and install fastfetch"
+	fi
 
 	# ======== install fzf ======== #
-	# _echo "installing fzf"
-	# $ASME git clone --depth 1 https://github.com/junegunn/fzf.git "$myhome"/.fzf &&
-	# 	$ASME "$myhome"/.fzf/install
 	_echo "updating fzf"
-	FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-	$ASME curl -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-${FZF_VERSION}-linux_$(dpkg --print-architecture).tar.gz" -o "$myhome/.local/src/fzf.tar.gz"
-	tar xzf "$myhome/.local/src/fzf.tar.gz" -C /usr/bin/ fzf &&
-		chmod +x /usr/bin/fzf &&
-		rm "$myhome/.local/src/fzf.tar.gz"
+	if should_run; then
+		FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+		$ASME curl -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-${FZF_VERSION}-linux_$(dpkg --print-architecture).tar.gz" -o "$myhome/.local/src/fzf.tar.gz"
+		tar xzf "$myhome/.local/src/fzf.tar.gz" -C /usr/bin/ fzf &&
+			chmod +x /usr/bin/fzf &&
+			rm "$myhome/.local/src/fzf.tar.gz"
+	else
+		dry_print "Would download and install latest fzf"
+	fi
 
 	# ======== install glow ======== #
 	_echo "installing glow"
-	curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
-	echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | tee /etc/apt/sources.list.d/charm.list
-	apt update && apt install glow
+	if should_run; then
+		curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+		echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | tee /etc/apt/sources.list.d/charm.list
+		apt update && apt install glow
+	else
+		dry_print "Would add charm repository and install glow"
+	fi
 
 	# ======== install lazydocker ======== #
-	curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
-	# prepare the download URL
-	GITHUB_LATEST_VERSION=$(curl -L -s -H 'Accept: application/json' https://github.com/jesseduffield/lazydocker/releases/latest | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
-	GITHUB_FILE="lazydocker_${GITHUB_LATEST_VERSION//v/}_$(uname -s)_${ARCH}.tar.gz"
-	GITHUB_URL="https://github.com/jesseduffield/lazydocker/releases/download/${GITHUB_LATEST_VERSION}/${GITHUB_FILE}"
+	_echo "installing lazydocker"
+	if should_run; then
+		# prepare the download URL
+		GITHUB_LATEST_VERSION=$(curl -L -s -H 'Accept: application/json' https://github.com/jesseduffield/lazydocker/releases/latest | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
+		GITHUB_FILE="lazydocker_${GITHUB_LATEST_VERSION//v/}_$(uname -s)_${ARCH_GH}.tar.gz"
+		GITHUB_URL="https://github.com/jesseduffield/lazydocker/releases/download/${GITHUB_LATEST_VERSION}/${GITHUB_FILE}"
 
-	# install/update the local binary
-	curl -L -o lazydocker.tar.gz "$GITHUB_URL"
-	tar xzvf lazydocker.tar.gz lazydocker
-	install -Dm 755 lazydocker -t "/usr/local/bin"
-	rm lazydocker lazydocker.tar.gz#
+		# install/update the local binary
+		curl -L -o lazydocker.tar.gz "$GITHUB_URL"
+		tar xzvf lazydocker.tar.gz lazydocker
+		install -Dm 755 lazydocker -t "/usr/local/bin"
+		rm lazydocker lazydocker.tar.gz
+	else
+		dry_print "Would download and install lazydocker"
+	fi
 
 	# ======== install lazygit ======== #
 	_echo "installing lazygit"
-	LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-	curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-	tar xf lazygit.tar.gz lazygit
-	install lazygit /usr/local/bin
-	rm -rf lazygit.tar.gz
-	rm -rf lazygit
+	if should_run; then
+		LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+		curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_${ARCH_GH}.tar.gz"
+		tar xf lazygit.tar.gz lazygit
+		install lazygit /usr/local/bin
+		rm -rf lazygit.tar.gz
+		rm -rf lazygit
+	else
+		dry_print "Would download and install lazygit"
+	fi
 
 	# ======== install neovim ======== #
-	_echo "building neovim"
-	# build from source because debian is old
-	$ASME git clone https://github.com/neovim/neovim "$myhome"/.local/src/neovim &&
-		cd "$myhome"/.local/src/neovim &&
-		git checkout stable &&
-		make CMAKE_BUILD_TYPE=RelWithDebInfo &&
-		cd build &&
-		cpack -G DEB &&
-		dpkg -i nvim-linux-x86_64.deb
-
-	# ======== install openvpn ======== #
-	_echo "installing openvpn"
-	curl -sSfL https://packages.openvpn.net/packages-repo.gpg | tee /etc/apt/keyrings/openvpn.asc
-	echo "deb [signed-by=/etc/apt/keyrings/openvpn.asc] https://packages.openvpn.net/openvpn3/debian $distro main" | tee /etc/apt/sources.list.d/openvpn3.list
-	apt update && apt install -y openvpn3
+	# Build from source for Debian/Ubuntu (outdated repos)
+	# Other distros like Fedora use package manager version
+	if [[ "$pkgmgr" == "apt" ]]; then
+		_echo "building neovim from source"
+		if should_run; then
+			$ASME git clone https://github.com/neovim/neovim "$myhome"/.local/src/neovim &&
+				cd "$myhome"/.local/src/neovim &&
+				git checkout stable &&
+				make CMAKE_BUILD_TYPE=RelWithDebInfo &&
+				cd build &&
+				cpack -G DEB &&
+				dpkg -i nvim-linux-"${ARCH_GH}".deb
+		else
+			dry_print "Would clone neovim repo and build from source"
+			dry_print "Would install nvim-linux-${ARCH_GH}.deb"
+		fi
+	else
+		log_message "INFO" "Skipping neovim build - using package manager version" "true"
+	fi
 
 	# ======== install wezterm ======== #
 	_echo "installing wezterm"
-	curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
-	echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
-	apt update && apt install wezterm
+	if should_run; then
+		curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+		echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
+		apt update && apt install wezterm
+	else
+		dry_print "Would add wezterm repository and install wezterm"
+	fi
 
 	# ======== install zoxide ======== #
-	# debian only
 	_echo "installing zoxide"
-	$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
+	if should_run; then
+		$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
+	else
+		dry_print "Would download and run zoxide install script"
+	fi
 
 	# ======== install extra python apps ======== #
 	_echo "setting up python + pip"
-	$ASME pipx ensurepath    # add bin path to bash - aka $bindir
-	pipx ensurepath --global # optional to allow pipx actions with --global argument
-	$ASME pipx install docutils
-	$ASME pipx install emoji-fzf
-	# install python neovim after neovim because debian will install old neovim
-	eval "$pkgmgr $pkginstall python3-neovim"
+	if should_run; then
+		$ASME pipx ensurepath    # add bin path to bash - aka $bindir
+		pipx ensurepath --global # optional to allow pipx actions with --global argument
+		$ASME pipx install docutils
+		$ASME pipx install emoji-fzf
+		# install python neovim after neovim because debian will install old neovim
+		eval "$pkgmgr $pkginstall python3-neovim"
+	else
+		dry_print "Would configure pipx and install: docutils emoji-fzf python3-neovim"
+	fi
 
 	# ======== Fun stuff ======== #
 	_echo "setting up ascii/ansi art tools"
-	rm -rf /usr/share/figlet/
-	git clone --depth=1 https://github.com/xero/figlet-fonts.git /usr/share/figlet/
-	$ASME git clone --depth=1 https://github.com/digitallyserviced/tdfgo.git "$myhome"/.local/src/tdfgo &&
-		cd "$myhome"/.local/src/tdfgo &&
-		$ASME go build &&
-		mv ./tdfgo "$myhome"/.local/bin/tdfgo &&
-		chmod +x "$myhome"/.local/bin/tdfgo &&
-		mkdir -p "$myhome"/.config/tdfgo &&
-		mv ./fonts "$myhome"/.config/tdfgo/fonts
+	if should_run; then
+		rm -rf /usr/share/figlet/
+		git clone --depth=1 https://github.com/xero/figlet-fonts.git /usr/share/figlet/
+	else
+		dry_print "Would install figlet fonts to /usr/share/figlet/"
+	fi
 }
 
-while true; do
-	user "Do you want to install packages? (y/n): "
-	read -r -n1 yn
-	echo # Move to a new line after reading input
-	case $yn in
-	[Yy]*)
-		log_message "INFO" "Continuing with package install..." "true"
-		install_packages
-		break
-		;;
-	[Nn]*)
-		log_message "INFO" "Skipping package install." "true"
-		break
-		;;
-	*) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true" ;;
-	esac
-done
+if $auto_yes; then
+	log_message "INFO" "Auto-yes mode: installing packages..." "true"
+	install_packages
+else
+	while true; do
+		user "Do you want to install packages? (y/n): "
+		read -r -n1 yn
+		echo # Move to a new line after reading input
+		case $yn in
+		[Yy]*)
+			log_message "INFO" "Continuing with package install..." "true"
+			install_packages
+			break
+			;;
+		[Nn]*)
+			log_message "INFO" "Skipping package install." "true"
+			break
+			;;
+		*) log_message "WARNING" "Invalid response. Please enter 'y' or 'n'." "true" ;;
+		esac
+	done
+fi
 
 #########################################
 # Setup                                 #
@@ -393,61 +599,82 @@ done
 
 # ======== setup dotfiles ======== #
 _echo "setting up dotfiles"
-if [ -d "$basedir/.git" ]; then
-	log_message "INFO" "Updating dotfiles using existing git..."
-	cd "$basedir" &&
-		$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
-	stowaway-check "$basedir" "$myhome"
-else
-	log_message "INFO" "Checking out dotfiles using git..."
-	rm -rf "$basedir"
-	$ASME git clone --quiet "$repourl" "$basedir" &&
+if should_run; then
+	if [ -d "$basedir/.git" ]; then
+		log_message "INFO" "Updating dotfiles using existing git..."
 		cd "$basedir" &&
+			$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
 		stowaway-check "$basedir" "$myhome"
+	else
+		log_message "INFO" "Checking out dotfiles using git..."
+		rm -rf "$basedir"
+		$ASME git clone --quiet "$repourl" "$basedir" &&
+			cd "$basedir" &&
+			stowaway-check "$basedir" "$myhome"
+	fi
+else
+	dry_print "Would clone/update dotfiles from $repourl"
+	dry_print "Would run stowaway-check"
 fi
 
 # ======== setup fd ======== #
 # debian only
-ln -s "$(which fdfind)" "$bindir"/fd
+if should_run; then
+	ln -s "$(which fdfind)" "$bindir"/fd
+else
+	dry_print "Would symlink fdfind to $bindir/fd"
+fi
 
 # ======== setup git ======== #
-# Git config name
-echo "Please enter your FULL NAME for Git configuration:"
-read -r git_user_name
+if should_run; then
+	# Git config name
+	echo "Please enter your FULL NAME for Git configuration:"
+	read -r git_user_name
 
-# Git config email
-echo "Please enter your EMAIL for Git configuration:"
-read -r git_user_email
+	# Git config email
+	echo "Please enter your EMAIL for Git configuration:"
+	read -r git_user_email
 
-# Set git credentials
-git config --global user.name "$git_user_name"
-git config --global user.email "$git_user_email"
-log_message "SUCCESS" "gitconfig"
+	# Set git credentials
+	git config --global user.name "$git_user_name"
+	git config --global user.email "$git_user_email"
+	log_message "SUCCESS" "gitconfig"
+else
+	dry_print "Would prompt for git user.name and user.email"
+fi
 
 # ======== setup tmux ======== #
 _echo "setting up tmux"
-if which tmux >/dev/null 2>&1; then
-	tpm="$myhome/.tmux/plugins/tpm"
-	$ASME mkdir -p "$tpm"
-	if [ -e "$myhome/.config/tmux/plugins/tpm" ]; then
-		mv "$myhome/.config/tmux/plugins/tpm" "$tpm"
-		pushd "$tpm" >/dev/null &&
-			$ASME git pull -q origin master &&
-			popd >/dev/null || return
+if should_run; then
+	if which tmux >/dev/null 2>&1; then
+		tpm="$myhome/.tmux/plugins/tpm"
+		$ASME mkdir -p "$tpm"
+		if [ -e "$myhome/.config/tmux/plugins/tpm" ]; then
+			mv "$myhome/.config/tmux/plugins/tpm" "$tpm"
+			pushd "$tpm" >/dev/null &&
+				$ASME git pull -q origin master &&
+				popd >/dev/null || return
+		else
+			$ASME git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm" &&
+				$ASME "$tpm"/scripts/install_plugins.sh >/dev/null &&
+				$ASME "$tpm"/scripts/clean_plugins.sh >/dev/null &&
+				$ASME "$tpm"/scripts/update_plugin.sh >/dev/null
+		fi
 	else
-		$ASME git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm" &&
-			$ASME "$tpm"/scripts/install_plugins.sh >/dev/null &&
-			$ASME "$tpm"/scripts/clean_plugins.sh >/dev/null &&
-			$ASME "$tpm"/scripts/update_plugin.sh >/dev/null
+		fail "Skipping tmux setup because tmux isn't installed."
 	fi
 else
-	fail "Skipping tmux setup because tmux isn't installed."
+	dry_print "Would setup tmux plugin manager (tpm)"
 fi
 
 # ======== zsh ======== #
 _echo "setting up zsh"
-if which zsh >/dev/null 2>&1; then
-	$ASME chsh -s "$(which zsh)"
+if should_run; then
+	if which zsh >/dev/null 2>&1; then
+		$ASME chsh -s "$(which zsh)"
+	fi
+else
+	dry_print "Would change default shell to zsh"
 fi
 
 #########################################
