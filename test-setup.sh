@@ -115,7 +115,7 @@ done
 test_distro() {
     local distro=$1
     local image=""
-    local setup_cmd=""
+    local base_setup=""
     local setup_flags="-y"  # Always use auto-yes for non-interactive testing
 
     # Add dry-run flag if requested
@@ -124,21 +124,29 @@ test_distro() {
     case $distro in
         ubuntu)
             image="ubuntu:24.04"
-            setup_cmd="apt-get update && apt-get install -y sudo lsb-release && cd /root/.dotfiles && bash setup $setup_flags"
+            base_setup="apt-get update && apt-get install -y sudo lsb-release git"
             ;;
         debian)
             image="debian:bookworm"
-            setup_cmd="apt-get update && apt-get install -y sudo lsb-release && cd /root/.dotfiles && bash setup $setup_flags"
+            base_setup="apt-get update && apt-get install -y sudo lsb-release git"
             ;;
         fedora)
             image="fedora:latest"
-            setup_cmd="cd /root/.dotfiles && bash setup $setup_flags"
+            base_setup="dnf install -y sudo git"
             ;;
         *)
             print_error "Unknown distro: $distro"
             return 1
             ;;
     esac
+
+    # ─── Create test user and run setup with sudo ───
+    # Replicates real scenario: regular user runs 'sudo ./setup' on fresh machine
+    # Script runs as root via sudo, detects real user via $SUDO_USER
+    local setup_cmd="$base_setup && \
+        useradd -m -s /bin/bash testuser && \
+        echo 'testuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/testuser && \
+        su - testuser -c \"sudo bash /tmp/setup $setup_flags\""
 
     local logfile="$LOG_DIR/${distro}_${TIMESTAMP}.log"
 
@@ -147,35 +155,44 @@ test_distro() {
 
     if [[ -n "$INTERACTIVE" ]]; then
         print_warning "Starting interactive container..."
-        print_warning "Run 'cd /root/.dotfiles && bash setup -n' to test"
+        print_warning "Logged in as testuser (use 'sudo /tmp/setup -n' to test)"
         docker run --rm -it \
-            -v "$DOTFILES_DIR:/root/.dotfiles:ro" \
+            -v "$DOTFILES_DIR/setup:/tmp/setup:ro" \
             "$image" \
-            bash
+            bash -c "$base_setup && \
+                useradd -m -s /bin/bash testuser && \
+                echo 'testuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/testuser && \
+                su - testuser"
     else
-        echo "Starting test at $(date)" > "$logfile"
-        echo "Distro: $distro" >> "$logfile"
-        echo "Image: $image" >> "$logfile"
-        echo "Command: $setup_cmd" >> "$logfile"
-        echo "════════════════════════════════════════" >> "$logfile"
-        echo "" >> "$logfile"
+        {
+            echo "Starting test at $(date)"
+            echo "Distro: $distro"
+            echo "Image: $image"
+            echo "Command: $setup_cmd"
+            echo "════════════════════════════════════════"
+            echo ""
+        } > "$logfile"
 
         print_info "Running test... (output redirected to log)"
 
         if docker run --rm \
-            -v "$DOTFILES_DIR:/root/.dotfiles:ro" \
+            -v "$DOTFILES_DIR/setup:/tmp/setup:ro" \
             "$image" \
             bash -c "$setup_cmd" >> "$logfile" 2>&1; then
-            echo "" >> "$logfile"
-            echo "════════════════════════════════════════" >> "$logfile"
-            echo "Test completed successfully at $(date)" >> "$logfile"
+            {
+                echo ""
+                echo "════════════════════════════════════════"
+                echo "Test completed successfully at $(date)"
+            } >> "$logfile"
             print_success "$distro test passed"
             print_info "Full log: $logfile"
             return 0
         else
-            echo "" >> "$logfile"
-            echo "════════════════════════════════════════" >> "$logfile"
-            echo "Test failed at $(date)" >> "$logfile"
+            {
+                echo ""
+                echo "════════════════════════════════════════"
+                echo "Test failed at $(date)"
+            } >> "$logfile"
             print_error "$distro test failed"
             print_error "Check log for details: $logfile"
             return 1

@@ -585,7 +585,6 @@ function install_packages() {
 	_echo "setting up python + pip"
 	if should_run; then
 		$ASME pipx ensurepath    # add bin path to bash - aka $bindir
-		pipx ensurepath --global # optional to allow pipx actions with --global argument
 		$ASME pipx install docutils
 		$ASME pipx install emoji-fzf
 		# install python neovim after neovim because debian will install old neovim
@@ -638,13 +637,13 @@ if should_run; then
 		log_message "INFO" "Updating dotfiles using existing git..."
 		cd "$basedir" &&
 			$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
-		stowaway-check "$basedir" "$myhome"
+		"$basedir/bin/.local/bin/stowaway-check" "$basedir" "$myhome"
 	else
 		log_message "INFO" "Checking out dotfiles using git..."
 		rm -rf "$basedir"
 		$ASME git clone --quiet "$repourl" "$basedir" &&
 			cd "$basedir" &&
-			stowaway-check "$basedir" "$myhome"
+			"$basedir/bin/.local/bin/stowaway-check" "$basedir" "$myhome"
 	fi
 else
 	dry_print "Would clone/update dotfiles from $repourl"
@@ -654,6 +653,7 @@ fi
 # ======== setup fd ======== #
 # debian only
 if should_run; then
+	mkdir -p "$bindir"
 	ln -s "$(which fdfind)" "$bindir"/fd
 else
 	dry_print "Would symlink fdfind to $bindir/fd"
@@ -661,18 +661,22 @@ fi
 
 # ======== setup git ======== #
 if should_run; then
-	# Git config name
-	echo "Please enter your FULL NAME for Git configuration:"
-	read -r git_user_name
+	if ! $auto_yes; then
+		# Git config name
+		echo "Please enter your FULL NAME for Git configuration:"
+		read -r git_user_name
 
-	# Git config email
-	echo "Please enter your EMAIL for Git configuration:"
-	read -r git_user_email
+		# Git config email
+		echo "Please enter your EMAIL for Git configuration:"
+		read -r git_user_email
 
-	# Set git credentials
-	git config --global user.name "$git_user_name"
-	git config --global user.email "$git_user_email"
-	log_message "SUCCESS" "gitconfig"
+		# Set git credentials
+		git config --global user.name "$git_user_name"
+		git config --global user.email "$git_user_email"
+		log_message "SUCCESS" "gitconfig"
+	else
+		log_message "INFO" "Skipping git config in auto-yes mode"
+	fi
 else
 	dry_print "Would prompt for git user.name and user.email"
 fi
@@ -705,7 +709,7 @@ fi
 _echo "setting up zsh"
 if should_run; then
 	if which zsh >/dev/null 2>&1; then
-		$ASME chsh -s "$(which zsh)"
+		chsh -s "$(which zsh)" "$me"
 	fi
 else
 	dry_print "Would change default shell to zsh"
