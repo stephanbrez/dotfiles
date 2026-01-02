@@ -285,14 +285,9 @@ function install_packages() {
 		bat
 		btop
 		diffutils
-		doxygen
-		findutils
 		fzf
-		gawk
 		gh
 		git
-		luarocks
-		mc
 		# neovim - installed separately (build from source for apt, pkg mgr for others)
 		ripgrep
 		shellcheck
@@ -304,11 +299,9 @@ function install_packages() {
 		zsh
 		# system/server tools
 		automake
-		bash
 		bash-completion
 		ca-certificates
 		cmake
-		coreutils
 		curl
 		# docker - installed separately from official Docker repos
 		e2fsprogs
@@ -324,8 +317,6 @@ function install_packages() {
 		python3
 		python3-pip
 		unzip
-		util-linux
-		wget
 		wl-clipboard
 		# fun
 		toilet
@@ -334,7 +325,7 @@ function install_packages() {
 	apt*)
 		# ═════ Debian/Ubuntu specific packages ═════
 		# Common for all apt-based distros
-		apt_common="apt-utils bash-completion build-essential dash debianutils dpkg python3-dev python3-venv fd-find silversearcher-ag mawk gpg secure-delete"
+		apt_common="build-essential python3-dev python3-venv fd-find silversearcher-ag secure-delete"
 
 		case "$DISTRO_ID" in
 		ubuntu)
@@ -416,7 +407,7 @@ function install_packages() {
 
 			# Add Docker repository
 			distro=$(lsb_release -c | awk '{print $2}')
-			echo "deb [arch=$ARCH_DEB signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$DISTRO_ID $distro stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+			echo "deb [arch=$ARCH_DEB signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$DISTRO_ID $distro stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
 
 			# Install Docker Engine
 			apt update && apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -469,16 +460,16 @@ function install_packages() {
 	fi
 
 	# ======== install miniconda ======== #
-	_echo "installing miniconda"
-	if should_run; then
-		curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor -o /usr/share/keyrings/conda-archive-keyring.gpg &&
-			# Check whether fingerprint is correct (will output an error message otherwise)
-			gpg --keyring /usr/share/keyrings/conda-archive-keyring.gpg --no-default-keyring --fingerprint 34161F5BF5EB1D4BFBBB8F0A8AEB4F8B29D82806
-		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" | tee -a /etc/apt/sources.list.d/conda.list >/dev/null
-		apt update && apt install -y conda
-	else
-		dry_print "Would add conda repository and install conda"
-	fi
+	# _echo "installing miniconda"
+	# if should_run; then
+	# 	curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor -o /usr/share/keyrings/conda-archive-keyring.gpg &&
+	# 		# Check whether fingerprint is correct (will output an error message otherwise)
+	# 		gpg --keyring /usr/share/keyrings/conda-archive-keyring.gpg --no-default-keyring --fingerprint 34161F5BF5EB1D4BFBBB8F0A8AEB4F8B29D82806
+	# 	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" | tee -a /etc/apt/sources.list.d/conda.list >/dev/null
+	# 	apt update && apt install -y conda
+	# else
+	# 	dry_print "Would add conda repository and install conda"
+	# fi
 
 	# ======== install fastfetch ======== #
 	_echo "installing fastfetch"
@@ -503,14 +494,14 @@ function install_packages() {
 	fi
 
 	# ======== install glow ======== #
-	_echo "installing glow"
-	if should_run; then
-		curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
-		echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | tee /etc/apt/sources.list.d/charm.list
-		apt update && apt install glow
-	else
-		dry_print "Would add charm repository and install glow"
-	fi
+	# _echo "installing glow"
+	# if should_run; then
+	# 	curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+	# 	echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | tee /etc/apt/sources.list.d/charm.list
+	# 	apt update && apt install glow
+	# else
+	# 	dry_print "Would add charm repository and install glow"
+	# fi
 
 	# ======== install lazydocker ======== #
 	_echo "installing lazydocker"
@@ -584,7 +575,7 @@ function install_packages() {
 	# ======== install extra python apps ======== #
 	_echo "setting up python + pip"
 	if should_run; then
-		$ASME pipx ensurepath    # add bin path to bash - aka $bindir
+		$ASME pipx ensurepath # add bin path to bash - aka $bindir
 		$ASME pipx install docutils
 		$ASME pipx install emoji-fzf
 		# install python neovim after neovim because debian will install old neovim
