@@ -1,0 +1,159 @@
+# ═══════════════════════════════════════════════════════════════
+# Package Configuration for Dotfiles Setup Script
+# ═══════════════════════════════════════════════════════════════
+# This file defines packages installed by the setup script
+# Organized by distribution and installation mode
+
+metadata:
+  version: "1.0"
+  description: "Package definitions for dotfiles setup script"
+  updated: "2026-01-02"
+
+# ═════ Common Packages (All Distros) ═════
+common:
+  distro_packages:
+    # ─── Command line tools ───
+    - bat
+    - btop
+    - diffutils
+    - fzf
+    - gh
+    - git
+    - ripgrep
+    - shellcheck
+    - stow
+    - thefuck
+    - tldr
+    - tmux
+    - trash-cli
+    - zsh
+    # ─── System/server tools ───
+    - automake
+    - bash-completion
+    - ca-certificates
+    - cmake
+    - curl
+    - e2fsprogs
+    - ethtool
+    - flatpak
+    - gcc
+    - gettext
+    - meson
+    - ninja-build
+    - npm
+    - pipx
+    - pkgconf
+    - python3
+    - python3-pip
+    - unzip
+    - wl-clipboard
+    # ─── Fun ───
+    - toilet
+
+# ═════ Ubuntu-Specific Packages ═════
+ubuntu:
+  minimal:
+    # ─── Distro packages for minimal install ───
+    distro_packages:
+      - build-essential
+      - python3-dev
+      - python3-venv
+      - fd-find
+      - silversearcher-ag
+      - secure-delete
+      - fonts-dejavu
+      - exfatprogs  # Ubuntu 20.04+, earlier versions use exfat-fuse
+
+    # Skip ALL third-party packages in minimal mode
+    skip_third_party: true
+
+  full:
+    # ─── Distro packages for full install ───
+    distro_packages:
+      - build-essential
+      - python3-dev
+      - python3-venv
+      - fd-find
+      - silversearcher-ag
+      - secure-delete
+      - python3-neovim
+      - fonts-dejavu
+      - exfatprogs  # Ubuntu 20.04+
+
+    # ─── Third-party installations ───
+    third_party:
+      docker: true
+      onepassword: true
+      eza: true
+      fastfetch: true
+      lazydocker: true
+      lazygit: true
+      fzf_binary: true
+      neovim_source: true
+      wezterm: true
+      zoxide: true
+
+    # ─── Python/pipx packages ───
+    pipx_packages:
+      - docutils
+      - emoji-fzf
+
+# ═════ Debian-Specific Packages ═════
+debian:
+  full:
+    # ─── Distro packages for full install ───
+    distro_packages:
+      - build-essential
+      - python3-dev
+      - python3-venv
+      - fd-find
+      - silversearcher-ag
+      - secure-delete
+      - python3-neovim
+      - ttf-dejavu  # Different from Ubuntu (ttf- vs fonts-)
+      - exfat-fuse  # Debian uses exfat-fuse (not exfatprogs)
+
+    # ─── Third-party installations ───
+    third_party:
+      docker: true
+      onepassword: true
+      eza: true
+      fastfetch: true
+      lazydocker: true
+      lazygit: true
+      fzf_binary: true
+      neovim_source: true
+      wezterm: true
+      zoxide: true
+
+    # ─── Python/pipx packages ───
+    pipx_packages:
+      - docutils
+      - emoji-fzf
+
+# ═════ Fedora-Specific Packages ═════
+fedora:
+  full:
+    # ─── Distro packages for full install ───
+    distro_packages:
+      - dejavu-fonts
+      - exfat-utils
+      - fd-find
+      - the_silver_searcher  # Different from ag
+      - gnupg2
+      - srm  # Different from secure-delete
+      - python3-neovim
+      - neovim  # Fedora has current version in repos
+
+    # ─── Group packages ───
+    group_packages:
+      - Development Tools
+
+    # ─── Third-party installations ───
+    third_party:
+      docker: true
+      # Note: 1password, eza, wezterm may not be available for Fedora
+      # fastfetch: true
+      # lazydocker: true
+      # lazygit: true
+      # zoxide: true
