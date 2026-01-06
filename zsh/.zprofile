@@ -22,6 +22,9 @@
 # Force XDG specification compliance: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest
 
 
+# You may need to manually set your language environment
+export LANG=en_US.UTF-8
+
 # follow XDG base dir specification
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -32,6 +35,15 @@ export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 
 # default programs
 export EDITOR="nvim"
+# --- config ----
+# export MANPATH="/usr/local/man:$MANPATH"
+
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
 # export TERM="/usr/bin/open-wezterm-here"
 # export TERMINAL="/usr/bin/open-wezterm-here"
 # export MUSPLAYER="termusic"
