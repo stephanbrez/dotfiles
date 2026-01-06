@@ -377,6 +377,7 @@ EOF
 		return 1
 	fi
 
+	log_message "INFO" "YAML parsed output: $python_output" "true"
 	eval "$python_output"
 	return 0
 }
@@ -496,6 +497,8 @@ function install_packages() {
 	fi
 
 	# ─── Install third-party packages based on YAML config flags ───
+	log_message "INFO" "Third-party flags: DOCKER=$INSTALL_DOCKER, EZA=$INSTALL_EZA, FASTFETCH=$INSTALL_FASTFETCH" "true"
+	log_message "INFO" "Third-party flags: LAZYGIT=$INSTALL_LAZYGIT, NEOVIM=$INSTALL_NEOVIM_SOURCE, UV=$INSTALL_UV" "true"
 	[[ "$INSTALL_DOCKER" == "true" ]] && install_docker
 	[[ "$INSTALL_ONEPASSWORD" == "true" ]] && install_onepassword
 	[[ "$INSTALL_EZA" == "true" ]] && install_eza
@@ -545,23 +548,19 @@ fi
 #########################################
 
 # ======== setup dotfiles ======== #
+# ❗ IMPORTANT: User must clone the repo before running setup
+# Usage: git clone https://github.com/stephanbrez/dotfiles.git ~/.dotfiles
+#        sudo ~/.dotfiles/setup
 _echo "setting up dotfiles"
 if should_run; then
-	if [ -d "$basedir/.git" ]; then
-		log_message "INFO" "Updating dotfiles using existing git..."
-		cd "$basedir" &&
-			$ASME git pull --quiet --rebase origin main || exit 1 # no use continuing if git pull fails
+	if [ -d "$basedir" ]; then
+		log_message "INFO" "Symlinking dotfiles with stow..."
 		"$basedir/bin/.local/bin/stowaway-check" "$basedir" "$myhome"
 	else
-		log_message "INFO" "Checking out dotfiles using git..."
-		rm -rf "$basedir"
-		$ASME git clone --quiet "$repourl" "$basedir" &&
-			cd "$basedir" &&
-			"$basedir/bin/.local/bin/stowaway-check" "$basedir" "$myhome"
+		fail "Dotfiles not found at $basedir. Please clone the repo first:\n  git clone $repourl $basedir"
 	fi
 else
-	dry_print "Would clone/update dotfiles from $repourl"
-	dry_print "Would run stowaway-check"
+	dry_print "Would run stowaway-check to symlink dotfiles"
 fi
 
 # ======== setup fd ======== #

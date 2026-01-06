@@ -156,14 +156,13 @@ test_distro() {
     esac
 
     # ─── Create test user and run setup with sudo ───
-    # Replicates real scenario: regular user runs 'sudo ./setup' on fresh machine
-    # Script runs as root via sudo, detects real user via $SUDO_USER
-    # Mount dotfiles to staging dir, then copy to user's home so setup can source
-    # installers/*.sh and read packages.yaml (git clone happens after sourcing)
+    # Simulates: user clones repo with 'git clone <url> ~/.dotfiles', then runs 'sudo ./setup'
+    # Copy full repo (excluding .git) to simulate a fresh clone
     local setup_cmd="$base_setup && \
         useradd -m -s /bin/bash testuser && \
         echo 'testuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/testuser && \
-        cp -r /tmp/dotfiles-src /home/testuser/.dotfiles && \
+        mkdir -p /home/testuser/.dotfiles && \
+        tar -C /tmp/dotfiles-src --exclude='.git' --exclude='test-logs' -cf - . | tar -xf - -C /home/testuser/.dotfiles && \
         chown -R testuser:testuser /home/testuser/.dotfiles && \
         su - testuser -c \"sudo bash /home/testuser/.dotfiles/setup $setup_flags\""
 
@@ -181,7 +180,8 @@ test_distro() {
             bash -c "$base_setup && \
                 useradd -m -s /bin/bash testuser && \
                 echo 'testuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/testuser && \
-                cp -r /tmp/dotfiles-src /home/testuser/.dotfiles && \
+                mkdir -p /home/testuser/.dotfiles && \
+                tar -C /tmp/dotfiles-src --exclude='.git' --exclude='test-logs' -cf - . | tar -xf - -C /home/testuser/.dotfiles && \
                 chown -R testuser:testuser /home/testuser/.dotfiles && \
                 su - testuser"
     else
