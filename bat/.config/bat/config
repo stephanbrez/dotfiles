@@ -3,11 +3,11 @@
 # run `bat --help` to get a list of all possible configuration options.
 
 # Show line numbers, Git modifications and file header (but no grid)
---style="numbers,changes,header"
+--style="numbers,changes,header,grid"
 
 # Specify desired highlighting theme (e.g. "TwoDark"). Run `bat --list-themes`
 # for a list of all available themes
---theme="base16"
+--theme="OneHalfLight"
 --color=auto
 
 # Enable this to use italic text on the terminal. This is not supported on all
@@ -21,6 +21,7 @@
 # enable mouse scrolling support in `bat` when running inside tmux. This might
 # disable text selection, unless you press shift.
 #--pager="less --RAW-CONTROL-CHARS --quit-if-one-screen --mouse"
+--pager="less -R --use-color -Dd+r -Du+b"
 
 # Syntax mappings: map a certain filename pattern to a language.
 #   Example 1: use the C++ syntax for Arduino .ino files
