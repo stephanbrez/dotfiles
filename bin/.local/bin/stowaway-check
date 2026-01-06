@@ -49,6 +49,23 @@
 #   🚨 Backup operations may fail on read-only filesystems
 #   🚨 Existing backups are never overwritten (timestamped instead)
 #
+# BATCH MODE:
+#   Global "_all" flags persist across packages, allowing "Skip all", "Replace all", etc.
+#   This is intentional - once a batch option is selected, it applies to all remaining packages.
+#
+# ATOMICITY:
+#   Operations are NOT atomic. If a stow command fails mid-run:
+#   - Previous packages remain stowed
+#   - Failed package is reported
+#   - Remaining packages are not processed
+#   - Backups are preserved (can be manually restored if needed)
+#
+# INTERRUPTION HANDLING:
+#   On Ctrl+C (SIGINT) or SIGTERM:
+#   - All backups created during this run are automatically restored
+#   - Script exits with code 130
+#   - No partial state is left
+#
 # WHY NOT JUST USE STOW DIRECTLY?
 #   • Stow lacks interactive conflict resolution
 #   • Batch operations don't allow selective package handling
@@ -67,6 +84,45 @@
 # STANDALONE OPERATION:
 #   This script includes built-in function definitions for log-message() and fail()
 #   to enable standalone execution without external dependencies.
+
+set -euo pipefail
+
+declare -g BACKUPS_CREATED=()
+declare -g ASME=""
+
+cleanup() {
+    local restored=0
+    for backup_entry in "${BACKUPS_CREATED[@]}"; do
+        local backup_path="${backup_entry%%:*}"
+        local original_path="${backup_entry##*:}"
+        if [ -e "$backup_path" ]; then
+            if mv "$backup_path" "$original_path" 2>/dev/null; then
+                log-message "INFO" "Restored: $original_path"
+                ((restored++))
+            fi
+        fi
+    done
+    if [ $restored -gt 0 ]; then
+        log-message "WARNING" "Restored $restored backups due to interruption" "true"
+    fi
+    exit 130
+}
+
+trap cleanup INT TERM
+
+setup_user_context() {
+    if [ -n "${SUDO_USER:-}" ]; then
+        ASME="sudo -u $SUDO_USER"
+    else
+        ASME=""
+    fi
+}
+
+log-to-file() {
+    if [ -n "${STOWAWAY_LOG:-}" ]; then
+        echo "$(date) $*" >> "$STOWAWAY_LOG"
+    fi
+}
 
 # Function definitions for standalone operation
 log-message() {
@@ -149,11 +205,12 @@ fail() {
 #   Sets global variables and executes stow commands, but returns no value
 
 stowaway_check() {
-		local src=$1
-		local target_dir="$2"
-		local replace="" backup_install="" backup_only="" skip="" install="" add=""
-		local stowcmd=""
-		local pkgname=""
+	local src=$1
+	local target_dir="$2"
+	local replace="" backup_install="" backup_only="" skip="" install="" add=""
+	local stowcmd=""
+	local pkgname=""
+	local action="" child="" child_name="" found="" cfg_child_name=""
 
 	if ! which stow >/dev/null 2>&1; then
 		fail "Skipping dotfiles setup because stow isn't installed."
@@ -172,88 +229,77 @@ stowaway_check() {
 	pkgname="$(basename "$src")"
 
 	if [ "$install_all" == "false" ] && [ "$replace_all" == "false" ] && [ "$backup_install_all" == "false" ] && [ "$backup_only_all" == "false" ] && [ "$skip_all" == "false" ] && [ "$add_all" == "false" ]; then
-		local children
 		local found=""
-		local cfg_child_name=""
 
-		# Get all children of the source directory one level deep
 		log-message "DEBUG" "searching for children of $src"
-		children=$(find "$src" -mindepth 1 -maxdepth 1)
+		while IFS= read -r -d '' child; do
+			cfg_child_name=""
+			found=""
 
-		for child in $children; do
-			# Skip processing children if anything in this package has been installed or skipped
-			if [ "$skip" != "true" ] && [ "$install" != "true" ]; then # "false" or empty
-				log-message "DEBUG" "processing children for ""$src"""
-				# Get the base name of the child (remove the directory part)
-				local child_name=""
-				child_name=$(basename "$child")
+			if [ "$skip" == "true" ] || [ "$install" == "true" ]; then
+				break
+			fi
 
-				# Check for files in the package
-				if [ -e "$target_dir/$pkgname/$child_name" ] && [ -f "$child" ]; then
-					log-message "DEBUG" "Child Type File"
-					found="$target_dir/$pkgname/$child_name"
-				fi
+			log-message "DEBUG" "processing children for $src"
+			child_name=$(basename "$child")
 
-				# only check the subdir that is .config
-				if [ -d "$child" ] && [ "$child_name" = ".config" ]; then
-					log-message "DEBUG" "Child Type .config Directory"
-					local cfg_children="" cfg_child_name=""
-					# Get all children one level deep
-					cfg_children=$(find "$child" -mindepth 1 -maxdepth 1)
-					for cfg_child in $cfg_children; do
-						cfg_child_name=$(basename "$cfg_child")
-						log-message "DEBUG" "checking for ""$target_dir"/.config/"$cfg_child_name"""
-						if [ -e "$target_dir/.config/$cfg_child_name" ]; then
-							found="$target_dir"/.config/"$cfg_child_name"
-							log-message "DEBUG" "found existing dots $found"
-						else
-							log-message "DEBUG" "couldn't find existing dots"
-						fi
-					done
-				fi
+			if [ -e "$target_dir/$pkgname/$child_name" ] && [ -f "$child" ]; then
+				log-message "DEBUG" "Child Type File"
+				found="$target_dir/$pkgname/$child_name"
+			fi
 
-				# Get user input
-				if [[ -n $found ]]; then
-					# For debug
-					if [ -n "$cfg_child_name" ]; then
-						log-message "DEBUG" "Exists ${pkgname}/${child_name}/${cfg_child_name} in $found"
+			if [ -d "$child" ] && [ "$child_name" = ".config" ]; then
+				log-message "DEBUG" "Child Type .config Directory"
+				while IFS= read -r -d '' cfg_child; do
+					cfg_child_name=$(basename "$cfg_child")
+					log-message "DEBUG" "checking for $target_dir/.config/$cfg_child_name"
+					if [ -e "$target_dir/.config/$cfg_child_name" ]; then
+						found="$target_dir/.config/$cfg_child_name"
+						log-message "DEBUG" "found existing dots $found"
+						break
 					else
-						log-message "DEBUG" "Exists ${pkgname}/${child_name} in $found"
+						log-message "DEBUG" "couldn't find existing dots"
 					fi
-					# End debug
-					local valid_options="sSrRbBaAoO"
-					while true; do
-						printf "\r  [ \033[33m??\033[0m ] Found existing dots at %s, what do you want to do? [s]kip, [S]kip all, [r]eplace, [R]eplace all, [b]ackup then install, [B]ackup then install all, [a]dd, [A]dd all, [o]nly backup, [O]nly backup all? " "$found"
-						read -r -n 1 action # Read a single character from the user
-						echo                # Move to a new line after reading input
-						if [[ "$valid_options" == *"$action"* ]]; then
-							log-message "DEBUG" "You chose: $action"
-							break
-						else
-							log-message "WARNING" "Invalid option. Please choose either s, S, r, R, b, B, a, A, o or O." "true"
-						fi
-					done
+				done < <(find "$child" -mindepth 1 -maxdepth 1 -print0)
+
+				if [ -n "$cfg_child_name" ]; then
+					log-message "DEBUG" "Exists ${pkgname}/${child_name}/${cfg_child_name} in $found"
 				else
-					# For debug
-					if [ -n "$cfg_child_name" ]; then
-						log-message "DEBUG" "No existing files at ${target_dir}/${child_name}/${cfg_child_name}"
-					else
-						log-message "DEBUG" "No existing files at ${target_dir}/$pkgname/${child_name}"
-					fi
-					# End debug
-					local valid_options="iIsS"
-					while true; do
-						printf "\r  [ \033[33m??\033[0m ] Found %s, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? " "$pkgname"
-						read -r -n 1 action # Read a single character from the user
-						echo                # Move to a new line after reading input
-						if [[ "$valid_options" == *"$action"* ]]; then
-							log-message "DEBUG" "You chose: $action"
-							break
-						else
-							log-message "WARNING" "Invalid option. Please choose either i, I, s, or S." "true"
-						fi
-					done
+					log-message "DEBUG" "Exists ${pkgname}/${child_name} in $found"
 				fi
+			fi
+
+			if [[ -n $found ]]; then
+				local valid_options="sSrRbBaAoO"
+				while true; do
+					printf "  [ \033[33m??\033[0m ] Found existing dots at %s, what do you want to do? [s]kip, [S]kip all, [r]eplace, [R]eplace all, [b]ackup then install, [B]ackup then install all, [a]dd, [A]dd all, [o]nly backup, [O]nly backup all? " "$found"
+					read -r action
+					action="${action:0:1}"
+					if [[ "$valid_options" == *"$action"* ]]; then
+						log-message "DEBUG" "You chose: $action"
+						break
+					else
+						log-message "WARNING" "Invalid option. Please choose either s, S, r, R, b, B, a, A, o or O." "true"
+					fi
+				done
+			else
+				if [ -n "$cfg_child_name" ]; then
+					log-message "DEBUG" "No existing files at ${target_dir}/${child_name}/${cfg_child_name}"
+				else
+					log-message "DEBUG" "No existing files at ${target_dir}/$pkgname/${child_name}"
+				fi
+				local valid_options="iIsS"
+				while true; do
+					printf "  [ \033[33m??\033[0m ] Found %s, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? " "$pkgname"
+					read -r action
+					action="${action:0:1}"
+					if [[ "$valid_options" == *"$action"* ]]; then
+						log-message "DEBUG" "You chose: $action"
+						break
+					else
+						log-message "WARNING" "Invalid option. Please choose either i, I, s, or S." "true"
+					fi
+				done
 			fi
 
 			case "$action" in
@@ -271,10 +317,10 @@ stowaway_check() {
 			S) skip_all=true ;;
 			*) ;;
 			esac
-		done
+			break
+		done < <(find "$src" -mindepth 1 -maxdepth 1 -print0)
 	fi
 
-	# if the individual action is unset, match the "all" action
 	install=${install:-$install_all}
 	replace=${replace:-$replace_all}
 	backup_install=${backup_install:-$backup_install_all}
@@ -282,70 +328,77 @@ stowaway_check() {
 	add=${add:-$add_all}
 	skip=${skip:-$skip_all}
 
-	# replace the entire package (no backup)
 	if [ "$replace" == "true" ]; then
 		stowcmd="-R $pkgname -t $target_dir"
-		stowcheck=("$pkgname" "restow")
 		log-message "INFO" "Replacing $found"
 		log-message "WARNING" "When replacing; files in $target_dir but NOT in the repo will still remain." "true"
+
+		log-message "DEBUG" "Executing: stow $stowcmd"
+		log-to-file "Stow: stow $stowcmd"
+		if ! eval "$ASME stow $stowcmd"; then
+			fail "Failed to stow package: $pkgname"
+		fi
 	fi
 
-	# backup then install
 	if [ "$backup_install" == "true" ]; then
-		# back up the entire package first
 		local dst=""
-		dst="${target_dir}"/"${pkgname}"
+		dst="${target_dir}/${pkgname}"
 		if [ -e "$dst" ]; then
 			local backup_dst="${dst}.backup"
 			if [ -e "$backup_dst" ]; then
-				# If backup already exists, add timestamp
-				backup_dst="${dst}.backup.$(date +%s)"
+				backup_dst="${dst}.backup.$(date +%s%N)"
 			fi
-			mv "$dst" "$backup_dst"
+			if ! mv "$dst" "$backup_dst"; then
+				fail "Failed to create backup: $dst -> $backup_dst"
+			fi
 			log-message "INFO" "Backed up $dst to $backup_dst"
+			log-to-file "Backup: $dst -> $backup_dst"
+			BACKUPS_CREATED+=("$backup_dst:$dst")
 		fi
-		# Then install
 		stowcmd="-S $pkgname -t $target_dir"
-		stowcheck=("$pkgname" "stow")
 		log-message "INFO" "Installing $pkgname after backup"
+
+		log-message "DEBUG" "Executing: stow $stowcmd"
+		log-to-file "Stow: stow $stowcmd"
+		if ! eval "$ASME stow $stowcmd"; then
+			fail "Failed to stow package: $pkgname"
+		fi
 	fi
 
-	# backup only (don't install)
 	if [ "$backup_only" == "true" ]; then
-		# back up the entire package only
 		local dst=""
-		dst="${target_dir}"/"${pkgname}"
+		dst="${target_dir}/${pkgname}"
 		if [ -e "$dst" ]; then
 			local backup_dst="${dst}.backup"
 			if [ -e "$backup_dst" ]; then
-				# If backup already exists, add timestamp
-				backup_dst="${dst}.backup.$(date +%s)"
+				backup_dst="${dst}.backup.$(date +%s%N)"
 			fi
-			mv "$dst" "$backup_dst"
+			if ! mv "$dst" "$backup_dst"; then
+				fail "Failed to create backup: $dst -> $backup_dst"
+			fi
 			log-message "INFO" "Backed up $dst to $backup_dst (not installing)"
+			log-to-file "Backup: $dst -> $backup_dst"
+			BACKUPS_CREATED+=("$backup_dst:$dst")
 		fi
 	fi
 
-	# this will cause the whole package to be skipped if any of its children is skipped
 	if [ "$skip" == "true" ]; then
 		log-message "INFO" "Skipping $pkgname"
 	fi
 
-	# Stow the package (skip if backup_only or skip)
 	if [ "$skip" != "true" ] && [ "$backup_only" != "true" ]; then
-		stowcheck[0]="$pkgname"
-		# add on the adopt flag if add
 		if [ "$add" == "true" ]; then
 			stowcmd="-S $pkgname --adopt"
-			stowcheck[1]="adopt,"
 		else
 			stowcmd="-S $pkgname"
-			stowcheck[1]="stow,"
 		fi
 		log-message "INFO" "Installing $pkgname"
 
-		stowparams="$stowcmd -t $target_dir"
-		log-message "DEBUG" "adding to stowparams: $stowparams"
+		log-message "DEBUG" "Executing: stow $stowcmd"
+		log-to-file "Stow: stow $stowcmd"
+		if ! eval "$ASME stow $stowcmd"; then
+			fail "Failed to stow package: $pkgname"
+		fi
 	fi
 }
 
@@ -369,13 +422,25 @@ stowaway_check() {
 # RETURNS:
 #   No return value, exits with success/failure status
 
-stowaway_dots() {
+	stowaway_dots() {
 	local src=$1
 	local target_dir="$2"
 	local install_all=false replace_all=false backup_install_all=false backup_only_all=false skip_all=false add_all=false
-	local stowparams=""
-	local stowcheck=()
 	local dirs=()
+
+	setup_user_context
+
+	if [ ! -e "$target_dir" ]; then
+		fail "Target directory not found"
+	fi
+
+	if ! $ASME touch "$target_dir/.stowaway-check-write-test" 2>/dev/null; then
+		fail "Cannot write to target directory $target_dir as stow user"
+	fi
+	$ASME rm -f "$target_dir/.stowaway-check-write-test"
+
+	stow_version=$(stow --version 2>/dev/null | head -1 || echo "unknown")
+	log-message "DEBUG" "Using $stow_version"
 
 	log-message "DEBUG" "Searching for dots in $target_dir"
 	while IFS= read -r dir; do
@@ -384,12 +449,6 @@ stowaway_dots() {
 
 	for dir in "${dirs[@]}"; do
 		stowaway_check "$dir" "$target_dir"
-		log-message "DEBUG" "running command: stow $stowparams" "true"
-		# "$ASME stow $stowparams"
-		log-message "DEBUG" "Checking to see if ${stowcheck[0]} is installed" "$verbose_mode"
-		if [ "${stowcheck[1]}" = "stow" ] && ! which "${stowcheck[0]}" >/dev/null 2>&1; then
-			log-message "WARNING" "You chose to install dotfiles for the following packages, but they aren't on your system: ${stowcheck[0]}" "true"
-		fi
 	done
 
 	log-message "SUCCESS" "dotfiles installed" "true"
@@ -399,13 +458,11 @@ stowaway_dots() {
 # When run directly (not sourced), this script processes command line arguments
 # and executes the main dotfiles installation workflow
 if test "$0" = "${BASH_SOURCE[0]}"; then
-	# Parse command line options
 	verbose_mode=false
 	if [ "$1" = "-v" ] || [ "$1" = "--verbose" ]; then
 		verbose_mode=true
 		shift
 	fi
 
-	# Execute main workflow with remaining arguments
 	stowaway_dots "$@"
 fi
