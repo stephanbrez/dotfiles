@@ -56,7 +56,7 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-export PATH="/usr/local/bin:/opt/nvim/:$PATH"
+export PATH="/usr/local/bin:/opt/nvim/:$XDG_CONFIG_HOME/.cargo/bin:$PATH"
 # export PATH="$XDG_CONFIG_HOME/scripts:$PATH"
 
 # ======== XDG Compliance ======== #
