@@ -2,16 +2,21 @@
 
 # Test script for replace option (r)
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/conflict-replace"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
 echo "🧪 Testing replace functionality..."
 
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
+# Copy fixture to temporary test directory
+mkdir -p "$TEST_DIR"
+cp -r "$FIXTURE_DIR"/* "$TEST_DIR/"
 
-# Run the test with 'r' input for the first conflict
+# Run the test with simulated input and capture output
 OUTPUT=$(timeout 10 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/source" "$TEST_DIR/target" <<<"rss" 2>&1)
+
+# Clean up
+rm -rf "$TEST_DIR"
 
 echo "🔍 Checking results..."
 

@@ -3,17 +3,21 @@
 # Simple test script for skip option
 # Captures script output to verify behavior
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/conflict-skip"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
 echo "🧪 Testing skip functionality..."
 
-# Clean up previous test run
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
+# Copy fixture to temporary test directory
+mkdir -p "$TEST_DIR"
+cp -r "$FIXTURE_DIR"/* "$TEST_DIR/"
 
 # Run the test with simulated input and capture output
 OUTPUT=$(timeout 10 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/source" "$TEST_DIR/target" <<<"sss" 2>&1)
+
+# Clean up
+rm -rf "$TEST_DIR"
 
 echo "🔍 Checking results..."
 

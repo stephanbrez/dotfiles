@@ -2,22 +2,17 @@
 
 # Test script for backup then install option (b)
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/conflict-backup-install"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
 echo "🧪 Testing backup then install functionality..."
 
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
+# Copy fixture to temporary test directory
+mkdir -p "$TEST_DIR"
+cp -r "$FIXTURE_DIR"/* "$TEST_DIR/"
 
-# Set up test environment: create package directory in target to backup
-mkdir -p "$TEST_DIR/target/package1/.config"
-echo "existing package1 content" >"$TEST_DIR/target/package1/.config/existing.conf"
-
-# Clean up any existing backups
-rm -rf "$TEST_DIR/target/package1.backup"
-
-# Run the test with 'b' input for the first conflict
+# Run the test with simulated input and capture output
 OUTPUT=$(timeout 10 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/source" "$TEST_DIR/target" <<<"bss" 2>&1)
 
 echo "🔍 Checking results..."
@@ -27,6 +22,7 @@ if echo "$OUTPUT" | grep -q "Found existing dots"; then
 	echo "✅ Backup-install test passed - conflict detection worked"
 else
 	echo "❌ Backup-install test failed - no conflict prompt found"
+	echo "Output: $OUTPUT"
 	exit 1
 fi
 
@@ -35,9 +31,13 @@ if [[ -d "$TEST_DIR/target/package1.backup" ]]; then
 	echo "✅ Backup-install test passed - backup directory created"
 else
 	echo "❌ Backup-install test failed - backup directory not found"
-	ls -la "$TEST_DIR/target/"
+	echo "Target contents:"
+	ls -la "$TEST_DIR/target/" 2>/dev/null || echo "Cannot list target"
 	exit 1
 fi
+
+# Clean up
+rm -rf "$TEST_DIR"
 
 if echo "$OUTPUT" | grep -q "dotfiles installed"; then
 	echo "✅ Backup-install test passed - script completed"
