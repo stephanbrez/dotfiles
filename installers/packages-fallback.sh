@@ -12,6 +12,7 @@ PKG_COMMON=(
 	bat
 	btop
 	diffutils
+	file
 	fzf
 	gh
 	git
@@ -43,12 +44,13 @@ PKG_COMMON=(
 	python3
 	python3-pip
 	unzip
+	wget
 	wl-clipboard
 	# fun
 )
 
 # ═════ APT-based distro packages ═════
-PKG_APT_COMMON="build-essential python3-dev python3-venv fd-find silversearcher-ag secure-delete"
+PKG_APT_COMMON="apt-utils build-essential python3-dev python3-venv fd-find silversearcher-ag secure-delete"
 
 # Ubuntu-specific (20.04+)
 PKG_UBUNTU_MODERN="$PKG_APT_COMMON fonts-dejavu exfatprogs"
