@@ -10,16 +10,15 @@
 #  ▒ ░   ░   ░ ░ ░  ░  ░    ░        ░   ▒     ░ ░     ░ ░      ░     ░░   ░
 #  ░           ░       ░                 ░  ░    ░  ░    ░  ░   ░  ░   ░
 
-# TODO:
-#
 # ╔════════════════════════════════════════════════╗
 # ║  ░█▄█░█▀▀░▀█▀░█░█░█▀█░█▀▄░█▀█░█░░░█▀█░█▀▀░█░█  ║
 # ║  ░█░█░█▀▀░░█░░█▀█░█░█░█░█░█░█░█░░░█░█░█░█░░█░  ║
 # ║  ░▀░▀░▀▀▀░░▀░░▀░▀░▀▀▀░▀▀░░▀▀▀░▀▀▀░▀▀▀░▀▀▀░░▀░  ║
 # ╚════════════════════════════════════════════════╝
 # Automate the installation of dotfiles and tools
-# Distro independent
-# Also works for Mac
+# Distro independent - Also works for Mac
+#
+# See README.md for documentation on adding new installers
 #
 
 #########################################
@@ -226,6 +225,11 @@ function linux_package() {
 # pkgcommands[0] = "$pkgmgr $pkginstall"
 # pkgcommands[1] = "$pkgmgr $pkgupdate"
 
+# ─── Source third-party installers ───
+for installer in "$basedir"/installers/*.sh; do
+	[ -f "$installer" ] && source "$installer"
+done
+
 # ======== sanity check ======== #
 log_message "INFO" "Detected user: $me (home: $myhome)" "true"
 log_message "INFO" "Setting up dotfiles in '$basedir'" "true"
@@ -318,8 +322,15 @@ parse_packages_yaml() {
 		return 1
 	fi
 
+	# ─── Check if python3 and PyYAML are available ───
+	if ! python3 -c "import yaml" 2>/dev/null; then
+		log_message "WARNING" "Python3 or PyYAML not available, using fallback" "true"
+		return 1
+	fi
+
 	# Use Python to parse YAML and output bash variable assignments
-	eval "$(python3 <<EOF
+	local python_output
+	python_output=$(python3 <<EOF
 import yaml
 import sys
 
@@ -358,178 +369,20 @@ except Exception as e:
     print(f\"echo 'Error parsing YAML: {e}' >&2\", file=sys.stderr)
     sys.exit(1)
 EOF
-)"
+)
+	local python_exit=$?
 
-	return $?
+	if [ $python_exit -ne 0 ] || [ -z "$python_output" ]; then
+		log_message "WARNING" "Failed to parse packages.yaml" "true"
+		return 1
+	fi
+
+	eval "$python_output"
+	return 0
 }
 
 # ═════ Third-Party Package Installers ═════
-# Each installer is a separate function for modularity and maintainability
-
-install_docker() {
-	_echo "installing Docker from official repository"
-	if [[ "$pkgmgr" == "apt" ]]; then
-		# ─── Docker for Debian/Ubuntu ───
-		if should_run; then
-			# Add Docker's official GPG key
-			curl -fsSL "https://download.docker.com/linux/$DISTRO_ID/gpg" -o /etc/apt/keyrings/docker.asc
-			chmod a+r /etc/apt/keyrings/docker.asc
-
-			# Add Docker repository
-			local distro
-			distro=$(lsb_release -c | awk '{print $2}')
-			echo "deb [arch=$ARCH_DEB signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$DISTRO_ID $distro stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
-
-			# Install Docker Engine
-			apt update && apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-			systemctl enable --now docker
-			log_message "SUCCESS" "Docker installed from official repository"
-		else
-			dry_print "Would add Docker GPG key and repository for $DISTRO_ID"
-			dry_print "Would install: docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
-			dry_print "Would enable docker service"
-		fi
-	elif [[ "$pkgmgr" == "dnf" ]]; then
-		# ─── Docker for Fedora ───
-		if should_run; then
-			dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo
-			dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-			systemctl enable --now docker
-			log_message "SUCCESS" "Docker installed from official repository"
-		else
-			dry_print "Would add Docker CE repository for Fedora"
-			dry_print "Would install: docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
-			dry_print "Would enable docker service"
-		fi
-	else
-		log_message "WARNING" "Docker installation not configured for $pkgmgr" "true"
-	fi
-}
-
-install_onepassword() {
-	_echo "installing 1password"
-	if should_run; then
-		curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg &&
-			echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main" | tee /etc/apt/sources.list.d/1password.list
-		mkdir -p /etc/debsig/policies/AC2D62742012EA22/ &&
-			curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
-		mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 &&
-			curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
-		apt update && apt install -y 1password 1password-cli
-	else
-		dry_print "Would add 1password repository and install 1password 1password-cli"
-	fi
-}
-
-install_eza() {
-	_echo "installing eza"
-	if should_run; then
-		wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-		echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | tee /etc/apt/sources.list.d/gierens.list
-		chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-		apt update && apt install -y eza
-	else
-		dry_print "Would add eza repository and install eza"
-	fi
-}
-
-install_fastfetch() {
-	_echo "installing fastfetch"
-	if should_run; then
-		curl -Lo fastfetch-linux.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb" &&
-			dpkg -i fastfetch-linux.deb &&
-			rm -rf fastfetch-linux.deb
-	else
-		dry_print "Would download and install fastfetch"
-	fi
-}
-
-install_fzf_binary() {
-	_echo "updating fzf"
-	if should_run; then
-		FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-		$ASME curl -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-${FZF_VERSION}-linux_$(dpkg --print-architecture).tar.gz" -o "$myhome/.local/src/fzf.tar.gz"
-		tar xzf "$myhome/.local/src/fzf.tar.gz" -C /usr/bin/ fzf &&
-			chmod +x /usr/bin/fzf &&
-			rm "$myhome/.local/src/fzf.tar.gz"
-	else
-		dry_print "Would download and install latest fzf"
-	fi
-}
-
-install_lazydocker() {
-	_echo "installing lazydocker"
-	if should_run; then
-		# prepare the download URL
-		GITHUB_LATEST_VERSION=$(curl -L -s -H 'Accept: application/json' https://github.com/jesseduffield/lazydocker/releases/latest | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
-		GITHUB_FILE="lazydocker_${GITHUB_LATEST_VERSION//v/}_$(uname -s)_${ARCH_GH}.tar.gz"
-		GITHUB_URL="https://github.com/jesseduffield/lazydocker/releases/download/${GITHUB_LATEST_VERSION}/${GITHUB_FILE}"
-
-		# install/update the local binary
-		curl -L -o lazydocker.tar.gz "$GITHUB_URL"
-		tar xzvf lazydocker.tar.gz lazydocker
-		install -Dm 755 lazydocker -t "/usr/local/bin"
-		rm lazydocker lazydocker.tar.gz
-	else
-		dry_print "Would download and install lazydocker"
-	fi
-}
-
-install_lazygit() {
-	_echo "installing lazygit"
-	if should_run; then
-		LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-		curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_${ARCH_GH}.tar.gz"
-		tar xf lazygit.tar.gz lazygit
-		install lazygit /usr/local/bin
-		rm -rf lazygit.tar.gz
-		rm -rf lazygit
-	else
-		dry_print "Would download and install lazygit"
-	fi
-}
-
-install_neovim_source() {
-	# Build from source for Debian/Ubuntu (outdated repos)
-	# Other distros like Fedora use package manager version
-	if [[ "$pkgmgr" == "apt" ]]; then
-		_echo "building neovim from source"
-		if should_run; then
-			$ASME git clone https://github.com/neovim/neovim "$myhome"/.local/src/neovim &&
-				cd "$myhome"/.local/src/neovim &&
-				git checkout stable &&
-				make CMAKE_BUILD_TYPE=RelWithDebInfo &&
-				cd build &&
-				cpack -G DEB &&
-				dpkg -i nvim-linux-"${ARCH_GH}".deb
-		else
-			dry_print "Would clone neovim repo and build from source"
-			dry_print "Would install nvim-linux-${ARCH_GH}.deb"
-		fi
-	else
-		log_message "INFO" "Skipping neovim build - using package manager version" "true"
-	fi
-}
-
-install_wezterm() {
-	_echo "installing wezterm"
-	if should_run; then
-		curl -fsSL https://apt.fury.io/wez/gpg.key | gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
-		echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | tee /etc/apt/sources.list.d/wezterm.list
-		apt update && apt install wezterm
-	else
-		dry_print "Would add wezterm repository and install wezterm"
-	fi
-}
-
-install_zoxide() {
-	_echo "installing zoxide"
-	if should_run; then
-		$ASME curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | $ASME bash
-	else
-		dry_print "Would download and run zoxide install script"
-	fi
-}
+# Installer functions are sourced from installers/*.sh
 
 install_pipx_packages() {
 	_echo "setting up python + pipx packages"
@@ -543,16 +396,6 @@ install_pipx_packages() {
 		eval "$pkgmgr $pkginstall python3-neovim"
 	else
 		dry_print "Would configure pipx and install: ${PKG_PIPX_PACKAGES[*]} python3-neovim"
-	fi
-}
-
-install_figlet_fonts() {
-	_echo "setting up ascii/ansi art tools"
-	if should_run; then
-		rm -rf /usr/share/figlet/
-		git clone --depth=1 https://github.com/xero/figlet-fonts.git /usr/share/figlet/
-	else
-		dry_print "Would install figlet fonts to /usr/share/figlet/"
 	fi
 }
 
@@ -632,115 +475,9 @@ function install_packages() {
 			dry_print "Would install distro packages: ${PKG_DISTRO_PACKAGES[*]}"
 		fi
 	else
-		# ─── Fallback: Install packages from inline definitions ───
-		# ═════ Distro-neutral packages ═════
-		pkgInstall=(
-		# command line tools
-		bat
-		btop
-		diffutils
-		fzf
-		gh
-		git
-		# neovim - installed separately (build from source for apt, pkg mgr for others)
-		ripgrep
-		shellcheck
-		stow
-		thefuck
-		tldr
-		tmux
-		trash-cli
-		zsh
-		# system/server tools
-		automake
-		bash-completion
-		ca-certificates
-		cmake
-		curl
-		# docker - installed separately from official Docker repos
-		e2fsprogs
-		ethtool
-		flatpak
-		gcc
-		gettext
-		meson
-		ninja-build
-		npm
-		pipx
-		pkgconf
-		python3
-		python3-pip
-		unzip
-		wl-clipboard
-		# fun
-		toilet
-	)
-	case $pkgmgr in
-	apt*)
-		# ═════ Debian/Ubuntu specific packages ═════
-		# Common for all apt-based distros
-		apt_common="build-essential python3-dev python3-venv fd-find silversearcher-ag secure-delete"
-
-		case "$DISTRO_ID" in
-		ubuntu)
-			# Ubuntu-specific packages
-			log_message "INFO" "Installing Ubuntu-specific packages..." "true"
-			# Ubuntu 20.04+ uses exfatprogs, older use exfat-fuse
-			if [[ "${DISTRO_VERSION%%.*}" -ge 20 ]]; then
-				if should_run; then
-					eval "$pkgmgr $pkginstall $apt_common fonts-dejavu exfatprogs"
-				else
-					dry_print "Would install: $apt_common fonts-dejavu exfatprogs"
-				fi
-			else
-				if should_run; then
-					eval "$pkgmgr $pkginstall $apt_common fonts-dejavu exfat-fuse"
-				else
-					dry_print "Would install: $apt_common fonts-dejavu exfat-fuse"
-				fi
-			fi
-			;;
-		debian)
-			# Debian-specific packages
-			log_message "INFO" "Installing Debian-specific packages..." "true"
-			if should_run; then
-				eval "$pkgmgr $pkginstall $apt_common ttf-dejavu exfat-fuse"
-			else
-				dry_print "Would install: $apt_common ttf-dejavu exfat-fuse"
-			fi
-			;;
-		*)
-			# Fallback for other Debian-based distros (Linux Mint, Pop!_OS, etc.)
-			log_message "INFO" "Installing packages for $DISTRO_ID..." "true"
-			if should_run; then
-				eval "$pkgmgr $pkginstall $apt_common fonts-dejavu exfat-fuse"
-			else
-				dry_print "Would install: $apt_common fonts-dejavu exfat-fuse"
-			fi
-			;;
-		esac
-		;;
-	dnf*)
-		# ═════ Fedora/RHEL specific packages ═════
-		log_message "INFO" "Installing Fedora-specific packages..." "true"
-		# fd (not fd-find), the_silver_searcher (not silversearcher-ag), Development Tools group
-		if should_run; then
-			eval "$pkgmgr groupinstall -y 'Development Tools'"
-			eval "$pkgmgr $pkginstall dejavu-fonts exfat-utils fd-find the_silver_searcher gnupg2 srm python3-neovim neovim"
-		else
-			dry_print "Would install group: Development Tools"
-			dry_print "Would install: dejavu-fonts exfat-utils fd-find the_silver_searcher gnupg2 srm python3-neovim neovim"
-		fi
-		;;
-	esac
-
-		# Install distro-neutral packages
-		if should_run; then
-			eval "$pkgmgr $pkginstall ${pkgInstall[*]}"
-		else
-			dry_print "Would install distro-neutral packages: ${pkgInstall[*]}"
-		fi
-	fi  # End of USE_YAML_CONFIG conditional
+		# ─── Fallback: Install packages from installers/packages-fallback.sh ───
+		install_fallback_packages
+	fi
 
 	# manually add apt sources
 	if should_run; then
@@ -769,6 +506,7 @@ function install_packages() {
 	[[ "$INSTALL_NEOVIM_SOURCE" == "true" ]] && install_neovim_source
 	[[ "$INSTALL_WEZTERM" == "true" ]] && install_wezterm
 	[[ "$INSTALL_ZOXIDE" == "true" ]] && install_zoxide
+	[[ "$INSTALL_UV" == "true" ]] && install_uv
 
 	# ─── Install pipx packages if configured ───
 	if [ -n "${PKG_PIPX_PACKAGES[*]}" ]; then
