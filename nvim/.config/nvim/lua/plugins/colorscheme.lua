@@ -12,11 +12,11 @@ return {
     -- you can set set configuration options here
     config = function()
       --     vim.g.zenbones_darken_comments = 45
-      vim.cmd.colorscheme("forestbones")
+      vim.cmd.colorscheme("seoulbones")
     end,
   },
-  { "rose-pine/neovim", name = "rose-pine", dark_variant = "moon" },
-  { "sainnhe/gruvbox-material" },
+  -- { "rose-pine/neovim", name = "rose-pine", dark_variant = "moon" },
+  -- { "sainnhe/gruvbox-material" },
   -- {
   --   "sainnhe/everforest",
   --   lazy = false,
