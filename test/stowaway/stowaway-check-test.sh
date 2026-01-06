@@ -5,9 +5,10 @@
 
 echo "Running stowaway-check with args: $*" >&2
 
-# Run the actual stowaway-check script (use debug version if it exists)
 SCRIPT_TO_RUN="$(dirname "$0")/stowaway-check"
 if [[ -f "$(dirname "$0")/stowaway-check-debug" ]]; then
 	SCRIPT_TO_RUN="$(dirname "$0")/stowaway-check-debug"
 fi
+
+export PATH="$(dirname "$0")/mocks:$PATH"
 exec "$SCRIPT_TO_RUN" "$@"

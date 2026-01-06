@@ -1,33 +1,53 @@
 #!/bin/bash
 
-# Test script for overwrite option (o)
+# Test script for backup only option (o) - duplicate test, checking if we still need it
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+source "$SCRIPT_DIR/test-lib.sh"
 
-echo "🧪 Testing overwrite functionality..."
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/conflict-backup-only"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
+echo "🧪 Testing backup only functionality (overwrite duplicate)..."
 
-# Run the test with 'o' input for the first conflict
-OUTPUT=$(timeout 10 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/source" "$TEST_DIR/target" <<<"oss" 2>&1)
+# Setup test environment
+setup_test_env "$FIXTURE_DIR" "$TEST_DIR"
+
+# Run test with input file (single character)
+OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
+	"$TEST_DIR/source" "$TEST_DIR/target" "o")
 
 echo "🔍 Checking results..."
 
-# Check that overwrite was processed
-if echo "$OUTPUT" | grep -q "Found existing dots"; then
-	echo "✅ Overwrite test passed - conflict detection worked"
+# Check that backup only was processed
+check_output_contains "$OUTPUT" "Found existing dots" "Conflict detection worked" || {
+	cleanup_test_env "$TEST_DIR"
+	exit 1
+}
+
+# Check that ONLY ONE prompt appeared
+PROMPT_COUNT=$(count_prompts "$OUTPUT" "what do you want to do")
+if [ "$PROMPT_COUNT" -eq 1 ]; then
+	echo "✅ Backup-only test passed - only one prompt shown"
 else
-	echo "❌ Overwrite test failed - no conflict prompt found"
+	echo "❌ Backup-only test failed - expected 1 prompt, got $PROMPT_COUNT"
+	cleanup_test_env "$TEST_DIR"
 	exit 1
 fi
 
-if echo "$OUTPUT" | grep -q "dotfiles installed"; then
-	echo "✅ Overwrite test passed - script completed"
-else
-	echo "❌ Overwrite test failed - script did not complete"
+# Check that script completed
+check_output_contains "$OUTPUT" "dotfiles installed" "Script completed" || {
+	cleanup_test_env "$TEST_DIR"
 	exit 1
-fi
+}
 
-echo "🎉 Overwrite test completed successfully!"
+# Verify stow was NOT called (backup only)
+verify_stow_not_called "$TEST_DIR" || {
+	cleanup_test_env "$TEST_DIR"
+	exit 1
+}
+
+# Cleanup
+cleanup_test_env "$TEST_DIR"
+
+echo "🎉 Backup only test (overwrite duplicate) completed successfully!"

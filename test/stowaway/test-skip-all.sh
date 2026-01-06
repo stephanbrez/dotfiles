@@ -2,35 +2,46 @@
 
 # Test script for "skip all" functionality (S)
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+source "$SCRIPT_DIR/test-lib.sh"
+
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/batch-operations"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
 echo "🧪 Testing skip all functionality..."
 
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
+# Setup test environment
+setup_test_env "$FIXTURE_DIR" "$TEST_DIR"
 
-# Run the test with 'S' (skip all) for the first conflict
-OUTPUT=$(timeout 10 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/source" "$TEST_DIR/target" <<<"S" 2>&1)
+# Run test with 'S' (skip all) - single input for batch mode
+OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
+	"$TEST_DIR/source" "$TEST_DIR/target" "S")
 
 echo "🔍 Checking results..."
 
-# Check that skip all worked - should skip all packages without individual prompts
-if echo "$OUTPUT" | grep -q "dotfiles installed"; then
-	echo "✅ Skip all test passed - script completed successfully"
+# Check that script completed
+check_output_contains "$OUTPUT" "dotfiles installed" "Script completed" || {
+	cleanup_test_env "$TEST_DIR"
+	exit 1
+}
+
+# Check that only FIRST package prompted (batch mode)
+PROMPT_COUNT=$(count_prompts "$OUTPUT" "what do you want to do")
+if [ "$PROMPT_COUNT" -eq 1 ]; then
+	echo "✅ Skip all test passed - only first package prompted"
 else
-	echo "❌ Skip all test failed - script did not complete"
-	echo "Output: $OUTPUT"
+	echo "❌ Skip all test failed - expected 1 prompt, got $PROMPT_COUNT"
+	cleanup_test_env "$TEST_DIR"
 	exit 1
 fi
 
-# Should not see individual package prompts after the first
-PACKAGE_PROMPTS=$(echo "$OUTPUT" | grep -c "Found package")
-if [[ $PACKAGE_PROMPTS -le 1 ]]; then
-	echo "✅ Skip all test passed - batch processing worked"
-else
-	echo "❌ Skip all test failed - individual prompts appeared"
+# Verify stow was NOT called (skip all)
+verify_stow_not_called "$TEST_DIR" || {
+	cleanup_test_env "$TEST_DIR"
 	exit 1
-fi
+}
+
+# Cleanup
+cleanup_test_env "$TEST_DIR"
 
 echo "🎉 Skip all test completed successfully!"

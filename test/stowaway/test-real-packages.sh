@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Real package testing with safe copies
-# Tests the script with actual dotfiles packages in isolated environment
+# Tests script with actual dotfiles packages in isolated environment
 
 TEST_BASE="/tmp/stowaway-real-test"
 SCRIPT_DIR="$(dirname "$0")"
@@ -23,7 +23,9 @@ rm -rf "$TEST_BASE/target"/*
 mkdir -p "$TEST_BASE/target"
 
 # Run install test
-OUTPUT1=$(timeout 15 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_BASE/source" "$TEST_BASE/target" <<<$'i\ni\ni' 2>&1)
+INPUT_FILE="$TEST_BASE/input1.txt"
+echo "i" >"$INPUT_FILE"
+OUTPUT1=$(timeout 15 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_BASE/source" "$TEST_BASE/target" <"$INPUT_FILE" 2>&1)
 
 if echo "$OUTPUT1" | grep -q "dotfiles installed"; then
 	echo "✅ Fresh install test passed"
@@ -42,7 +44,12 @@ rm -rf "$TEST_BASE/target"/*
 mkdir -p "$TEST_BASE/target/.config/zsh"
 echo "existing zsh config" >"$TEST_BASE/target/.config/zsh/.zshrc"
 
-OUTPUT2=$(timeout 15 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_BASE/source" "$TEST_BASE/target" <<<$'s\ni\ni' 2>&1)
+# Run test with skip then install
+INPUT_FILE="$TEST_BASE/input2.txt"
+echo "s" >"$INPUT_FILE"
+echo "i" >>"$INPUT_FILE"
+echo "i" >>"$INPUT_FILE"
+OUTPUT2=$(timeout 15 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_BASE/source" "$TEST_BASE/target" <"$INPUT_FILE" 2>&1)
 
 if echo "$OUTPUT2" | grep -q "dotfiles installed"; then
 	echo "✅ Basic functionality test passed"
@@ -60,7 +67,9 @@ echo "📋 Test 3: Install all functionality with real packages..."
 rm -rf "$TEST_BASE/target"/*
 mkdir -p "$TEST_BASE/target"
 
-OUTPUT3=$(timeout 15 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_BASE/source" "$TEST_BASE/target" <<<"I" 2>&1)
+INPUT_FILE="$TEST_BASE/input3.txt"
+echo "I" >"$INPUT_FILE"
+OUTPUT3=$(timeout 15 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_BASE/source" "$TEST_BASE/target" <"$INPUT_FILE" 2>&1)
 
 if echo "$OUTPUT3" | grep -q "dotfiles installed"; then
 	echo "✅ Install all test passed"

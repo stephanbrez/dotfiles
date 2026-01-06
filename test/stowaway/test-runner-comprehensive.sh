@@ -10,27 +10,15 @@ echo "Test directory: $TEST_DIR"
 
 # Ensure test environment is set up
 mkdir -p "$TEST_DIR/logs"
-
-# Clean up any previous test artifacts
 rm -f "$TEST_DIR/logs/*"
-rm -rf "$TEST_DIR/target/package1.backup" 2>/dev/null || true
 
-# Run individual tests
+# Run existing tests (updated)
 echo ""
 echo "📋 Running skip test..."
 if bash "$SCRIPT_DIR/test-skip-simple.sh"; then
 	echo "✅ Skip test: PASSED"
 else
 	echo "❌ Skip test: FAILED"
-	exit 1
-fi
-
-echo ""
-echo "📋 Running overwrite test..."
-if bash "$SCRIPT_DIR/test-overwrite-simple.sh"; then
-	echo "✅ Overwrite test: PASSED"
-else
-	echo "❌ Overwrite test: FAILED"
 	exit 1
 fi
 
@@ -102,7 +90,8 @@ echo "  Testing read-only target directory..."
 if bash "$SCRIPT_DIR/test-edge-permissions.sh" 2>/dev/null; then
 	echo "  ✅ Read-only target test: PASSED"
 else
-	echo "  ⚠️  Read-only target test: SKIPPED (fixture permission issues)"
+	echo "  ❌ Read-only target test: FAILED"
+	exit 1
 fi
 
 echo ""
@@ -123,6 +112,43 @@ else
 	exit 1
 fi
 
+# Run new feature tests
+echo ""
+echo "📋 Running backup restoration test..."
+if bash "$SCRIPT_DIR/test-interrupt-restore.sh"; then
+	echo "✅ Backup restoration test: PASSED"
+else
+	echo "❌ Backup restoration test: FAILED"
+	exit 1
+fi
+
+echo ""
+echo "📋 Running write permission test..."
+if bash "$SCRIPT_DIR/test-write-permission.sh"; then
+	echo "✅ Write permission test: PASSED"
+else
+	echo "❌ Write permission test: FAILED"
+	exit 1
+fi
+
+echo ""
+echo "📋 Running break after first conflict test..."
+if bash "$SCRIPT_DIR/test-break-first-conflict.sh"; then
+	echo "✅ Break after first conflict test: PASSED"
+else
+	echo "❌ Break after first conflict test: FAILED"
+	exit 1
+fi
+
+echo ""
+echo "📋 Running ASME variable test..."
+if bash "$SCRIPT_DIR/test-asme-variable.sh"; then
+	echo "✅ ASME variable test: PASSED"
+else
+	echo "❌ ASME variable test: FAILED"
+	exit 1
+fi
+
 echo ""
 echo "🎉 All tests passed successfully!"
 echo ""
@@ -138,5 +164,14 @@ echo "   ✅ Dependency checking (stow presence)"
 echo "   ✅ Dependency checking (target directory)"
 echo "   ✅ Edge case: empty source directory"
 echo "   ✅ Edge case: read-only target directory"
+echo "   ✅ Backup restoration on interrupt"
+echo "   ✅ Write permission checking"
+echo "   ✅ Break after first conflict"
+echo "   ✅ ASME variable behavior"
 echo ""
-echo "Next steps: Add remaining 'all' options tests and more edge cases, then real package testing."
+echo "All tests verify stow command execution via mock-stow!"
+
+# Cleanup base test directory (but preserve logs for review)
+rm -rf "$TEST_DIR/source" "$TEST_DIR/target" "$TEST_DIR/readonly-target" "$TEST_DIR/empty-source" 2>/dev/null || true
+echo ""
+echo "🧹 Cleaned up test artifacts (logs preserved)"

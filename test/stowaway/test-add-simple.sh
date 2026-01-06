@@ -2,41 +2,62 @@
 
 # Test script for add/adopt option (a)
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+source "$SCRIPT_DIR/test-lib.sh"
+
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/conflict-add"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
 echo "🧪 Testing add/adopt functionality..."
 
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
+# Setup test environment
+setup_test_env "$FIXTURE_DIR" "$TEST_DIR"
 
-# Run the test with 'a' input for the first conflict
-OUTPUT=$(timeout 10 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/source" "$TEST_DIR/target" <<<"ass" 2>&1)
+# Run test with input file (single character)
+OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
+	"$TEST_DIR/source" "$TEST_DIR/target" "a")
 
 echo "🔍 Checking results..."
 
 # Check that add was processed
-if echo "$OUTPUT" | grep -q "Found existing dots"; then
-	echo "✅ Add test passed - conflict detection worked"
+check_output_contains "$OUTPUT" "Found existing dots" "Conflict detection worked" || {
+	cleanup_test_env "$TEST_DIR"
+	exit 1
+}
+
+# Check that ONLY ONE prompt appeared
+PROMPT_COUNT=$(count_prompts "$OUTPUT" "what do you want to do")
+if [ "$PROMPT_COUNT" -eq 1 ]; then
+	echo "✅ Add test passed - only one prompt shown"
 else
-	echo "❌ Add test failed - no conflict prompt found"
+	echo "❌ Add test failed - expected 1 prompt, got $PROMPT_COUNT"
+	cleanup_test_env "$TEST_DIR"
 	exit 1
 fi
 
-# Check that stow command included --adopt
-if echo "$OUTPUT" | grep -q "stow -S.*--adopt"; then
-	echo "✅ Add test passed - adopt flag was used in stow command"
+# Check that script completed
+check_output_contains "$OUTPUT" "dotfiles installed" "Script completed" || {
+	cleanup_test_env "$TEST_DIR"
+	exit 1
+}
+
+# Verify stow was called with --adopt
+if [[ -f "$TEST_DIR/logs/stow.log" ]]; then
+	if grep -q "stow.*--adopt" "$TEST_DIR/logs/stow.log"; then
+		echo "✅ Stow command verified with --adopt flag"
+	else
+		echo "❌ Stow command missing --adopt flag"
+		cat "$TEST_DIR/logs/stow.log"
+		cleanup_test_env "$TEST_DIR"
+		exit 1
+	fi
 else
-	echo "❌ Add test failed - adopt flag not found in stow command"
-	echo "Output: $OUTPUT"
+	echo "❌ Stow log not found"
+	cleanup_test_env "$TEST_DIR"
 	exit 1
 fi
 
-if echo "$OUTPUT" | grep -q "dotfiles installed"; then
-	echo "✅ Add test passed - script completed"
-else
-	echo "❌ Add test failed - script did not complete"
-	exit 1
-fi
+# Cleanup
+cleanup_test_env "$TEST_DIR"
 
 echo "🎉 Add/adopt test completed successfully!"

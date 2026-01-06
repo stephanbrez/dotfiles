@@ -2,38 +2,38 @@
 
 # Test script for edge case: empty source directory
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+source "$SCRIPT_DIR/test-lib.sh"
+
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/edge-empty-source"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
 echo "🧪 Testing edge case: empty source directory..."
 
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
-
-# Create empty source directory
+# Setup test environment (creates empty source)
 mkdir -p "$TEST_DIR/empty-source"
+mkdir -p "$TEST_DIR/target"
+mkdir -p "$TEST_DIR/logs"
 
 # Run the test
-OUTPUT=$(timeout 5 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/empty-source" "$TEST_DIR/target" <<<"" 2>&1)
+OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
+	"$TEST_DIR/empty-source" "$TEST_DIR/target" "")
 
 echo "🔍 Checking results..."
 
 # Check that the script handles empty directory gracefully
-if echo "$OUTPUT" | grep -q "dotfiles installed"; then
-	echo "✅ Empty source test passed - script completed successfully"
-else
-	echo "❌ Empty source test failed - script did not complete"
-	echo "Output: $OUTPUT"
+check_output_contains "$OUTPUT" "dotfiles installed" "Script completed" || {
+	cleanup_test_env "$TEST_DIR"
 	exit 1
-fi
+}
 
 # Check that no stow commands were executed
-if [[ ! -f "$TEST_DIR/logs/stow.log" ]] || [[ ! -s "$TEST_DIR/logs/stow.log" ]]; then
-	echo "✅ Empty source test passed - no stow commands executed"
-else
-	echo "❌ Empty source test failed - unexpected stow commands"
-	cat "$TEST_DIR/logs/stow.log"
+verify_stow_not_called "$TEST_DIR" || {
+	cleanup_test_env "$TEST_DIR"
 	exit 1
-fi
+}
+
+# Cleanup
+cleanup_test_env "$TEST_DIR"
 
 echo "🎉 Empty source directory test completed successfully!"

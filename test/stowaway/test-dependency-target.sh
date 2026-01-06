@@ -2,32 +2,35 @@
 
 # Test script for dependency checking - missing target directory
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+source "$SCRIPT_DIR/test-lib.sh"
+
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/basic-install"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
 echo "🧪 Testing dependency checking (missing target directory)..."
 
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
+# Setup test environment (create source only)
+mkdir -p "$TEST_DIR/source"
+cp -r "$FIXTURE_DIR/source"/* "$TEST_DIR/source/" 2>/dev/null || true
 
-# Run the test with non-existent target directory
-NON_EXISTENT_TARGET="/tmp/non-existent-target-directory-$$"
-echo "Testing with target directory: $NON_EXISTENT_TARGET"
-if [[ -e "$NON_EXISTENT_TARGET" ]]; then
-	echo "ERROR: Target directory already exists!"
-	exit 1
-fi
-OUTPUT=$(timeout 5 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/source" "$NON_EXISTENT_TARGET" <<<"" 2>&1)
+# Create non-existent target directory
+NON_EXISTENT_TARGET="$TEST_DIR/non-existent-target"
+
+# Run test with empty input (should fail before reaching prompts)
+OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
+	"$TEST_DIR/source" "$NON_EXISTENT_TARGET" "" 5)
 
 echo "🔍 Checking results..."
 
 # Check that the script failed due to missing target directory
-if echo "$OUTPUT" | grep -q "Target directory not found"; then
-	echo "✅ Dependency test passed - correctly detected missing target directory"
-else
-	echo "❌ Dependency test failed - did not detect missing target directory"
-	echo "Output: $OUTPUT"
+check_output_contains "$OUTPUT" "Target directory not found" \
+	"Correctly detected missing target directory" || {
+	cleanup_test_env "$TEST_DIR"
 	exit 1
-fi
+}
+
+# Cleanup
+cleanup_test_env "$TEST_DIR"
 
 echo "🎉 Missing target directory test completed successfully!"

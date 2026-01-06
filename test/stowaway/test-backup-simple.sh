@@ -2,41 +2,71 @@
 
 # Test script for backup option (b)
 
-TEST_DIR="/tmp/stowaway-test"
 SCRIPT_DIR="$(dirname "$0")"
+source "$SCRIPT_DIR/test-lib.sh"
 
-echo "🧪 Testing backup functionality..."
+FIXTURE_DIR="$SCRIPT_DIR/fixtures/scenarios/conflict-backup-install"
+TEST_DIR="/tmp/stowaway-test-run-$$"
 
-mkdir -p "$TEST_DIR/logs"
-rm -f "$TEST_DIR/logs/*"
+echo "🧪 Testing backup then install functionality..."
 
-# Run the test with 'b' input for the first conflict
-OUTPUT=$(timeout 10 bash "$SCRIPT_DIR/stowaway-check-test.sh" "$TEST_DIR/source" "$TEST_DIR/target" <<<"bss" 2>&1)
+# Setup test environment
+setup_test_env "$FIXTURE_DIR" "$TEST_DIR"
+
+# Run test with input file (single character)
+OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
+	"$TEST_DIR/source" "$TEST_DIR/target" "b")
 
 echo "🔍 Checking results..."
 
-# Check that backup was processed
-if echo "$OUTPUT" | grep -q "Found existing dots"; then
-	echo "✅ Backup test passed - conflict detection worked"
+# Check that backup then install was processed
+check_output_contains "$OUTPUT" "Found existing dots" "Conflict detection worked" || {
+	cleanup_test_env "$TEST_DIR"
+	exit 1
+}
+
+# Check that ONLY ONE prompt appeared
+PROMPT_COUNT=$(count_prompts "$OUTPUT" "what do you want to do")
+if [ "$PROMPT_COUNT" -eq 1 ]; then
+	echo "✅ Backup test passed - only one prompt shown"
 else
-	echo "❌ Backup test failed - no conflict prompt found"
+	echo "❌ Backup test failed - expected 1 prompt, got $PROMPT_COUNT"
+	cleanup_test_env "$TEST_DIR"
 	exit 1
 fi
 
-# This test now uses backup then install (b) option
-if echo "$OUTPUT" | grep -q "Found existing dots"; then
-	echo "✅ Backup test passed - backup option was presented"
+# Check if backup directory was created
+if [[ -d "$TEST_DIR/target/package1.backup" ]]; then
+	echo "✅ Backup test passed - backup directory created"
 else
-	echo "❌ Backup test failed - backup option not available"
-	echo "Output: $OUTPUT"
+	echo "❌ Backup test failed - backup directory not found"
+	ls -la "$TEST_DIR/target/" 2>/dev/null || echo "Cannot list target"
+	cleanup_test_env "$TEST_DIR"
 	exit 1
 fi
 
-if echo "$OUTPUT" | grep -q "dotfiles installed"; then
-	echo "✅ Backup test passed - script completed"
+# Check that script completed
+check_output_contains "$OUTPUT" "dotfiles installed" "Script completed" || {
+	cleanup_test_env "$TEST_DIR"
+	exit 1
+}
+
+# Verify stow was called
+if [[ -f "$TEST_DIR/logs/stow.log" ]]; then
+	if grep -q "mock-stow called" "$TEST_DIR/logs/stow.log"; then
+		echo "✅ Stow command executed"
+	else
+		echo "❌ Stow command not found in log"
+		cleanup_test_env "$TEST_DIR"
+		exit 1
+	fi
 else
-	echo "❌ Backup test failed - script did not complete"
+	echo "❌ Stow log not found"
+	cleanup_test_env "$TEST_DIR"
 	exit 1
 fi
+
+# Cleanup
+cleanup_test_env "$TEST_DIR"
 
 echo "🎉 Backup test completed successfully!"

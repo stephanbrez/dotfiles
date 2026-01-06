@@ -44,11 +44,12 @@ while [[ $# -gt 0 ]]; do
 		shift
 		;;
 	-*)
-		# Unknown option, just log it
 		shift
 		;;
 	*)
-		PACKAGE="$1"
+		if [[ -z "$PACKAGE" ]]; then
+			PACKAGE="$1"
+		fi
 		shift
 		;;
 	esac
@@ -56,5 +57,4 @@ done
 
 echo "$(date): Would execute: stow $COMMAND $PACKAGE -t $TARGET" >>"$LOG_FILE"
 
-# Simulate success
 exit 0
