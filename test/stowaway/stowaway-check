@@ -1,0 +1,411 @@
+#!/usr/bin/env bash
+
+# *Stowaway-Check* - Interactive wrapper for [stow](https://www.gnu.org/software/stow/) designed for dotfiles management in 🏠 ($HOME).
+#
+# This script provides fine-grained control over dotfiles installation, allowing you to selectively install, backup,
+# replace, or adopt dotfiles on a package-by-package basis. Perfect for trying dotfiles before committing to them.
+#
+# KEY FEATURES:
+#   • Interactive conflict resolution with multiple strategies
+#   • Package-level operations (not individual files)
+#   • Backup functionality with automatic collision handling
+#   • Batch processing with "all" options
+#   • Safe operation - never modifies files without user consent
+#
+# CONFLICT RESOLUTION OPTIONS:
+#   Individual Package Options:
+#     s - skip: Skip this package entirely
+#     r - replace: Replace entire package (no backup)
+#     b - backup then install: Backup conflicts, then install package
+#     a - add: Install non-conflicting files only (adopt existing)
+#     o - backup only: Backup conflicts, don't install
+#     i - install: Install package (when no conflicts)
+#
+#   "All" Batch Options (apply to all remaining packages):
+#     S - skip all
+#     R - replace all
+#     B - backup then install all
+#     A - add all
+#     O - backup only all
+#     I - install all
+#
+# BACKUP BEHAVIOR:
+#   • Creates timestamped backups when collisions occur (package.backup, package.backup.1643123456)
+#   • "Backup then install" preserves existing files and installs new ones
+#   • "Backup only" preserves existing files without installing anything new
+#
+# USAGE EXAMPLES:
+#   ./stowaway-check ~/.dotfiles ~          # Interactive mode
+#   ./stowaway-check -v ~/.dotfiles ~       # Verbose mode
+#
+# ARCHITECTURAL NOTES:
+#   • Operates on package level (directories) not individual files
+#   • Uses GNU Stow for symlink management and conflict detection
+#   • Maintains atomic operations - each package is handled independently
+#   • Provides graceful error handling and informative user feedback
+#
+# WARNINGS:
+#   🚨 "All" options process remaining packages without individual prompts
+#   🚨 Backup operations may fail on read-only filesystems
+#   🚨 Existing backups are never overwritten (timestamped instead)
+#
+# WHY NOT JUST USE STOW DIRECTLY?
+#   • Stow lacks interactive conflict resolution
+#   • Batch operations don't allow selective package handling
+#   • No built-in backup functionality
+#   • Complex for users trying dotfiles repositories
+#
+# WHY NOT PASS ALL PACKAGES TO STOW AT ONCE?
+#   • Prevents individual package adoption (--adopt flag)
+#   • Makes it impossible to handle conflicts per-package
+#   • Removes user control over installation process
+#
+# DEPENDENCIES:
+#   • stow (GNU Stow utility)
+#   • bash (POSIX shell with advanced features)
+#
+# STANDALONE OPERATION:
+#   This script includes built-in function definitions for log-message() and fail()
+#   to enable standalone execution without external dependencies.
+
+# Function definitions for standalone operation
+log-message() {
+    local level="$1"
+    local message="$2"
+    local force="${3:-false}"
+    local timestamp
+    timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+
+    if $verbose_mode || $force; then
+        case $level in
+        DEBUG) printf "  [ \033[36mDebug\033[0m ][%s] %s\n" "$timestamp" "$message" ;;
+        INFO) printf "[ \033[34m>>\033[0m ] %s\n" "$message" ;;
+        WARNING) printf "[\033[31m;1 !!! \033[0m][%s] %s\n" "$timestamp" "$message" ;;
+        SUCCESS) printf "\033[2K  [ \033[32mOK\033[0m ] %s\n" "$message" ;;
+        *) printf "[UNKNOWN][%s] %s\n" "$timestamp" "$message" ;; # Fallback for unknown message types
+        esac
+    fi
+}
+
+fail() {
+    printf "\r\033[2K  [ \033[01;31mFAIL\033[0m ] %s\n" "$1"
+    echo ''
+    exit 1
+}
+
+# PARAMETERS:
+#   -v, --verbose (optional): Enable verbose output showing debug information
+#   src: Source directory containing dotfiles packages (directories)
+#   target_dir: Target directory where dotfiles will be installed (typically $HOME)
+#
+# USAGE EXAMPLES:
+#   ./stowaway-check ~/.dotfiles ~                    # Interactive installation
+#   ./stowaway-check -v ~/.dotfiles ~                 # Verbose mode
+#   ./stowaway-check ~/.dotfiles /tmp/test-home       # Install to test directory
+#
+# RETURN VALUES:
+#   0: Success - all operations completed
+#   1: Failure - dependency check failed or critical error
+#
+# INTERACTIVE PROMPTS:
+#   The script presents different prompts based on conflict detection:
+#
+#   For packages with NO conflicts:
+#   "Found [package], what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all?"
+#
+#   For packages with conflicts:
+#   "Found existing dots at [path], what do you want to do?
+#    [s]kip, [S]kip all, [r]eplace, [R]eplace all, [b]ackup then install, [B]ackup then install all,
+#    [a]dd, [A]dd all, [o]nly backup, [O]nly backup all?"
+#
+# USER OPTION REFERENCE:
+#   s/S - Skip: Ignore package entirely
+#   r/R - Replace: Overwrite without backup
+#   b/B - Backup then Install: Preserve existing, add new
+#   a/A - Add: Merge non-conflicting files (stow --adopt)
+#   o/O - Backup Only: Preserve existing without installing
+#   i/I - Install: Standard installation (no conflicts present)
+#
+
+# FUNCTION: stowaway_check()
+#   Handles conflict resolution and installation for a single dotfiles package
+#
+# PARAMETERS:
+#   src: Path to the package directory (e.g., ~/.dotfiles/zsh)
+#   target_dir: Target installation directory (e.g., $HOME)
+#
+# GLOBALS USED:
+#   install_all, replace_all, backup_install_all, backup_only_all, skip_all, add_all
+#   verbose_mode
+#
+# BEHAVIOR:
+#   - Checks for stow dependency and target directory existence
+#   - Scans for file conflicts between package and target
+#   - Presents interactive prompts based on conflict detection
+#   - Executes chosen action (install, backup, skip, etc.)
+#   - Updates global "all" flags when batch options are selected
+#
+# RETURNS:
+#   Sets global variables and executes stow commands, but returns no value
+
+stowaway_check() {
+		local src=$1
+		local target_dir="$2"
+		local replace="" backup_install="" backup_only="" skip="" install="" add=""
+		local stowcmd=""
+		local pkgname=""
+
+	if ! which stow >/dev/null 2>&1; then
+		fail "Skipping dotfiles setup because stow isn't installed."
+	elif [ ! -e "$target_dir" ]; then
+		fail "Target directory not found"
+	fi
+
+	log-message "DEBUG" "Starting stowaway_check for $src"
+	log-message "DEBUG" "install_all=$([ "$install_all" == "true" ] && echo true || echo false) \
+	replace_all=$([ "$replace_all" == "true" ] && echo true || echo false) \
+	backup_install_all=$([ "$backup_install_all" == "true" ] && echo true || echo false) \
+	backup_only_all=$([ "$backup_only_all" == "true" ] && echo true || echo false) \
+	skip_all=$([ "$skip_all" == "true" ] && echo true || echo false) \
+	add_all=$([ "$add_all" == "true" ] && echo true || echo false)"
+
+	pkgname="$(basename "$src")"
+
+	if [ "$install_all" == "false" ] && [ "$replace_all" == "false" ] && [ "$backup_install_all" == "false" ] && [ "$backup_only_all" == "false" ] && [ "$skip_all" == "false" ] && [ "$add_all" == "false" ]; then
+		local children
+		local found=""
+		local cfg_child_name=""
+
+		# Get all children of the source directory one level deep
+		log-message "DEBUG" "searching for children of $src"
+		children=$(find "$src" -mindepth 1 -maxdepth 1)
+
+		for child in $children; do
+			# Skip processing children if anything in this package has been installed or skipped
+			if [ "$skip" != "true" ] && [ "$install" != "true" ]; then # "false" or empty
+				log-message "DEBUG" "processing children for ""$src"""
+				# Get the base name of the child (remove the directory part)
+				local child_name=""
+				child_name=$(basename "$child")
+
+				# Check for files in the package
+				if [ -e "$target_dir/$pkgname/$child_name" ] && [ -f "$child" ]; then
+					log-message "DEBUG" "Child Type File"
+					found="$target_dir/$pkgname/$child_name"
+				fi
+
+				# only check the subdir that is .config
+				if [ -d "$child" ] && [ "$child_name" = ".config" ]; then
+					log-message "DEBUG" "Child Type .config Directory"
+					local cfg_children="" cfg_child_name=""
+					# Get all children one level deep
+					cfg_children=$(find "$child" -mindepth 1 -maxdepth 1)
+					for cfg_child in $cfg_children; do
+						cfg_child_name=$(basename "$cfg_child")
+						log-message "DEBUG" "checking for ""$target_dir"/.config/"$cfg_child_name"""
+						if [ -e "$target_dir/.config/$cfg_child_name" ]; then
+							found="$target_dir"/.config/"$cfg_child_name"
+							log-message "DEBUG" "found existing dots $found"
+						else
+							log-message "DEBUG" "couldn't find existing dots"
+						fi
+					done
+				fi
+
+				# Get user input
+				if [[ -n $found ]]; then
+					# For debug
+					if [ -n "$cfg_child_name" ]; then
+						log-message "DEBUG" "Exists ${pkgname}/${child_name}/${cfg_child_name} in $found"
+					else
+						log-message "DEBUG" "Exists ${pkgname}/${child_name} in $found"
+					fi
+					# End debug
+					local valid_options="sSrRbBaAoO"
+					while true; do
+						printf "\r  [ \033[33m??\033[0m ] Found existing dots at %s, what do you want to do? [s]kip, [S]kip all, [r]eplace, [R]eplace all, [b]ackup then install, [B]ackup then install all, [a]dd, [A]dd all, [o]nly backup, [O]nly backup all? " "$found"
+						read -r -n 1 action # Read a single character from the user
+						echo                # Move to a new line after reading input
+						if [[ "$valid_options" == *"$action"* ]]; then
+							log-message "DEBUG" "You chose: $action"
+							break
+						else
+							log-message "WARNING" "Invalid option. Please choose either s, S, r, R, b, B, a, A, o or O." "true"
+						fi
+					done
+				else
+					# For debug
+					if [ -n "$cfg_child_name" ]; then
+						log-message "DEBUG" "No existing files at ${target_dir}/${child_name}/${cfg_child_name}"
+					else
+						log-message "DEBUG" "No existing files at ${target_dir}/$pkgname/${child_name}"
+					fi
+					# End debug
+					local valid_options="iIsS"
+					while true; do
+						printf "\r  [ \033[33m??\033[0m ] Found %s, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? " "$pkgname"
+						read -r -n 1 action # Read a single character from the user
+						echo                # Move to a new line after reading input
+						if [[ "$valid_options" == *"$action"* ]]; then
+							log-message "DEBUG" "You chose: $action"
+							break
+						else
+							log-message "WARNING" "Invalid option. Please choose either i, I, s, or S." "true"
+						fi
+					done
+				fi
+			fi
+
+			case "$action" in
+			i) install=true ;;
+			I) install_all=true ;;
+			r) replace=true ;;
+			R) replace_all=true ;;
+			b) backup_install=true ;;
+			B) backup_install_all=true ;;
+			o) backup_only=true ;;
+			O) backup_only_all=true ;;
+			a) add=true ;;
+			A) add_all=true ;;
+			s) skip=true ;;
+			S) skip_all=true ;;
+			*) ;;
+			esac
+		done
+	fi
+
+	# if the individual action is unset, match the "all" action
+	install=${install:-$install_all}
+	replace=${replace:-$replace_all}
+	backup_install=${backup_install:-$backup_install_all}
+	backup_only=${backup_only:-$backup_only_all}
+	add=${add:-$add_all}
+	skip=${skip:-$skip_all}
+
+	# replace the entire package (no backup)
+	if [ "$replace" == "true" ]; then
+		stowcmd="-R $pkgname -t $target_dir"
+		stowcheck=("$pkgname" "restow")
+		log-message "INFO" "Replacing $found"
+		log-message "WARNING" "When replacing; files in $target_dir but NOT in the repo will still remain." "true"
+	fi
+
+	# backup then install
+	if [ "$backup_install" == "true" ]; then
+		# back up the entire package first
+		local dst=""
+		dst="${target_dir}"/"${pkgname}"
+		if [ -e "$dst" ]; then
+			local backup_dst="${dst}.backup"
+			if [ -e "$backup_dst" ]; then
+				# If backup already exists, add timestamp
+				backup_dst="${dst}.backup.$(date +%s)"
+			fi
+			mv "$dst" "$backup_dst"
+			log-message "INFO" "Backed up $dst to $backup_dst"
+		fi
+		# Then install
+		stowcmd="-S $pkgname -t $target_dir"
+		stowcheck=("$pkgname" "stow")
+		log-message "INFO" "Installing $pkgname after backup"
+	fi
+
+	# backup only (don't install)
+	if [ "$backup_only" == "true" ]; then
+		# back up the entire package only
+		local dst=""
+		dst="${target_dir}"/"${pkgname}"
+		if [ -e "$dst" ]; then
+			local backup_dst="${dst}.backup"
+			if [ -e "$backup_dst" ]; then
+				# If backup already exists, add timestamp
+				backup_dst="${dst}.backup.$(date +%s)"
+			fi
+			mv "$dst" "$backup_dst"
+			log-message "INFO" "Backed up $dst to $backup_dst (not installing)"
+		fi
+	fi
+
+	# this will cause the whole package to be skipped if any of its children is skipped
+	if [ "$skip" == "true" ]; then
+		log-message "INFO" "Skipping $pkgname"
+	fi
+
+	# Stow the package (skip if backup_only or skip)
+	if [ "$skip" != "true" ] && [ "$backup_only" != "true" ]; then
+		stowcheck[0]="$pkgname"
+		# add on the adopt flag if add
+		if [ "$add" == "true" ]; then
+			stowcmd="-S $pkgname --adopt"
+			stowcheck[1]="adopt,"
+		else
+			stowcmd="-S $pkgname"
+			stowcheck[1]="stow,"
+		fi
+		log-message "INFO" "Installing $pkgname"
+
+		stowparams="$stowcmd -t $target_dir"
+		log-message "DEBUG" "adding to stowparams: $stowparams"
+	fi
+}
+
+# FUNCTION: stowaway_dots()
+#   Main orchestration function that processes all dotfiles packages
+#
+# PARAMETERS:
+#   src: Root directory containing all dotfiles packages
+#   target_dir: Target installation directory
+#
+# GLOBALS SET:
+#   Initializes all "*_all" flags to false
+#   verbose_mode (from command line arguments)
+#
+# BEHAVIOR:
+#   - Discovers all package directories in source
+#   - Processes each package through stowaway_check()
+#   - Maintains global state for batch operations
+#   - Provides final success confirmation
+#
+# RETURNS:
+#   No return value, exits with success/failure status
+
+stowaway_dots() {
+	local src=$1
+	local target_dir="$2"
+	local install_all=false replace_all=false backup_install_all=false backup_only_all=false skip_all=false add_all=false
+	local stowparams=""
+	local stowcheck=()
+	local dirs=()
+
+	log-message "DEBUG" "Searching for dots in $target_dir"
+	while IFS= read -r dir; do
+		dirs+=("$dir")
+	done < <(find "$src" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*')
+
+	for dir in "${dirs[@]}"; do
+		stowaway_check "$dir" "$target_dir"
+		log-message "DEBUG" "running command: stow $stowparams" "true"
+		# "$ASME stow $stowparams"
+		log-message "DEBUG" "Checking to see if ${stowcheck[0]} is installed" "$verbose_mode"
+		if [ "${stowcheck[1]}" = "stow" ] && ! which "${stowcheck[0]}" >/dev/null 2>&1; then
+			log-message "WARNING" "You chose to install dotfiles for the following packages, but they aren't on your system: ${stowcheck[0]}" "true"
+		fi
+	done
+
+	log-message "SUCCESS" "dotfiles installed" "true"
+}
+
+# STANDALONE EXECUTION
+# When run directly (not sourced), this script processes command line arguments
+# and executes the main dotfiles installation workflow
+if test "$0" = "${BASH_SOURCE[0]}"; then
+	# Parse command line options
+	verbose_mode=false
+	if [ "$1" = "-v" ] || [ "$1" = "--verbose" ]; then
+		verbose_mode=true
+		shift
+	fi
+
+	# Execute main workflow with remaining arguments
+	stowaway_dots "$@"
+fi

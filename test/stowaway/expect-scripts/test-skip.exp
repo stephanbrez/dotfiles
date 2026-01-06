@@ -1,0 +1,30 @@
+#!/usr/bin/expect -f
+
+# Test script for skip option (s)
+
+set timeout 10
+set test_dir "/tmp/stowaway-test"
+
+# Clean up previous logs
+exec rm -f $test_dir/logs/*.log
+
+# Run the test version of stowaway-check
+spawn bash test/stowaway-check-test.sh $test_dir/source $test_dir/target
+
+# Expect the conflict prompt and respond with 's' (skip)
+expect {
+    "*Found existing dots at*" {
+        send "s\r"
+        exp_continue
+    }
+    "*Found * what do you want to do*" {
+        send "s\r"
+        exp_continue
+    }
+    eof
+}
+
+# Wait a bit for processing
+sleep 1
+
+puts "Skip test completed"
