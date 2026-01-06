@@ -347,26 +347,26 @@ try:
 
     # Combine and output
     all_pkgs = common_pkgs + distro_pkgs
-    print(f\"PKG_DISTRO_PACKAGES=({' '.join(all_pkgs)})\")
+    print(f"PKG_DISTRO_PACKAGES=({' '.join(all_pkgs)})")
 
     # Export third-party flags
     third_party = distro_config.get('third_party', {})
     skip_third_party = distro_config.get('skip_third_party', False)
 
     if skip_third_party:
-        print(\"SKIP_THIRD_PARTY=true\")
+        print("SKIP_THIRD_PARTY=true")
     else:
         for name, enabled in third_party.items():
             if enabled:
-                print(f\"INSTALL_{name.upper()}=true\")
+                print(f"INSTALL_{name.upper()}=true")
 
     # Export pipx packages
     pipx_pkgs = distro_config.get('pipx_packages', [])
     if pipx_pkgs:
-        print(f\"PKG_PIPX_PACKAGES=({' '.join(pipx_pkgs)})\")
+        print(f"PKG_PIPX_PACKAGES=({' '.join(pipx_pkgs)})")
 
 except Exception as e:
-    print(f\"echo 'Error parsing YAML: {e}' >&2\", file=sys.stderr)
+    print(f"echo 'Error parsing YAML: {e}' >&2", file=sys.stderr)
     sys.exit(1)
 EOF
 )
