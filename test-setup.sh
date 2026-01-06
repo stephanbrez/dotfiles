@@ -55,6 +55,8 @@ All output is logged to test-logs/ directory for review.
 
 Options:
   -n, --dry-run     Run setup in dry-run mode (no actual changes)
+  -v, --verbose     Run setup in verbose mode (detailed output)
+  -f, --full        Run setup in full install mode (override Ubuntu minimal)
   -i, --interactive Run container interactively (for debugging)
   -a, --all         Test all supported distros
   -h, --help        Show this help message
@@ -65,9 +67,10 @@ Distros:
   fedora            Test on Fedora latest
 
 Examples:
-  $0 ubuntu                    # Full test on Ubuntu (will install packages!)
+  $0 ubuntu                    # Minimal test on Ubuntu (default)
+  $0 --full ubuntu             # Full install test on Ubuntu
   $0 --dry-run debian          # Dry-run test on Debian (safe, no changes)
-  $0 --dry-run --all           # Dry-run test on all distros
+  $0 --dry-run --verbose --all # Verbose dry-run on all distros
   $0 -i ubuntu                 # Interactive Ubuntu container for debugging
 
 Logs:
@@ -79,6 +82,8 @@ EOF
 
 # Parse arguments
 DRY_RUN=""
+VERBOSE=""
+FULL_MODE=""
 INTERACTIVE=""
 TEST_ALL=""
 DISTRO=""
@@ -87,6 +92,14 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         -n|--dry-run)
             DRY_RUN="-n"
+            shift
+            ;;
+        -v|--verbose)
+            VERBOSE="-v"
+            shift
+            ;;
+        -f|--full)
+            FULL_MODE="-f"
             shift
             ;;
         -i|--interactive)
@@ -118,8 +131,10 @@ test_distro() {
     local base_setup=""
     local setup_flags="-y"  # Always use auto-yes for non-interactive testing
 
-    # Add dry-run flag if requested
+    # Add optional flags if requested
     [[ -n "$DRY_RUN" ]] && setup_flags="$setup_flags -n"
+    [[ -n "$VERBOSE" ]] && setup_flags="$setup_flags -v"
+    [[ -n "$FULL_MODE" ]] && setup_flags="$setup_flags -f"
 
     case $distro in
         ubuntu)
@@ -143,10 +158,14 @@ test_distro() {
     # ─── Create test user and run setup with sudo ───
     # Replicates real scenario: regular user runs 'sudo ./setup' on fresh machine
     # Script runs as root via sudo, detects real user via $SUDO_USER
+    # Mount dotfiles to staging dir, then copy to user's home so setup can source
+    # installers/*.sh and read packages.yaml (git clone happens after sourcing)
     local setup_cmd="$base_setup && \
         useradd -m -s /bin/bash testuser && \
         echo 'testuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/testuser && \
-        su - testuser -c \"sudo bash /tmp/setup $setup_flags\""
+        cp -r /tmp/dotfiles-src /home/testuser/.dotfiles && \
+        chown -R testuser:testuser /home/testuser/.dotfiles && \
+        su - testuser -c \"sudo bash /home/testuser/.dotfiles/setup $setup_flags\""
 
     local logfile="$LOG_DIR/${distro}_${TIMESTAMP}.log"
 
@@ -155,13 +174,15 @@ test_distro() {
 
     if [[ -n "$INTERACTIVE" ]]; then
         print_warning "Starting interactive container..."
-        print_warning "Logged in as testuser (use 'sudo /tmp/setup -n' to test)"
+        print_warning "Logged in as testuser (use 'sudo ~/.dotfiles/setup -n' to test)"
         docker run --rm -it \
-            -v "$DOTFILES_DIR/setup:/tmp/setup:ro" \
+            -v "$DOTFILES_DIR:/tmp/dotfiles-src:ro" \
             "$image" \
             bash -c "$base_setup && \
                 useradd -m -s /bin/bash testuser && \
                 echo 'testuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/testuser && \
+                cp -r /tmp/dotfiles-src /home/testuser/.dotfiles && \
+                chown -R testuser:testuser /home/testuser/.dotfiles && \
                 su - testuser"
     else
         {
@@ -176,7 +197,7 @@ test_distro() {
         print_info "Running test... (output redirected to log)"
 
         if docker run --rm \
-            -v "$DOTFILES_DIR/setup:/tmp/setup:ro" \
+            -v "$DOTFILES_DIR:/tmp/dotfiles-src:ro" \
             "$image" \
             bash -c "$setup_cmd" >> "$logfile" 2>&1; then
             {
@@ -218,6 +239,8 @@ print_header "Setup Script Docker Test"
 echo "Dotfiles directory: $DOTFILES_DIR"
 echo "Log directory: $LOG_DIR"
 echo "Dry-run mode: ${DRY_RUN:-disabled}"
+echo "Verbose mode: ${VERBOSE:-disabled}"
+echo "Full install: ${FULL_MODE:-disabled}"
 echo ""
 
 if [[ -n "$TEST_ALL" ]]; then
