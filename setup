@@ -555,7 +555,11 @@ _echo "setting up dotfiles"
 if should_run; then
 	if [ -d "$basedir" ]; then
 		log_message "INFO" "Symlinking dotfiles with stow..."
-		"$basedir/bin/.local/bin/stowaway-check" "$basedir" "$myhome"
+		if $auto_yes; then
+			"$basedir/bin/.local/bin/stowaway-check" -y "$basedir" "$myhome"
+		else
+			"$basedir/bin/.local/bin/stowaway-check" "$basedir" "$myhome"
+		fi
 	else
 		fail "Dotfiles not found at $basedir. Please clone the repo first:\n  git clone $repourl $basedir"
 	fi
