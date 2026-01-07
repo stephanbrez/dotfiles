@@ -37,6 +37,7 @@
 # USAGE EXAMPLES:
 #   ./stowaway-check ~/.dotfiles ~          # Interactive mode
 #   ./stowaway-check -v ~/.dotfiles ~       # Verbose mode
+#   ./stowaway-check -y ~/.dotfiles ~       # Auto-yes mode (install all packages)
 #
 # ARCHITECTURAL NOTES:
 #   • Operates on package level (directories) not individual files
@@ -89,6 +90,7 @@ set -euo pipefail
 
 declare -g BACKUPS_CREATED=()
 declare -g ASME=""
+declare -g auto_yes=false
 
 cleanup() {
     local restored=0
@@ -428,6 +430,11 @@ stowaway_check() {
 	local install_all=false replace_all=false backup_install_all=false backup_only_all=false skip_all=false add_all=false
 	local dirs=()
 
+	if $auto_yes; then
+		install_all=true
+		log-message "INFO" "Auto-yes mode enabled: installing all packages"
+	fi
+
 	setup_user_context
 
 	if [ ! -e "$target_dir" ]; then
@@ -461,6 +468,10 @@ if test "$0" = "${BASH_SOURCE[0]}"; then
 	verbose_mode=false
 	if [ "$1" = "-v" ] || [ "$1" = "--verbose" ]; then
 		verbose_mode=true
+		shift
+	fi
+	if [ "$1" = "-y" ] || [ "$1" = "--yes" ]; then
+		auto_yes=true
 		shift
 	fi
 
