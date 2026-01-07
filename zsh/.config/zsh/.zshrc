@@ -70,18 +70,6 @@ setopt globdots # include dotfiles
 setopt extended_glob # match ~ # ^
 setopt interactive_comments # allow comments in shell
 
-# --- config ----
-# export MANPATH="/usr/local/man:$MANPATH"
-# You may need to manually set your language environment
-export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
 # ======== zinit ======== #
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 # install if not present
@@ -190,6 +178,7 @@ _fzf_compgen_dir() {
   fd --type d --hidden --follow --exclude ".git" . "$1"
 }
 
+
 # ======== mamba ======== #
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'mamba shell init' !!
@@ -202,6 +191,9 @@ fi
 unset __mamba_setup
 # <<< mamba initialize <<<
 
+
+# ======== opencode ======== #
+export PATH=/home/stephan/.opencode/bin:$PATH
 
 # ======== starship ======== #
 # eval "$(starship init zsh)"
@@ -227,3 +219,5 @@ eval $(uv generate-shell-completion zsh)
 # init & replace cd
 # For completions to work, this must be added after compinit is called
 eval "$(zoxide init --cmd cd zsh)"
+
+
