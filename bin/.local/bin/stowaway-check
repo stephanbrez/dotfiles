@@ -337,7 +337,7 @@ stowaway_check() {
 
 		log-message "DEBUG" "Executing: stow $stowcmd"
 		log-to-file "Stow: stow $stowcmd"
-		if ! eval "$ASME stow $stowcmd"; then
+	if ! eval "$ASME stow $stowcmd"; then
 			fail "Failed to stow package: $pkgname"
 		fi
 	fi
