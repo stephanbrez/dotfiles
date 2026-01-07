@@ -331,7 +331,7 @@ stowaway_check() {
 	skip=${skip:-$skip_all}
 
 	if [ "$replace" == "true" ]; then
-		stowcmd="-R $pkgname -t $target_dir"
+		stowcmd="-d $(dirname "$src") -R $pkgname -t $target_dir"
 		log-message "INFO" "Replacing $found"
 		log-message "WARNING" "When replacing; files in $target_dir but NOT in the repo will still remain." "true"
 
@@ -357,7 +357,7 @@ stowaway_check() {
 			log-to-file "Backup: $dst -> $backup_dst"
 			BACKUPS_CREATED+=("$backup_dst:$dst")
 		fi
-		stowcmd="-S $pkgname -t $target_dir"
+		stowcmd="-d $(dirname "$src") -S $pkgname -t $target_dir"
 		log-message "INFO" "Installing $pkgname after backup"
 
 		log-message "DEBUG" "Executing: stow $stowcmd"
@@ -390,9 +390,9 @@ stowaway_check() {
 
 	if [ "$skip" != "true" ] && [ "$backup_only" != "true" ]; then
 		if [ "$add" == "true" ]; then
-			stowcmd="-S $pkgname --adopt"
+			stowcmd="-d $(dirname "$src") -S $pkgname --adopt"
 		else
-			stowcmd="-S $pkgname"
+			stowcmd="-d $(dirname "$src") -S $pkgname"
 		fi
 		log-message "INFO" "Installing $pkgname"
 
