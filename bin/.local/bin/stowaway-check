@@ -340,8 +340,7 @@ stowaway_check() {
 	if ! eval "$ASME stow $stowcmd"; then
 			fail "Failed to stow package: $pkgname"
 		fi
-	fi
-
+	
 	if [ "$backup_install" == "true" ]; then
 		local dst=""
 		dst="${target_dir}/${pkgname}"
