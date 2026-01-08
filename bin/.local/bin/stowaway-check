@@ -233,6 +233,10 @@ stowaway_check() {
 	if [ "$install_all" == "false" ] && [ "$replace_all" == "false" ] && [ "$backup_install_all" == "false" ] && [ "$backup_only_all" == "false" ] && [ "$skip_all" == "false" ] && [ "$add_all" == "false" ]; then
 		local found=""
 
+		# Save stdin to fd 3 so read commands can access user input
+		# (the while loop redirects stdin from find)
+		exec 3<&0
+
 		log-message "DEBUG" "searching for children of $src"
 		while IFS= read -r -d '' child; do
 			cfg_child_name=""
@@ -275,7 +279,7 @@ stowaway_check() {
 				local valid_options="sSrRbBaAoO"
 				while true; do
 					printf "  [ \033[33m??\033[0m ] Found existing dots at %s, what do you want to do? [s]kip, [S]kip all, [r]eplace, [R]eplace all, [b]ackup then install, [B]ackup then install all, [a]dd, [A]dd all, [o]nly backup, [O]nly backup all? " "$found"
-					read -r action
+					read -r action <&3
 					action="${action:0:1}"
 					if [[ "$valid_options" == *"$action"* ]]; then
 						log-message "DEBUG" "You chose: $action"
@@ -293,7 +297,7 @@ stowaway_check() {
 				local valid_options="iIsS"
 				while true; do
 					printf "  [ \033[33m??\033[0m ] Found %s, what do you want to do: [i]nstall, [I]nstall all, [s]kip, [S]kip all? " "$pkgname"
-					read -r action
+					read -r action <&3
 					action="${action:0:1}"
 					if [[ "$valid_options" == *"$action"* ]]; then
 						log-message "DEBUG" "You chose: $action"
@@ -337,10 +341,11 @@ stowaway_check() {
 
 		log-message "DEBUG" "Executing: stow $stowcmd"
 		log-to-file "Stow: stow $stowcmd"
-	if ! eval "$ASME stow $stowcmd"; then
+		if ! eval "$ASME stow $stowcmd"; then
 			fail "Failed to stow package: $pkgname"
 		fi
-	
+	fi
+
 	if [ "$backup_install" == "true" ]; then
 		local dst=""
 		dst="${target_dir}/${pkgname}"
@@ -389,9 +394,9 @@ stowaway_check() {
 
 	if [ "$skip" != "true" ] && [ "$backup_only" != "true" ]; then
 		if [ "$add" == "true" ]; then
-			stowcmd="-d $(dirname "$src") -S $pkgname --adopt"
+			stowcmd="-d $(dirname "$src") -S $pkgname --adopt -t $target_dir"
 		else
-			stowcmd="-d $(dirname "$src") -S $pkgname"
+			stowcmd="-d $(dirname "$src") -S $pkgname -t $target_dir"
 		fi
 		log-message "INFO" "Installing $pkgname"
 
