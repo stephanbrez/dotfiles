@@ -11,6 +11,7 @@
 #   • Backup functionality with automatic collision handling
 #   • Batch processing with "all" options
 #   • Safe operation - never modifies files without user consent
+#   • Package exclusion via .stowaway-ignore file
 #
 # CONFLICT RESOLUTION OPTIONS:
 #   Individual Package Options:
@@ -33,6 +34,17 @@
 #   • Creates timestamped backups when collisions occur (package.backup, package.backup.1643123456)
 #   • "Backup then install" preserves existing files and installs new ones
 #   • "Backup only" preserves existing files without installing anything new
+#
+# PACKAGE EXCLUSION:
+#   Directories can be excluded from package discovery by creating
+#   a .stowaway-ignore file in the dotfiles directory root.
+#   Format: One pattern per line (simple shell patterns)
+#   Supported patterns: *, ?, [], literal strings
+#   Comments: Lines starting with # are ignored
+#   Examples:
+#     installers          # Exclude installers directory
+#     test*              # Exclude directories starting with "test"
+#     # This is a comment
 #
 # USAGE EXAMPLES:
 #   ./stowaway-check ~/.dotfiles ~          # Interactive mode
@@ -85,6 +97,11 @@
 # STANDALONE OPERATION:
 #   This script includes built-in function definitions for log-message() and fail()
 #   to enable standalone execution without external dependencies.
+#
+# FUTURE ENHANCEMENTS:
+#   • .stowaway-ignore file support [IMPLEMENTED]
+#   • Recursive pattern matching
+#   • .stowaway-global-ignore support
 
 set -euo pipefail
 
@@ -149,6 +166,20 @@ fail() {
     printf "\r\033[2K  [ \033[01;31mFAIL\033[0m ] %s\n" "$1"
     echo ''
     exit 1
+}
+
+parse_stowaway_ignore() {
+    local src="$1"
+    local ignore_file="$src/.stowaway-ignore"
+    
+    [ ! -f "$ignore_file" ] && return 0
+    
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        [[ "$line" =~ ^[[:space:]]*# ]] && continue
+        line=$(echo "$line" | xargs)
+        echo "$line"
+    done < "$ignore_file"
 }
 
 # PARAMETERS:
@@ -454,9 +485,19 @@ stowaway_check() {
 	log-message "DEBUG" "Using $stow_version"
 
 	log-message "DEBUG" "Searching for dots in $target_dir"
+
+	local ignore_patterns=()
+	mapfile -t ignore_patterns < <(parse_stowaway_ignore "$src")
+
+	local find_args=("$src" "-mindepth" "1" "-maxdepth" "1" "-type" "d" "!" "-name" "*.git*")
+
+	for pattern in "${ignore_patterns[@]}"; do
+		find_args+=("!" "-name" "$pattern")
+	done
+
 	while IFS= read -r dir; do
 		dirs+=("$dir")
-	done < <(find "$src" -mindepth 1 -maxdepth 1 -type d ! -name '*.git*')
+	done < <(find "${find_args[@]}")
 
 	for dir in "${dirs[@]}"; do
 		stowaway_check "$dir" "$target_dir"
