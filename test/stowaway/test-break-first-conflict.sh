@@ -20,9 +20,10 @@ echo "🔍 Checking results..."
 
 # Count how many conflict checks occurred (should be 1, not multiple)
 # Look for "checking for" debug messages
-CHECK_COUNT=$(echo "$OUTPUT" | grep -c "checking for" || echo "0")
+CHECK_COUNT=$(echo "$OUTPUT" | grep -c "checking for" 2>/dev/null || true)
+CHECK_COUNT=${CHECK_COUNT:-0}
 if [ "$CHECK_COUNT" -le 1 ]; then
-	echo "✅ Break after first conflict test passed - only checked 1 conflict"
+	echo "✅ Break after first conflict test passed - only checked $CHECK_COUNT conflict(s)"
 else
 	echo "❌ Break after first conflict test failed - checked $CHECK_COUNT conflicts"
 	cleanup_test_env "$TEST_DIR"

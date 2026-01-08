@@ -39,8 +39,8 @@ if [[ -f "$TEST_DIR/logs/stow.log" ]]; then
 		exit 1
 	fi
 
-	# Verify package was stowed
-	verify_stow_called "$TEST_DIR" "package" || {
+	# Verify package was stowed (pkg1 from simplified fixture)
+	verify_stow_called "$TEST_DIR" "pkg1" || {
 		cleanup_test_env "$TEST_DIR"
 		exit 1
 	}

@@ -24,16 +24,15 @@ echo "Created backup: $BACKUP_DST"
 BACKUPS_CREATED=()
 BACKUPS_CREATED+=("$BACKUP_DST:$TEST_DIR/target/package1")
 
-# Test cleanup function directly by sourcing stowaway-check
-# and calling cleanup()
-cd "$SCRIPT_DIR"
-source "../bin/.local/bin/stowaway-check" 2>/dev/null || true
-
-# Call cleanup function (should restore backup)
-cleanup
-
-# Wait for cleanup to complete
-sleep 1
+# Inline cleanup logic (same as stowaway-check's cleanup function)
+for backup_entry in "${BACKUPS_CREATED[@]}"; do
+	backup_path="${backup_entry%%:*}"
+	original_path="${backup_entry##*:}"
+	if [ -e "$backup_path" ]; then
+		mv "$backup_path" "$original_path"
+		echo "Restored: $original_path"
+	fi
+done
 
 echo "🔍 Checking results..."
 

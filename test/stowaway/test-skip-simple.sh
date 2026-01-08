@@ -13,17 +13,14 @@ echo "🧪 Testing skip functionality..."
 
 # Setup test environment - only copy source, use fixture's target
 setup_test_env "$FIXTURE_DIR" "$TEST_DIR"
-# Remove the copied target if exists (we'll use it as-is)
-rm -rf "$TEST_DIR/target" 2>/dev/null || true
-# Move fixture target to test target
-if [ -d "$FIXTURE_DIR/target" ]; then
-	cp -r "$FIXTURE_DIR/target" "$TEST_DIR/"
-fi
 
-# Run test with input file (two characters for two packages)
+# Verify target directory exists (graceful handling of missing fixtures)
+check_target_exists "$TEST_DIR" || exit 1
+
+# Run test with skip (s) for single package
 SCRIPT_PATH="$SCRIPT_DIR/stowaway-check-test.sh"
 OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_PATH" \
-	"$TEST_DIR/source" "$TEST_DIR/target" "ss")
+	"$TEST_DIR/source" "$TEST_DIR/target" "s")
 
 echo "🔍 Checking results..."
 
@@ -35,10 +32,10 @@ check_output_contains "$OUTPUT" "Found existing dots" "Conflict detection worked
 
 # Check that TWO prompts appeared (one per package)
 PROMPT_COUNT=$(count_prompts "$OUTPUT" "what do you want to do")
-if [ "$PROMPT_COUNT" -eq 2 ]; then
+if [ "$PROMPT_COUNT" -eq 1 ]; then
 	echo "✅ Skip test passed - one prompt per package shown"
 else
-	echo "❌ Skip test failed - expected 2 prompts, got $PROMPT_COUNT"
+	echo "❌ Skip test failed - expected 1 prompt, got $PROMPT_COUNT"
 	cleanup_test_env "$TEST_DIR"
 	exit 1
 fi

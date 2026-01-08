@@ -13,7 +13,9 @@ if [[ $# -eq 0 ]]; then
 	exit 0
 fi
 
-LOG_FILE="/tmp/stowaway-test/logs/stow.log"
+LOG_DIR="${STOWAWAY_TEST_LOG_DIR:-/tmp/stowaway-test/logs}"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/stow.log"
 echo "$(date): mock-stow called with: $*" >>"$LOG_FILE"
 
 # Parse arguments to understand what stow would do

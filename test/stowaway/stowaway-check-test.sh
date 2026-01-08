@@ -5,9 +5,13 @@
 
 echo "Running stowaway-check with args: $*" >&2
 
-SCRIPT_TO_RUN="$(dirname "$0")/stowaway-check"
-if [[ -f "$(dirname "$0")/stowaway-check-debug" ]]; then
-	SCRIPT_TO_RUN="$(dirname "$0")/stowaway-check-debug"
+# Use the production stowaway-check script
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_TO_RUN="$SCRIPT_DIR/../../bin/.local/bin/stowaway-check"
+
+# Allow debug override if present
+if [[ -f "$SCRIPT_DIR/stowaway-check-debug" ]]; then
+	SCRIPT_TO_RUN="$SCRIPT_DIR/stowaway-check-debug"
 fi
 
 export PATH="$(dirname "$0")/mocks:$PATH"

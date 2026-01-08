@@ -77,6 +77,32 @@ else
 fi
 
 echo ""
+echo "📋 Running auto-yes tests..."
+echo "  Testing auto-yes simple..."
+if bash "$SCRIPT_DIR/test-auto-yes-simple.sh"; then
+	echo "  ✅ Auto-yes simple test: PASSED"
+else
+	echo "  ❌ Auto-yes simple test: FAILED"
+	exit 1
+fi
+
+echo "  Testing auto-yes multiple packages..."
+if bash "$SCRIPT_DIR/test-auto-yes-multiple.sh"; then
+	echo "  ✅ Auto-yes multiple test: PASSED"
+else
+	echo "  ❌ Auto-yes multiple test: FAILED"
+	exit 1
+fi
+
+echo "  Testing auto-yes with conflicts..."
+if bash "$SCRIPT_DIR/test-auto-yes-with-conflicts.sh"; then
+	echo "  ✅ Auto-yes with conflicts test: PASSED"
+else
+	echo "  ❌ Auto-yes with conflicts test: FAILED"
+	exit 1
+fi
+
+echo ""
 echo "📋 Running edge case tests..."
 echo "  Testing empty source directory..."
 if bash "$SCRIPT_DIR/test-edge-empty-source.sh"; then
@@ -160,6 +186,9 @@ echo "   ✅ Backup only functionality"
 echo "   ✅ Install functionality"
 echo "   ✅ Add/adopt functionality"
 echo "   ✅ Skip all functionality"
+echo "   ✅ Auto-yes mode (single package)"
+echo "   ✅ Auto-yes mode (multiple packages)"
+echo "   ✅ Auto-yes mode (with conflicts)"
 echo "   ✅ Dependency checking (stow presence)"
 echo "   ✅ Dependency checking (target directory)"
 echo "   ✅ Edge case: empty source directory"

@@ -13,14 +13,10 @@ echo "🧪 Testing backup only functionality..."
 # Setup test environment
 setup_test_env "$FIXTURE_DIR" "$TEST_DIR"
 
-# Set up test environment: create package directory in target to backup
-mkdir -p "$TEST_DIR/target/package1/.config"
-echo "existing package1 content" >"$TEST_DIR/target/package1/.config/existing.conf"
+# Verify target directory exists
+check_target_exists "$TEST_DIR" || exit 1
 
-# Clean up any existing backups
-rm -rf "$TEST_DIR/target/package1.backup"
-
-# Run test with input file (single character)
+# Run test with backup-only (o) for single package
 OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
 	"$TEST_DIR/source" "$TEST_DIR/target" "o")
 
@@ -42,8 +38,8 @@ else
 	exit 1
 fi
 
-# Check if backup directory was created
-if [[ -d "$TEST_DIR/target/package1.backup" ]]; then
+# Check if backup directory was created (pkg1.backup)
+if [[ -d "$TEST_DIR/target/pkg1.backup" ]]; then
 	echo "✅ Backup-only test passed - backup directory created"
 else
 	echo "❌ Backup-only test failed - backup directory not found"
@@ -53,7 +49,7 @@ else
 fi
 
 # Check that no stow commands were executed (backup only doesn't install)
-if echo "$OUTPUT" | grep -q "Installing package1"; then
+if echo "$OUTPUT" | grep -q "Installing pkg1"; then
 	echo "❌ Backup-only test failed - package was installed when it shouldn't be"
 	cleanup_test_env "$TEST_DIR"
 	exit 1

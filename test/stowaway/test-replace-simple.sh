@@ -13,7 +13,10 @@ echo "🧪 Testing replace functionality..."
 # Setup test environment
 setup_test_env "$FIXTURE_DIR" "$TEST_DIR"
 
-# Run test with input file (single character)
+# Verify target directory exists
+check_target_exists "$TEST_DIR" || exit 1
+
+# Run test with replace (r) for single package
 OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
 	"$TEST_DIR/source" "$TEST_DIR/target" "r")
 

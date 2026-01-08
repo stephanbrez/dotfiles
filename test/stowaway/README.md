@@ -79,6 +79,15 @@ All tests should use the `test-lib.sh` helper library:
 
 ## Test Helper Functions
 
+### check_target_exists
+Verifies that the target directory exists (graceful handling of missing target/ directories).
+
+```bash
+check_target_exists <test_dir>
+```
+
+Returns 0 if target exists, 1 if it doesn't (and exits with error).
+
 ### run_test_with_input
 Runs stowaway-check with input from a file instead of herestrings.
 
@@ -137,6 +146,55 @@ If tests fail:
 3. **Check mock-stow.sh** - Verify it's executable and in PATH
 4. **Verify fixture structure** - Ensure fixture directories exist and contain files
 5. **Check input file** - Input files are created in `$TEST_DIR/input.txt`
+6. **Target directory handling** - Tests that use `conflict-*` fixtures don't have `target/` directories; `setup_test_env()` now gracefully handles missing targets
+
+## Auto-Yes Mode Tests
+
+Auto-yes mode (`-y` or `--yes` flag) bypasses all interactive prompts:
+
+- **test-auto-yes-simple.sh**: Tests auto-yes with single package, no conflicts
+- **test-auto-yes-multiple.sh**: Tests auto-yes with multiple packages
+- **test-auto-yes-with-conflicts.sh**: Tests auto-yes behavior when conflicts exist
+
+Key behaviors verified by auto-yes tests:
+- No interactive prompts appear (what do you want to do)
+- "Auto-yes mode enabled" message appears
+- All packages install automatically
+- Stow commands use `-d` flag with package directory
+
+## Fixture Structure
+
+Auto-yes fixtures have the following structure:
+
+```
+test/stowaway/fixtures/scenarios/auto-yes/
+├── single-package/          # Single package, no conflicts
+│   ├── source/test-pkg/.config/test-pkg/  # Files to be stowed
+│   │   ├── .bashrc                   # Example dotfile
+│   │   ├── .config/test-pkg/
+│   │   │   └── test-pkg/test.conf   # Package config file
+│   └── target/                  # Where symlinks are created
+├── multiple-packages/        # Multiple packages, no conflicts
+│   ├── source/              # Source files to be stowed
+│   │   ├── pkg1/
+│   │   │   ├── .config/
+│   │   │   │   └── pkg1/config  # Package 1 config
+│   │   ├── pkg2/
+│   │   │   ├── .config/
+│   │   │   │   └── pkg2/config  # Package 2 config
+│   └── target/              # Where symlinks are created
+└── with-conflicts/         # Packages with existing conflicts
+    ├── source/              # Source files to be stowed
+    │   ├── pkg1/
+    │   │   ├── .config/
+    │   │   │   └── pkg1/config         # Package 1 config (with conflict)
+    │   ├── pkg2/
+    │   │   ├── .config/
+    │   │   │   └── pkg2/config         # Package 2 config (with conflict)
+    └── target/              # Target with existing config (for conflict handling)
+```
+
+All fixtures now have proper structure with `source/`, `target/`, and optional `expected/` directories.
 
 ## Test Updates for New Behavior
 
@@ -169,6 +227,10 @@ Current test suite covers:
 - ✅ Write permission checking
 - ✅ ASME variable behavior (user ownership)
 - ✅ Backup restoration on interrupt
-- ✅ Stow command execution and formatting
+- ✅ Stow command execution and formatting (with -d flag support)
+- ✅ Auto-yes mode functionality (single package)
+- ✅ Auto-yes mode with multiple packages
+- ✅ Auto-yes mode with conflicting packages
+- ✅ No interactive prompts in auto-yes mode
 
-Total: 20 automated tests
+Total: 23 automated tests

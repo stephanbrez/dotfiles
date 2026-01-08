@@ -13,7 +13,10 @@ echo "🧪 Testing backup then install functionality..."
 # Setup test environment
 setup_test_env "$FIXTURE_DIR" "$TEST_DIR"
 
-# Run test with input file (single character)
+# Verify target directory exists
+check_target_exists "$TEST_DIR" || exit 1
+
+# Run test with backup-install (b) for single package
 OUTPUT=$(run_test_with_input "$TEST_DIR" "$SCRIPT_DIR/stowaway-check-test.sh" \
 	"$TEST_DIR/source" "$TEST_DIR/target" "b")
 
@@ -35,8 +38,8 @@ else
 	exit 1
 fi
 
-# Check if backup directory was created
-if [[ -d "$TEST_DIR/target/package1.backup" ]]; then
+# Check if backup directory was created (pkg1.backup)
+if [[ -d "$TEST_DIR/target/pkg1.backup" ]]; then
 	echo "✅ Backup-install test passed - backup directory created"
 else
 	echo "❌ Backup-install test failed - backup directory not found"
