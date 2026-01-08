@@ -1,2 +1,3 @@
 # Exclude non-package directories from stowaway discovery
 installers
+test
