@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DIRNAME=$(basename "$PWD")
+
+uv add --dev ipykernel jupyter-client
+
+uv run python -m ipykernel install --user --name "$DIRNAME" --display-name "Python ($DIRNAME)"
+
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130
