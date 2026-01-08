@@ -79,7 +79,7 @@ esac
 verbose_mode=false
 dry_run=false
 auto_yes=false
-install_mode=""  # Will be set based on distro or -f flag
+install_mode="" # Will be set based on distro or -f flag
 
 # Parse command-line arguments
 show_help() {
@@ -330,7 +330,8 @@ parse_packages_yaml() {
 
 	# Use Python to parse YAML and output bash variable assignments
 	local python_output
-	python_output=$(python3 <<EOF
+	python_output=$(
+		python3 <<EOF
 import yaml
 import sys
 
@@ -369,7 +370,7 @@ except Exception as e:
     print(f"echo 'Error parsing YAML: {e}' >&2", file=sys.stderr)
     sys.exit(1)
 EOF
-)
+	)
 	local python_exit=$?
 
 	if [ $python_exit -ne 0 ] || [ -z "$python_output" ]; then
@@ -517,7 +518,7 @@ function install_packages() {
 	fi
 
 	# ─── Fun stuff (always install) ───
-	install_figlet_fonts
+	# install_figlet_fonts
 }
 
 if $auto_yes; then

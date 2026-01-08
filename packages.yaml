@@ -47,7 +47,7 @@ common:
     - python3-pip
     - unzip
     - wget
-    - wl-clipboard
+    # - wl-clipboard
     # ─── Fun ───
     - toilet
 
@@ -97,7 +97,7 @@ ubuntu:
       zoxide: true
 
     # ─── Python/pipx packages ───
-    pipx_packages:
+    # pipx_packages:
 
 # ═════ Debian-Specific Packages ═════
 debian:
