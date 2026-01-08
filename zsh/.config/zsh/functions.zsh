@@ -59,6 +59,15 @@ function mcd() {
 function ipyki() {
   python -m ipykernel install --user --name=$1 --display-name="Python ($1)"
 }
+# uv version
+function uvpyk() {
+    local name="${1:-$(basename "$PWD")}"
+
+    uv run ipython kernel install \
+      --user \
+      --name "$name" \
+      --display-name "Python ($name)"
+}
 
 # Wezterm
 # Connect to a remote host from .ssh/config file in a new tab
