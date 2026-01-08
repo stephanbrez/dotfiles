@@ -1,0 +1,30 @@
+# https://github.com/FelixKratz/dotfiles
+
+# Listen for events
+sketchybar --add event aerospace_workspace_change
+# Font
+FONT="Hack Nerd Font"
+# Define item and plugin directories
+ITEM_DIR="$CONFIG_DIR/items"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+
+# Load colors
+source "$CONFIG_DIR/colors.sh"
+# Load icons
+source "$CONFIG_DIR/icons.sh"
+# Load default settings
+source "$CONFIG_DIR/default.sh"
+
+# Left side items ---
+source "$ITEM_DIR/space.sh"
+# source "$ITEM_DIR/front_app.sh"
+# --- Right side items
+source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/media_block.sh"
+# source "$ITEM_DIR/cpu.sh"
+# source "$ITEM_DIR/ram.sh"
+
+# Hot reload
+sketchybar --hotload on
+sketchybar --update
