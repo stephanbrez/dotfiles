@@ -23,7 +23,6 @@ common:
     - ripgrep
     - shellcheck
     - stow
-    - thefuck
     - tldr
     - tmux
     - trash-cli
@@ -65,7 +64,7 @@ ubuntu:
       - silversearcher-ag
       - secure-delete
       - fonts-dejavu
-      - exfatprogs # Ubuntu 20.04+, earlier versions use exfat-fuse
+      # - exfatprogs # Ubuntu 20.04+, earlier versions use exfat-fuse
 
     # Skip ALL third-party packages in minimal mode
     skip_third_party: true
@@ -81,7 +80,7 @@ ubuntu:
       - silversearcher-ag
       - secure-delete
       - fonts-dejavu
-      - exfatprogs # Ubuntu 20.04+
+      # - exfatprogs # Ubuntu 20.04+
 
     # ─── Third-party installations ───
     third_party:
@@ -92,15 +91,13 @@ ubuntu:
       lazydocker: true
       lazygit: true
       fzf_binary: true
-      neovim_source: true
+      neovim_source: false
       uv: true
       wezterm: true
       zoxide: true
 
     # ─── Python/pipx packages ───
     pipx_packages:
-      - docutils
-      - emoji-fzf
 
 # ═════ Debian-Specific Packages ═════
 debian:
@@ -114,6 +111,7 @@ debian:
       - fd-find
       - silversearcher-ag
       - secure-delete
+      - thefuck
       - ttf-dejavu # Different from Ubuntu (ttf- vs fonts-)
       - exfat-fuse # Debian uses exfat-fuse (not exfatprogs)
 
@@ -133,7 +131,7 @@ debian:
 
     # ─── Python/pipx packages ───
     pipx_packages:
-      - docutils
+      #- docutils
       - emoji-fzf
 
 # ═════ Fedora-Specific Packages ═════
@@ -156,11 +154,11 @@ fedora:
 
     # ─── Third-party installations ───
     third_party:
-      docker: true
+      # docker: true
       # Note: 1password, eza, wezterm may not be available for Fedora
       # fastfetch: true
       # lazydocker: true
       # lazygit: true
       uv: true
-      wezterm: true
+      # wezterm: true
       # zoxide: true
