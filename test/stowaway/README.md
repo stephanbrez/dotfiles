@@ -232,5 +232,10 @@ Current test suite covers:
 - ✅ Auto-yes mode with multiple packages
 - ✅ Auto-yes mode with conflicting packages
 - ✅ No interactive prompts in auto-yes mode
+- ✅ .stowaway-ignore: basic directory exclusion
+- ✅ .stowaway-ignore: wildcard pattern matching (*, ?, [])
+- ✅ .stowaway-ignore: backward compatibility (no file)
+- ✅ .stowaway-ignore: empty file handling
+- ✅ .stowaway-ignore: comment and whitespace handling
 
-Total: 23 automated tests
+Total: 28 automated tests

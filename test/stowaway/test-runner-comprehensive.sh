@@ -176,6 +176,48 @@ else
 fi
 
 echo ""
+echo "📋 Running .stowaway-ignore feature tests..."
+echo "  Testing basic directory exclusion..."
+if bash "$SCRIPT_DIR/test-ignore-basic.sh"; then
+	echo "  ✅ Basic ignore test: PASSED"
+else
+	echo "  ❌ Basic ignore test: FAILED"
+	exit 1
+fi
+
+echo "  Testing wildcard pattern exclusion..."
+if bash "$SCRIPT_DIR/test-ignore-wildcards.sh"; then
+	echo "  ✅ Wildcard ignore test: PASSED"
+else
+	echo "  ❌ Wildcard ignore test: FAILED"
+	exit 1
+fi
+
+echo "  Testing behavior without ignore file..."
+if bash "$SCRIPT_DIR/test-ignore-no-file.sh"; then
+	echo "  ✅ No ignore file test: PASSED"
+else
+	echo "  ❌ No ignore file test: FAILED"
+	exit 1
+fi
+
+echo "  Testing empty ignore file..."
+if bash "$SCRIPT_DIR/test-ignore-empty-file.sh"; then
+	echo "  ✅ Empty ignore file test: PASSED"
+else
+	echo "  ❌ Empty ignore file test: FAILED"
+	exit 1
+fi
+
+echo "  Testing comment and whitespace handling..."
+if bash "$SCRIPT_DIR/test-ignore-comments.sh"; then
+	echo "  ✅ Comment handling test: PASSED"
+else
+	echo "  ❌ Comment handling test: FAILED"
+	exit 1
+fi
+
+echo ""
 echo "🎉 All tests passed successfully!"
 echo ""
 echo "📊 Test Summary:"
@@ -197,6 +239,11 @@ echo "   ✅ Backup restoration on interrupt"
 echo "   ✅ Write permission checking"
 echo "   ✅ Break after first conflict"
 echo "   ✅ ASME variable behavior"
+echo "   ✅ .stowaway-ignore: basic exclusion"
+echo "   ✅ .stowaway-ignore: wildcard patterns"
+echo "   ✅ .stowaway-ignore: backward compatibility"
+echo "   ✅ .stowaway-ignore: empty file handling"
+echo "   ✅ .stowaway-ignore: comment handling"
 echo ""
 echo "All tests verify stow command execution via mock-stow!"
 

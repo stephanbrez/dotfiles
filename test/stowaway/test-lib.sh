@@ -155,3 +155,72 @@ verify_no_prompts() {
 		return 0
 	fi
 }
+
+# Verify .stowaway-ignore file exists in source
+verify_ignore_file_exists() {
+	local test_dir="$1"
+	local message="${2:-Ignore file exists}"
+
+	if [ -f "$test_dir/source/.stowaway-ignore" ]; then
+		echo "✅ $message"
+		return 0
+	else
+		echo "❌ $message - .stowaway-ignore not found"
+		return 1
+	fi
+}
+
+# Verify .stowaway-ignore file does not exist in source
+verify_ignore_file_not_exists() {
+	local test_dir="$1"
+	local message="${2:-Ignore file does not exist}"
+
+	if [ ! -f "$test_dir/source/.stowaway-ignore" ]; then
+		echo "✅ $message"
+		return 0
+	else
+		echo "❌ $message - .stowaway-ignore exists when it shouldn't"
+		return 1
+	fi
+}
+
+# Verify directory was excluded from processing
+verify_directory_excluded() {
+	local test_dir="$1"
+	local dir_name="$2"
+	local message="${3:-Directory $dir_name was excluded}"
+
+	if [ ! -f "$test_dir/logs/stow.log" ] || ! grep -q "$dir_name" "$test_dir/logs/stow.log"; then
+		echo "✅ $message"
+		return 0
+	else
+		echo "❌ $message - $dir_name was processed"
+		return 1
+	fi
+}
+
+# Verify directory was processed
+verify_directory_processed() {
+	local test_dir="$1"
+	local dir_name="$2"
+	local message="${3:-Directory $dir_name was processed}"
+
+	if grep -q "$dir_name" "$test_dir/logs/stow.log" 2>/dev/null; then
+		echo "✅ $message"
+		return 0
+	else
+		echo "❌ $message - $dir_name not found in stow log"
+		return 1
+	fi
+}
+
+# Count how many packages were processed
+count_processed_packages() {
+	local test_dir="$1"
+
+	if [ -f "$test_dir/logs/stow.log" ]; then
+		grep -c "stow.*-S" "$test_dir/logs/stow.log" 2>/dev/null || echo "0"
+	else
+		echo "0"
+	fi
+}
