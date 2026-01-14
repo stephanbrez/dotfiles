@@ -51,6 +51,197 @@
         ]
         },
 
+        /* ===================== GOTO/GIT  <leader>g ===================== */
+        {
+        "keys": "g",
+        "name": "Goto…",
+        "type": "bindings",
+        "bindings": [
+            /* LSP Goto commands */
+            { "key": "d", "name": "Go to Definition",        "type": "command", "command": "editor.action.revealDefinition" },
+            { "key": "D", "name": "Peek Definition",        "type": "command", "command": "editor.action.peekDefinition" },
+            { "key": "r", "name": "Go to References",       "type": "command", "command": "editor.action.referenceSearch.trigger" },
+            { "key": "i", "name": "Go to Implementation",   "type": "command", "command": "editor.action.goToImplementation" },
+            { "key": "t", "name": "Go to Type Definition", "type": "command", "command": "editor.action.goToTypeDefinition" },
+            { "key": "l", "name": "Go to Line…",           "type": "command", "command": "workbench.action.gotoLine" },
+            { "key": "s", "name": "Go to Symbol in File…",  "type": "command", "command": "workbench.action.gotoSymbol" },
+            
+            /* Git commands (merged under <leader>g per LazyVim) */
+            { "key": "c", "name": "Commit (Git: Commit)",  "type": "command", "command": "git.commit" }
+        ]
+        },
+        
+        /* Git Hunk submenu (LazyVim: <leader>gh) */
+        {
+            "keys": "g.h",
+            "name": "Git Hunk…",
+            "type": "bindings",
+            "bindings": [
+                { "key": "s", "name": "Source Control",            "type": "command", "command": "workbench.view.scm" },
+                { "key": "d", "name": "Open Changes (Diff)",       "type": "command", "command": "workbench.scm.focus" }
+                /* Requires GitLens extension - commented out */
+                // { "key": "b", "name": "Blame (GitLens)", "type": "command", "command": "gitlens.toggleFileBlame" },
+                // { "key": "p", "name": "Line Blame (GitLens)", "type": "command", "command": "gitlens.toggleLineBlame" }
+            ]
+        },
+        
+        /* ===================== SEARCH  <leader>s ===================== */
+        {
+        "keys": "s",
+        "name": "Search…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "/", "name": "Search in Files",                "type": "command", "command": "workbench.action.findInFiles" },          /* s/ */
+            { "key": "g", "name": "Search Editor (New)",            "type": "command", "command": "search.action.openNewEditor" },           /* sg */
+            { "key": "G", "name": "Grep (Workspace)",             "type": "command", "command": "search.action.openNewEditor" },           /* sG */
+            { "key": "k", "name": "Keyboard Shortcuts",             "type": "command", "command": "workbench.action.openGlobalKeybindings" },/* sk */
+            { "key": "h", "name": "Show All Symbols",               "type": "command", "command": "workbench.action.showAllSymbols" },       /* sh */
+            { "key": "H", "name": "Show All Symbols",               "type": "command", "command": "workbench.action.showAllSymbols" },       /* sH (alias) */
+            { "key": "d", "name": "Diagnostics (Problems Focus)",   "type": "command", "command": "workbench.action.problems.focus" },        /* sd ≈ snacks s d */
+            { "key": "c", "name": "Command History",              "type": "command", "command": "workbench.action.showCommands" },       /* sc */
+            { "key": "C", "name": "Commands",                    "type": "command", "command": "workbench.action.showCommands" },       /* sC (alias) */
+            { "key": "b", "name": "Buffer Lines (Outline)",        "type": "command", "command": "breadcrumbs.focusAndSelect" },       /* sb */
+            { "key": "B", "name": "Grep Open Buffers",           "type": "command", "command": "workbench.action.findInFiles" },       /* sB (TODO: filter to open buffers) */
+            { "key": "r", "name": "Resume (Last Search)",         "type": "command", "command": "workbench.action.findInFiles" },       /* sr (focuses last used search) */
+            { "key": "t", "name": "Search: TODO/FIXME",         "type": "command", "command": "search.action.openNewEditor", "args": { "triggerSearch": false, "focusResults": false } } /* st (TODO|FIXME in query) */
+            
+            /* Neovim-specific (handled by neovim extension) - commented to avoid conflicts */
+            // { "key": "\"", "name": "Registers",       "type": "command", "command": "neovim.register" },
+            // { "key": "a",  "name": "Autocmds",        "type": "command", "command": "neovim.autocmd" },
+            // { "key": "m",  "name": "Marks",           "type": "command", "command": "neovim.mark" },
+            // { "key": "M",  "name": "Man Pages",       "type": "command", "command": "neovim.man" },
+            // { "key": "u",  "name": "Undotree",       "type": "command", "command": "neovim.undotree" },
+            // { "key": "i",  "name": "Icons",          "type": "command", "command": "neovim.icons" },
+            // { "key": "H",  "name": "Highlights",     "type": "command", "command": "neovim.highlights" },
+            // { "key": "S",  "name": "Symbols",        "type": "command", "command": "workbench.action.showAllSymbols" } /* moved to h */
+        ]
+        },
+
+        /* ===================== CODE/LSP  <leader>c ===================== */
+        {
+        "keys": "c",
+        "name": "Code…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "a", "name": "Code Action (Quick Fix / Refactor)", "type": "command", "command": "editor.action.quickFix" },
+            { "key": "A", "name": "Source Actions",                   "type": "command", "command": "editor.action.sourceAction" },
+            { "key": "r", "name": "Rename Symbol",                   "type": "command", "command": "editor.action.rename" },
+            { "key": "R", "name": "Rename File",                     "type": "command", "command": "workbench.action.files.rename" },
+            { "key": "f", "name": "Format Document",                  "type": "command", "command": "editor.action.formatDocument" },    /* <leader>cf */
+            { "key": "s", "name": "Symbols (Problems/Outline via Trouble≈Breadcrumbs)", "type": "command", "command": "breadcrumbs.focusAndSelect" }
+            
+            /* No native VSCode equivalent - commented out */
+            // { "key": "F", "name": "Format Injected Langs",  "type": "command", "command": "" }, /* Requires extension */
+            // { "key": "C", "name": "Run Codelens",          "type": "command", "command": "" }, /* Requires extension */
+            // { "key": "n", "name": "Generate Annotations",    "type": "command", "command": "" }, /* Neovim-specific */
+        ]
+        },
+
+        /* ===================== DEBUG  <leader>d ===================== */
+        {
+        "keys": "d",
+        "name": "Debug…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "c", "name": "Continue debug",      "type": "command", "command": "workbench.action.debug.continue" },
+            { "key": "d", "name": "Start debug",        "type": "command", "command": "workbench.action.debug.start" },
+            { "key": "i", "name": "Step into",         "type": "command", "command": "workbench.action.debug.stepInto" },
+            { "key": "j", "name": "Jump to cursor",     "type": "command", "command": "debug.jumpToCursor" },
+            { "key": "o", "name": "Step out",          "type": "command", "command": "workbench.action.debug.stepOut" },
+            { "key": "p", "name": "Pause debug",       "type": "command", "command": "workbench.action.debug.pause" },
+            { "key": "s", "name": "Step over",        "type": "command", "command": "workbench.action.debug.stepOver" },
+            { "key": "v", "name": "REPL",              "type": "command", "command": "workbench.debug.action.toggleRepl" },
+            { "key": "w", "name": "Focus on watch window", "type": "command", "command": "workbench.debug.action.focusWatchView" },
+            { "key": "C", "name": "Continue to cursor",  "type": "command", "command": "editor.debug.action.runToCursor" },
+            { "key": "D", "name": "Run without debugging", "type": "command", "command": "workbench.action.debug.run" },
+            { "key": "R", "name": "Restart debug",      "type": "command", "command": "workbench.action.debug.restart" },
+            { "key": "S", "name": "Stop debug",         "type": "command", "command": "workbench.action.debug.stop" },
+            { "key": "W", "name": "Add to watch",       "type": "command", "command": "editor.debug.action.selectionToWatch" },
+            { "key": "b", "name": "+Breakpoint",       "type": "bindings", "bindings": [
+                { "key": "b", "name": "Toggle Breakpoint", "type": "command", "command": "editor.debug.action.toggleBreakpoint" }
+            ]}
+            
+            /* No native VSCode profiler equivalent - commented out */
+            // { "key": "p", "name": "Toggle Profiler",      "type": "command", "command": "" }, /* Neovim-specific */
+        ]
+        },
+
+        /* ===================== UI TOGGLES  <leader>u ===================== */
+        {
+        "keys": "u",
+        "name": "UI…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "z", "name": "Zen Mode",                       "type": "command", "command": "workbench.action.toggleZenMode" },
+            { "key": "Z", "name": "Maximize Editor (Zoom-ish)",     "type": "command", "command": "workbench.action.maximizeEditor" },
+            { "key": "c", "name": "Toggle Centered Layout",         "type": "command", "command": "workbench.action.toggleCenteredLayout" }, /* verified cmd id */
+            { "key": "w", "name": "Toggle Word Wrap",               "type": "command", "command": "editor.action.toggleWordWrap" },
+            { "key": "b", "name": "Toggle Breadcrumbs",             "type": "command", "command": "breadcrumbs.toggle" },
+            { "key": "m", "name": "Toggle Minimap",                 "type": "command", "command": "editor.action.toggleMinimap" },
+            { "key": "s", "name": "Toggle Render Whitespace",       "type": "command", "command": "toggleRenderWhitespace" },
+            { "key": "a", "name": "Toggle Activity Bar",            "type": "command", "command": "workbench.action.toggleActivityBarVisibility" },
+            { "key": "S", "name": "Toggle Sidebar (Primary)",       "type": "command", "command": "workbench.action.toggleSidebarVisibility" },
+            { "key": "B", "name": "Toggle Secondary Sidebar",       "type": "command", "command": "workbench.action.toggleAuxiliaryBar" },
+            { "key": "p", "name": "Toggle Panel",                   "type": "command", "command": "workbench.action.togglePanel" },
+            { "key": "t", "name": "Toggle Status Bar",              "type": "command", "command": "workbench.action.toggleStatusbarVisibility" },
+            { "key": "L", "name": "Toggle Line Numbers (Relative/Abs/Off)", "type": "command", "command": "workbench.action.toggleLineNumbers" },
+            { "key": "d", "name": "Diagnostics (Problems Focus)",  "type": "command", "command": "workbench.action.problems.focus" }
+            
+            /* Requires "Settings Cycler" extension - https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.settings-cycler */
+            // { "key": "h", "name": "Toggle Inlay Hints",          "type": "command", "command": "settings.cycle.editor.inlayHints.enabled" },
+            // { "key": "g", "name": "Toggle Indent Guides",        "type": "command", "command": "settings.cycle.editor.guides.indentation" },
+            // { "key": "S", "name": "Toggle Smooth Scrolling",     "type": "command", "command": "settings.cycle.editor.smoothScrolling" },
+            // { "key": "a", "name": "Toggle Animations",           "type": "command", "command": "settings.cycle.workbench.enableExperimantalView" },
+            /* No native toggle - commented out */
+            // { "key": "n", "name": "Dismiss Notifications",     "type": "command", "command": "" },
+        ]
+        },
+        /* ---------- UI → Panel position & focus utilities ---------- */
+        {
+        "keys": "u.P",
+        "name": "Panel Position…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "l", "name": "Move Panel Left",   "type": "command", "command": "workbench.action.positionPanelLeft" },
+            { "key": "r", "name": "Move Panel Right",  "type": "command", "command": "workbench.action.positionPanelRight" },
+            { "key": "b", "name": "Move Panel Bottom", "type": "command", "command": "workbench.action.positionPanelBottom" },
+            { "key": "t", "name": "Move Panel Top",    "type": "command", "command": "workbench.action.positionPanelTop" },
+            { "key": "f", "name": "Focus Panel",       "type": "command", "command": "workbench.action.focusPanel" },
+            { "key": "p", "name": "Previous Panel View","type": "command", "command": "workbench.action.previousPanelView" },
+            { "key": "n", "name": "Next Panel View",   "type": "command", "command": "workbench.action.nextPanelView" }
+        ]
+        },
+
+        /* ===================== DIAGNOSTICS / TROUBLE  <leader>x ===================== */
+        {
+        "keys": "x",
+        "name": "Diagnostics…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "x", "name": "Problems: Focus",        "type": "command", "command": "workbench.action.problems.focus" },       /* xx */
+            { "key": "l", "name": "Problems: Show Panel",   "type": "command", "command": "workbench.actions.view.problems" },       /* xl */
+            { "key": "q", "name": "Quick Fix",              "type": "command", "command": "editor.action.quickFix" },                /* xq */
+            { "key": "n", "name": "Next Problem (in Files)","type": "command", "command": "editor.action.marker.nextInFiles" },      /* xn */
+            { "key": "p", "name": "Prev Problem (in Files)", "type": "command", "command": "editor.action.marker.prevInFiles" }      /* xp */
+        ]
+        },
+
+        /* ===================== TABS  <leader><tab> ===================== */
+        {
+        "keys": "<tab>",
+        "name": "Tabs…",
+        "type": "bindings",
+        "bindings": [
+            { "key": "l",      "name": "Last Tab",            "type": "command", "command": "workbench.action.openPreviousRecentlyUsedEditor" }, /* <tab>l (approx) */
+            { "key": "o",      "name": "Close Other Tabs",    "type": "command", "command": "workbench.action.closeOtherEditors" },              /* <tab>o */
+            { "key": "f",      "name": "First Tab",           "type": "command", "command": "workbench.action.firstEditorInGroup" },             /* <tab>f */
+            { "key": "<tab>",  "name": "New Tab (Untitled)",  "type": "command", "command": "workbench.action.files.newUntitledFile" },          /* <tab><tab> */
+            { "key": "]",      "name": "Next Tab",            "type": "command", "command": "workbench.action.nextEditor" },                     /* <tab>] */
+            { "key": "d",      "name": "Close Tab",           "type": "command", "command": "workbench.action.closeActiveEditor" },              /* <tab>d */
+            { "key": "[",      "name": "Previous Tab",        "type": "command", "command": "workbench.action.previousEditor" }                  /* <tab>[ */
+        ]
+        },
+
         /* ===================== BUFFERS  <leader>b ===================== */
         {
         "keys": "b",
@@ -116,146 +307,6 @@
             ]
         },
         
-        /* ===================== TABS  <leader><tab> ===================== */
-        {
-        "keys": "<tab>",
-        "name": "Tabs…",
-        "type": "bindings",
-        "bindings": [
-            { "key": "l",      "name": "Last Tab",            "type": "command", "command": "workbench.action.openPreviousRecentlyUsedEditor" }, /* <tab>l (approx) */
-            { "key": "o",      "name": "Close Other Tabs",    "type": "command", "command": "workbench.action.closeOtherEditors" },              /* <tab>o */
-            { "key": "f",      "name": "First Tab",           "type": "command", "command": "workbench.action.firstEditorInGroup" },             /* <tab>f */
-            { "key": "<tab>",  "name": "New Tab (Untitled)",  "type": "command", "command": "workbench.action.files.newUntitledFile" },          /* <tab><tab> */
-            { "key": "]",      "name": "Next Tab",            "type": "command", "command": "workbench.action.nextEditor" },                     /* <tab>] */
-            { "key": "d",      "name": "Close Tab",           "type": "command", "command": "workbench.action.closeActiveEditor" },              /* <tab>d */
-            { "key": "[",      "name": "Previous Tab",        "type": "command", "command": "workbench.action.previousEditor" }                  /* <tab>[ */
-        ]
-        },
-
-        /* ===================== SEARCH  <leader>s ===================== */
-        {
-        "keys": "s",
-        "name": "Search…",
-        "type": "bindings",
-        "bindings": [
-            { "key": "/", "name": "Search in Files",                "type": "command", "command": "workbench.action.findInFiles" },          /* s/ */
-            { "key": "g", "name": "Search Editor (New)",            "type": "command", "command": "search.action.openNewEditor" },           /* sg */
-            { "key": "k", "name": "Keyboard Shortcuts",             "type": "command", "command": "workbench.action.openGlobalKeybindings" },/* sk */
-            { "key": "h", "name": "Show All Symbols",               "type": "command", "command": "workbench.action.showAllSymbols" },       /* sh */
-            { "key": "d", "name": "Diagnostics (Problems Focus)",   "type": "command", "command": "workbench.action.problems.focus" }        /* sd ≈ snacks s d */
-        ]
-        },
-        
-        /* ---------- SEARCH extras: TODO/FIXME Search Editor preset ---------- */
-        {
-        "keys": "s.t",
-        "name": "Search: TODO/FIXME",
-        "type": "command",
-        "command": "search.action.openNewEditor",
-        "args": { "triggerSearch": false, "focusResults": false } // caret in query box; type:  TODO|FIXME
-        },
-        
-        /* ===================== GOTO <leader>g ===================== (LazyVim “goto” family) */
-        {
-        "keys": "g",
-        "name": "Goto…",
-        "type": "bindings",
-        "bindings": [
-            { "key": "d", "name": "Go to Definition", "type": "command", "command": "editor.action.revealDefinition" },
-            { "key": "D", "name": "Peek Definition", "type": "command", "command": "editor.action.peekDefinition" },
-            { "key": "r", "name": "Go to References", "type": "command", "command": "editor.action.referenceSearch.trigger" },
-            { "key": "i", "name": "Go to Implementation", "type": "command", "command": "editor.action.goToImplementation" },
-            { "key": "t", "name": "Go to Type Definition", "type": "command", "command": "editor.action.goToTypeDefinition" },
-            { "key": "l", "name": "Go to Line…", "type": "command", "command": "workbench.action.gotoLine" },
-            { "key": "s", "name": "Go to Symbol in File…", "type": "command", "command": "workbench.action.gotoSymbol" }
-        ]
-        },
-
-        /* ===================== CODE/LSP <leader>c ===================== */
-        {
-        "keys": "c",
-        "name": "Code…",
-        "type": "bindings",
-        "bindings": [
-            { "key": "a", "name": "Code Action (Quick Fix / Refactor)", "type": "command", "command": "editor.action.quickFix" },
-            { "key": "r", "name": "Rename Symbol", "type": "command", "command": "editor.action.rename" },
-            { "key": "f", "name": "Format Document", "type": "command", "command": "editor.action.formatDocument" },    /* <leader>cf */
-            { "key": "s", "name": "Symbols (Problems/Outline via Trouble≈Breadcrumbs)", "type": "command", "command": "breadcrumbs.focusAndSelect" }
-        ]
-        },
-
-        /* ===================== DIAGNOSTICS / TROUBLE  <leader>x ===================== */
-        {
-        "keys": "x",
-        "name": "Diagnostics…",
-        "type": "bindings",
-        "bindings": [
-            { "key": "x", "name": "Problems: Focus",        "type": "command", "command": "workbench.action.problems.focus" },       /* xx */
-            { "key": "l", "name": "Problems: Show Panel",   "type": "command", "command": "workbench.actions.view.problems" },       /* xl */
-            { "key": "q", "name": "Quick Fix",              "type": "command", "command": "editor.action.quickFix" },                /* xq */
-            { "key": "n", "name": "Next Problem (in Files)","type": "command", "command": "editor.action.marker.nextInFiles" },      /* xn */
-            { "key": "p", "name": "Prev Problem (in Files)", "type": "command", "command": "editor.action.marker.prevInFiles" }      /* xp */
-        ]
-        },
-
-        /* ===================== UI TOGGLES  <leader>u ===================== */
-        {
-        "keys": "u",
-        "name": "UI…",
-        "type": "bindings",
-        "bindings": [
-            { "key": "z", "name": "Zen Mode",                       "type": "command", "command": "workbench.action.toggleZenMode" },
-            { "key": "Z", "name": "Maximize Editor (Zoom-ish)",     "type": "command", "command": "workbench.action.maximizeEditor" },
-            { "key": "c", "name": "Toggle Centered Layout",         "type": "command", "command": "workbench.action.toggleCenteredLayout" }, /* verified cmd id */
-            { "key": "w", "name": "Toggle Word Wrap",               "type": "command", "command": "editor.action.toggleWordWrap" },
-            { "key": "b", "name": "Toggle Breadcrumbs",             "type": "command", "command": "breadcrumbs.toggle" },
-            { "key": "m", "name": "Toggle Minimap",                 "type": "command", "command": "editor.action.toggleMinimap" },
-            { "key": "s", "name": "Toggle Render Whitespace",       "type": "command", "command": "toggleRenderWhitespace" },
-            { "key": "a", "name": "Toggle Activity Bar",            "type": "command", "command": "workbench.action.toggleActivityBarVisibility" },
-            { "key": "S", "name": "Toggle Sidebar (Primary)",       "type": "command", "command": "workbench.action.toggleSidebarVisibility" },
-            { "key": "B", "name": "Toggle Secondary Sidebar",       "type": "command", "command": "workbench.action.toggleAuxiliaryBar" },
-            { "key": "p", "name": "Toggle Panel",                   "type": "command", "command": "workbench.action.togglePanel" },
-            { "key": "t", "name": "Toggle Status Bar",              "type": "command", "command": "workbench.action.toggleStatusbarVisibility" }
-        ]
-        },
-        /* ---------- UI → Panel position & focus utilities ---------- */
-        {
-        "keys": "u.P",
-        "name": "Panel Position…",
-        "type": "bindings",
-        "bindings": [
-            { "key": "l", "name": "Move Panel Left",   "type": "command", "command": "workbench.action.positionPanelLeft" },
-            { "key": "r", "name": "Move Panel Right",  "type": "command", "command": "workbench.action.positionPanelRight" },
-            { "key": "b", "name": "Move Panel Bottom", "type": "command", "command": "workbench.action.positionPanelBottom" },
-            { "key": "t", "name": "Move Panel Top",    "type": "command", "command": "workbench.action.positionPanelTop" },
-            { "key": "f", "name": "Focus Panel",       "type": "command", "command": "workbench.action.focusPanel" },
-            { "key": "p", "name": "Previous Panel View","type": "command", "command": "workbench.action.previousPanelView" },
-            { "key": "n", "name": "Next Panel View",   "type": "command", "command": "workbench.action.nextPanelView" }
-        ]
-        },
-        
-        /* ===================== GIT  <leader>g ===================== */
-        {
-        "keys": "g",
-        "name": "Git…",
-        "type": "bindings",
-        "bindings": [
-            { "key": "s", "name": "Source Control",            "type": "command", "command": "workbench.view.scm" },                   /* gs */
-            { "key": "d", "name": "Open Changes (Diff)",       "type": "command", "command": "workbench.scm.focus" },                  /* gd approx */
-            { "key": "c", "name": "Commit (Git: Commit)",      "type": "command", "command": "git.commit" },                          /* gc */
-            { "key": "b", "name": "Toggle File Blame (GitLens)","type": "command", "command": "gitlens.toggleFileBlame" }             /* gb (optional) */
-        ]
-        },
-        {
-            "keys": "g.h",
-            "name": "Git Hunk-ish…",
-            "type": "bindings",
-            "bindings": [
-                { "key": "b", "name": "Blame (GitLens, if installed)", "type": "command", "command": "gitlens.toggleFileBlame" },
-                { "key": "p", "name": "Open File Blame (Inline, if installed)", "type": "command", "command": "gitlens.toggleLineBlame" }
-            ]
-        },
-
         /* ===================== TERMINAL  <leader>t ===================== */
         {
         "keys": "t",
@@ -278,8 +329,33 @@
         "bindings": [
             { "key": "s", "name": "Save All & Close Window", "type": "commands", "commands": ["workbench.action.files.saveAll", "workbench.action.closeWindow"] }, /* qs ≈ persistence */
             { "key": "l", "name": "Open Recent (Restore)",   "type": "command",  "command": "workbench.action.openRecent" },                                        /* ql */
-            { "key": "d", "name": "Close Window (Don’t Save)","type": "command", "command": "workbench.action.closeWindow" },                                       /* qd */
+            { "key": "d", "name": "Close Window (Don't Save)","type": "command", "command": "workbench.action.closeWindow" },                                       /* qd */
             { "key": "q", "name": "Quit",                    "type": "command",  "command": "workbench.action.quit" }                                                /* qq (dup for menu context) */
+        ]
+        },
+
+        /* ===================== AI  <leader>a ===================== */
+        {
+        "keys": "a",
+        "name": "AI…",
+        "type": "bindings",
+        "bindings": [
+            /* Claude Code - Command IDs may need verification from your Cursor installation */
+            { "key": "a", "name": "Ask Claude (Focus Input)",   "type": "command", "command": "claudeCode.focusInput" }, /* Cmd+Esc / Ctrl+Esc */
+            { "key": "c", "name": "Toggle Claude Panel",       "type": "command", "command": "workbench.action.toggleAuxiliaryBar" }, /* Toggle right panel */
+            { "key": "f", "name": "Focus Claude Panel",       "type": "command", "command": "workbench.action.toggleAuxiliaryBar" }, /* Focus/show right panel */
+            { "key": "N", "name": "Insert @-Mention Reference", "type": "command", "command": "claudeCode.insertMentionReference" } /* Alt+K */
+            
+            /* Command IDs to be verified from Cursor extension installation - comment these for now */
+            // { "key": "C", "name": "Continue Claude",      "type": "command", "command": "claudeCode.continue" },
+            // { "key": "d", "name": "Accept Diff",         "type": "command", "command": "claudeCode.acceptDiff" },
+            // { "key": "h", "name": "Claude History",      "type": "command", "command": "claudeCode.showHistory" },
+            // { "key": "m", "name": "Select Model",         "type": "command", "command": "claudeCode.selectModel" },
+            // { "key": "n", "name": "New Claude Chat",     "type": "command", "command": "claudeCode.newConversation" },
+            // { "key": "p", "name": "Switch Provider",      "type": "command", "command": "claudeCode.switchProvider" },
+            // { "key": "r", "name": "Resume Claude",        "type": "command", "command": "claudeCode.resume" },
+            // { "key": "s", "name": "Stop Claude",         "type": "command", "command": "claudeCode.stop" },
+            // { "key": "t", "name": "Toggle Claude",        "type": "command", "command": "claudeCode.toggle" }
         ]
         }
     ],
