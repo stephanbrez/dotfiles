@@ -9,22 +9,33 @@ return {
   config = function()
     ---@type opencode.Opts
     vim.g.opencode_opts = {
-      -- Your configuration, if any — see `lua/opencode/config.lua`, or "goto definition".
+      provider = {
+        enabled = "wezterm",
+        wezterm = {
+          -- ...
+        },
+      },
     }
-
     -- Required for `opts.events.reload`.
     vim.o.autoread = true
 
     -- Recommended/example keymaps.
-    vim.keymap.set({ "n", "x" }, "<C-a>", function()
+    vim.keymap.set({ "n", "x" }, "<leader>oa", function()
       require("opencode").ask("@this: ", { submit = true })
     end, { desc = "Ask opencode" })
-    vim.keymap.set({ "n", "x" }, "<C-x>", function()
+    vim.keymap.set({ "n", "x" }, "<leader>ox", function()
       require("opencode").select()
     end, { desc = "Execute opencode action…" })
-    vim.keymap.set({ "n", "t" }, "<C-.>", function()
+    vim.keymap.set({ "n", "t" }, "<leader>o.", function()
       require("opencode").toggle()
     end, { desc = "Toggle opencode" })
+    -- Visual mode
+    vim.keymap.set({ "v" }, "<leader>oA", function()
+      require("opencode").ask("@this: ", { submit = true })
+    end, { desc = "Ask opencode" })
+    vim.keymap.set({ "v" }, "<leader>oX", function()
+      require("opencode").select()
+    end, { desc = "Execute opencode action…" })
 
     vim.keymap.set({ "n", "x" }, "go", function()
       return require("opencode").operator("@this ")
@@ -33,15 +44,32 @@ return {
       return require("opencode").operator("@this ") .. "_"
     end, { expr = true, desc = "Add line to opencode" })
 
-    vim.keymap.set("n", "<S-C-u>", function()
+    vim.keymap.set("n", "<leader>ou", function()
       require("opencode").command("session.half.page.up")
     end, { desc = "opencode half page up" })
-    vim.keymap.set("n", "<S-C-d>", function()
+    vim.keymap.set("n", "<leader>od", function()
       require("opencode").command("session.half.page.down")
     end, { desc = "opencode half page down" })
 
+    -- Prompts
+    vim.keymap.set({ "n", "x" }, "<leader>of", function()
+      require("opencode").prompt("fix", { submit = true })
+    end, { desc = "Fix this..." }) --
+    vim.keymap.set({ "n", "x" }, "<leader>oe", function()
+      require("opencode").prompt("explain", { submit = true })
+    end, { desc = "Explain this..." }) --
+    vim.keymap.set({ "n", "x" }, "<leader>or", function()
+      require("opencode").prompt("review", { submit = true })
+    end, { desc = "Review this..." }) --
+    vim.keymap.set({ "n", "x" }, "<leader>oo", function()
+      require("opencode").prompt("optimize", { submit = true })
+    end, { desc = "Optimize this..." }) --
+    vim.keymap.set({ "n", "x" }, "<leader>oi", function()
+      require("opencode").prompt("implement", { submit = true })
+    end, { desc = "Implement this..." }) --
+
     -- You may want these if you stick with the opinionated "<C-a>" and "<C-x>" above — otherwise consider "<leader>o".
-    vim.keymap.set("n", "+", "<C-a>", { desc = "Increment", noremap = true })
-    vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement", noremap = true })
+    -- vim.keymap.set("n", "+", "<C-a>", { desc = "Increment", noremap = true })
+    -- vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement", noremap = true })
   end,
 }
