@@ -5,6 +5,11 @@
 -- Enable formatting concealment to hide markdown code
 vim.opt.conceallevel = 2
 -- vim.go.bg = "light"
+--
+--
+--
+-- vim.opt.listchars = { tab = "  ", trail = "·", eol = "↵" }
+vim.opt.listchars = { tab = "» ", trail = "·", eol = "↵", nbsp = "␣" }
 
 -- Soft wrap text at window edge
 vim.opt.textwidth = 80
@@ -12,6 +17,8 @@ vim.opt.wrapmargin = 0
 vim.opt.wrap = true
 -- Break lines at word
 vim.opt.linebreak = true
+-- Better wrapping
+vim.opt.breakindent = true
 
 -- make backspace behave in a sane manner
 vim.opt.backspace = "indent,eol,start"
@@ -23,3 +30,6 @@ vim.opt.shiftwidth = 4
 
 -- completions
 -- vim.g.ai_cmp = false
+--
+-- Scroll lines above and below
+vim.opt.scrolloff = 8
