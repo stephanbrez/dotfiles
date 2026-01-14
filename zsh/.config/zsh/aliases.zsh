@@ -252,6 +252,9 @@ alias mua="mamba update --all"                 # Update all installed packages
 alias mue="mamba env update"                   # Update the current environment
 alias muc="mamba update mamba"                 # Update mamba package manager
 
+# --- Avante ---
+alias avante='nvim -c "lua vim.defer_fn(function()require(\"avante.api\").zen_mode()end, 100)"'
+
 # --- Docker ---
 alias dbl='docker build'            # Build an image from a Dockerfile
 alias dcin='docker container inspect'  # Display detailed information on one or more containers
