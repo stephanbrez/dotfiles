@@ -10,13 +10,19 @@
         "context": "Workspace",
         "bindings": {
             // "shift shift": "file_finder::Toggle"
-        }
+        },
     },
     {
         "context": "Editor",
         "bindings": {
             // "j k": ["workspace::SendKeystrokes", "escape"]
-        }
+        },
+    },
+    {
+        "context": "Editor && showing_completions",
+        "bindings": {
+            "shift-enter": "editor::Newline",
+        },
     },
     {
         "context": "Dock",
@@ -25,9 +31,9 @@
             "ctrl-w l": "workspace::ActivatePaneRight",
             "ctrl-w k": "workspace::ActivatePaneUp",
             "ctrl-w j": "workspace::ActivatePaneDown",
-            "ctrl-w t": "terminal_panel::ToggleFocus"
+            "ctrl-w t": "terminal_panel::ToggleFocus",
             // ... or other keybindings
-        }
+        },
     },
     {
         "context": "VimControl && !menu",
@@ -39,37 +45,42 @@
             "ctrl-shift-y": "agent::KeepAll",
             "ctrl-shift-n": "agent::RejectAll",
             "shift-ctrl-r": "agent::OpenAgentDiff",
+            "space a": "agents::ToggleAgentsPanel",
+            // Terminal
+            "space t": "terminal_panel::ToggleFocus",
+            "space shift-t": "terminal_panel::Toggle",
             // Buffers
             "space ,": "tab_switcher::Toggle",
             // Files
             "space f": "file_finder::Toggle",
             "space e": "project_panel::ToggleFocus",
             // Editor
+            "space shift-e": "workspace::ToggleLeftDock",
             "space o": "outline_panel::ToggleFocus", // Toggle outline panel
             "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
             "alt-k": "editor::MoveLineUp",
             "alt-j": "editor::MoveLineDown",
             "x x": "editor::Cut", // Cut line
-            "d d": "editor::DeleteLine" // Delete line without clipboard
-        }
+            "d d": "editor::DeleteLine", // Delete line without clipboard
+        },
     },
     {
         "context": "vim_mode == normal && !menu",
         "bindings": {
-            "x": ["workspace::SendKeystrokes", "v x"] // Cut character
-        }
+            "x": ["workspace::SendKeystrokes", "v x"], // Cut character
+        },
     },
     {
         "context": "vim_mode == visual && !menu",
         "bindings": {
-            "d": "editor::Delete"
-        }
+            "d": "editor::Delete",
+        },
     },
     {
         "context": "vim_mode == insert",
         "bindings": {
             // "j k": "vim::NormalBefore" // In insert mode, make jk escape to normal mode.
-        }
+        },
     },
     {
         "context": "EmptyPane || SharedScreen",
@@ -77,6 +88,6 @@
             // Put key bindings here (in addition to the context above) if you want them to
             // work when no editor exists.
             // "space f": "file_finder::Toggle"
-        }
-    }
+        },
+    },
 ]
