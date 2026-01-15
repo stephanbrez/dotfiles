@@ -9,7 +9,7 @@ vim.opt.conceallevel = 2
 --
 --
 -- vim.opt.listchars = { tab = "  ", trail = "·", eol = "↵" }
-vim.opt.listchars = { tab = "» ", trail = "·", eol = "↵", nbsp = "␣" }
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- Soft wrap text at window edge
 vim.opt.textwidth = 80
