@@ -33,6 +33,10 @@ export XDG_CACHE_HOME="$HOME/.cache"
 # bootstrap .zshrc to ~/.config/zsh/.zshrc, any other zsh config files can also reside here
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 
+# ======== secrets ======== #
+# source private environment variables (if file exists)
+[[ -f "$ZDOTDIR/.zsh-secrets" ]] && source "$ZDOTDIR/.zsh-secrets"
+
 # default programs
 export EDITOR="nvim"
 # --- config ----

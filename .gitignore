@@ -1,2 +1,5 @@
 # Test logs from test-setup.sh
 test-logs/
+
+# Secrets file for zsh
+zsh/.config/zsh/.zsh-secrets
