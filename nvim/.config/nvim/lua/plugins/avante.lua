@@ -17,27 +17,19 @@ return {
     providers = {
       claude = {
         endpoint = "https://api.anthropic.com",
-        model = "claude-sonnet-4-20250514",
+        model = "claude-opus-4-5-20251101",
+        api_key_name = "cmd:echo $AVANTE_ANTHROPIC_API_KEY",
         timeout = 30000, -- Timeout in milliseconds
         extra_request_body = {
           temperature = 0.75,
           max_tokens = 20480,
         },
       },
-      moonshot = {
-        endpoint = "https://api.moonshot.ai/v1",
-        model = "kimi-k2-0711-preview",
-        timeout = 30000, -- Timeout in milliseconds
-        extra_request_body = {
-          temperature = 0.75,
-          max_tokens = 32768,
-        },
-      },
     },
     selector = {
       --- @alias avante.SelectorProvider "native" | "fzf_lua" | "mini_pick" | "snacks" | "telescope" | fun(selector: avante.ui.Selector): nil
       --- @type avante.SelectorProvider
-      provider = "fzf",
+      provider = "fzf_lua",
       -- Options override for custom providers
       provider_opts = {},
     },
