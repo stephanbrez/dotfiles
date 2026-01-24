@@ -1,39 +1,58 @@
-# CLAUDE.md
+# Coding Project Rules
 
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
-## Coding Principles
+## Core Coding Principles
 
-1. Prioritize readability, modularity, and scalability in your code suggestions.
-2. Document data sources, assumptions, and methodologies clearly.
-3. Refer to official documentation for best practices and up-to-date APIs.
-4. Prefer YAML over JSON for configuration files.
-5. Recommend version control (e.g., git) for tracking changes.
+1. **Readability, Modularity, and Scalability**: Prioritize these qualities in
+   all suggestions
+2. **Documentation**: Ensure data sources, assumptions, and methodologies are
+   clearly documented
+3. **Best Practices**: Reference official documentation for current APIs and
+   patterns
+4. **Configuration**: Recommend YAML over JSON for configuration files
+5. **Iterative Development**: Build minimal functionality first, verify before
+   adding complexity
+6. **Version Control**: Recommend git for tracking changes when appropriate
 
-## Programming Style
+## Programming Style Guidelines
 
-1. Use descriptive variable names and avoid ambiguity.
-2. Implement robust error handling and logging.
-3. Use early returns and avoid nested conditionals and functions.
-4. Handle edge cases at the beginning of functions.
-5. Use named constants or environment variables instead of hardcoded values.
-6. Validate data types and ranges to ensure data integrity.
-7. Use the Numpy style for documentation strings.
+1. Use descriptive, unambiguous variable names
+2. Implement robust error handling and logging throughout
+3. Use early returns to avoid nested conditionals and functions
+4. Handle edge cases at the beginning of functions
+5. Use named constants or environment variables instead of hardcoded values
+6. Validate data types and ranges to ensure data integrity
+7. Write documentation strings in NumPy style
+8. Prefer functional, stateless, and immutable approaches
+9. Follow DRY principles (Don't Repeat Yourself)
+10. Ensure modules, classes, and functions have single responsibility and are
+    self-contained
 
-## Code Formatting
+## Code Formatting Standards
 
-1. Use four spaces for indentation and limit lines to 80 characters.
-2. Use lowercase_with_underscores for variables, functions, and filenames.
-3. Use UPPER_CASE for constants and environment variables.
-4. Use CamelCase for class names.
-5. Use lowercase-with-dashes for directories.
+1. **Indentation**: Use four spaces, limit lines to 80 characters
+2. **Naming Conventions**:
+    - `lowercase_with_underscores` for variables, functions, and filenames
+    - `UPPER_CASE` for constants and environment variables
+    - `CamelCase` for class names
+    - `lowercase-with-dashes` for directories
 
-## Code Organization
+## Code Organization Requirements
 
-1. Break up large functions with comments describing the steps: "─── Description
-   ───"
-2. Create logical sections in large files with headers: "===== Section Name
-   =====" IMPORTANT: Only use these section headers for main file content, never
-   inside functions.
-3. Use emojis in comments and logging: ⚠️ WARNING:, 🚨 ERROR:, ❗ IMPORTANT:
+1. Break up large functions with step comments using: `"─── Description ───"`
+2. Create sections in large files with headers: `"===== Section Name ====="`
+    - **IMPORTANT**: Only use section headers for main file content, never
+      inside functions
+3. Use emojis in comments and logging for clarity:
+    - ⚠️ WARNING: For potential issues or deprecated features
+    - 🚨 ERROR: For critical errors and exceptions
+    - ❗ IMPORTANT: For crucial information or breaking changes
+    - ✅ SUCCESS: For successful operations or validations
+    - 🔍 DEBUG: For debugging information
+    - 📝 NOTE: For general informational comments
+    - 🚀 PERFORMANCE: For performance-related notes
+    - 🔒 SECURITY: For security-related considerations
+    - 💡 TIP: For helpful hints or best practices
+    - 🧪 TEST: For testing-related comments
