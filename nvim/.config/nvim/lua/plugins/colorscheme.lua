@@ -16,7 +16,7 @@ return {
     end,
   },
   -- { "rose-pine/neovim", name = "rose-pine", dark_variant = "moon" },
-  -- { "sainnhe/gruvbox-material" },
+  { "sainnhe/gruvbox-material" },
   -- {
   --   "sainnhe/everforest",
   --   lazy = false,
