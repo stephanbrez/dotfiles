@@ -33,3 +33,6 @@ vim.opt.shiftwidth = 4
 --
 -- Scroll lines above and below
 vim.opt.scrolloff = 8
+
+-- Snacks
+vim.g.lazyvim_picker = "snacks"
