@@ -136,10 +136,44 @@ end) --
 --
 -- Auto light/dark mode:
 -- config.color_scheme = "Everforest Light (Gogh)"
-config.color_scheme = "Seoulbones_light"
+-- config.color_scheme = "Seoulbones_light"
 -- config.color_scheme = "Monokai (light) (terminal.sexy)"
 -- config.colors = theme.colors()
 -- config.color_scheme = Scheme_for_appearance(get_appearance())
+
+-- Default scheme
+local default_scheme = "Seoulbones_light"
+local host_to_scheme = {
+	["149.28.39.143"] = "Zenbones",
+}
+
+-- Set the global default
+config.color_scheme = default_scheme
+
+-- Per-window override based on ssh target
+wezterm.on("update-status", function(window, pane)
+	local fg = pane:get_foreground_process_info() or {}
+	local overrides = {}
+
+	if fg.name == "ssh" and fg.argv then
+		-- fg.argv is the ssh command and args
+		for _, arg in ipairs(fg.argv) do
+			for pattern, scheme in pairs(host_to_scheme) do
+				if string.find(arg, pattern) then
+					overrides.color_scheme = scheme
+					break
+				end
+			end
+		end
+	end
+
+	-- Fallback to default if none matched
+	if not overrides.color_scheme then
+		overrides.color_scheme = default_scheme
+	end
+
+	window:set_config_overrides(overrides)
+end)
 
 -- Keybindings
 config.enable_kitty_keyboard = true
