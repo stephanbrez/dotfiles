@@ -43,6 +43,7 @@ set $mod Mod4
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 # exec --no-startup-id dex --autostart --environment i3
+# exec_always --no-startup-id xrdb -merge <<< 'Xft.dpi: 96'
 exec --no-startup-id picom
 exec --no-startup-id ~/.local/src/xborder/xborders -c ~/.config/xborders/config.json
 
@@ -177,7 +178,7 @@ bindsym $mod+c focus child
 #########################################
 # Screens
 #########################################
-set $output-primary output primary
+set $output-primary output DP-0
 set $output-secondary output HDMI-0
 
 #########################################
