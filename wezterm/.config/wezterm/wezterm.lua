@@ -143,20 +143,30 @@ end) --
 
 -- Default scheme
 local default_scheme = "Seoulbones_light"
-local host_to_scheme = {
-	["149.28.39.143"] = "Zenbones",
-}
+
+-- Load SSH themes from separate file (contains sensitive host information)
+local host_to_scheme = {}
+local ssh_themes_path = wezterm.config_dir .. "/ssh-themes.lua"
+
+-- Try to load SSH themes config
+local success, ssh_config = pcall(dofile, ssh_themes_path)
+if success and ssh_config and ssh_config.host_to_scheme then
+    host_to_scheme = ssh_config.host_to_scheme
+    wezterm.log_info("Loaded SSH themes from: " .. ssh_themes_path)
+else
+    wezterm.log_info("No SSH themes config found at: " .. ssh_themes_path)
+    -- This is normal if no sensitive hosts are configured
+end
 
 -- Set the global default
 config.color_scheme = default_scheme
 
--- Per-window override based on ssh target
+-- Simplified SSH theme detection
 wezterm.on("update-status", function(window, pane)
 	local fg = pane:get_foreground_process_info() or {}
 	local overrides = {}
 
 	if fg.name == "ssh" and fg.argv then
-		-- fg.argv is the ssh command and args
 		for _, arg in ipairs(fg.argv) do
 			for pattern, scheme in pairs(host_to_scheme) do
 				if string.find(arg, pattern) then
@@ -164,10 +174,10 @@ wezterm.on("update-status", function(window, pane)
 					break
 				end
 			end
+			if overrides.color_scheme then break end
 		end
 	end
 
-	-- Fallback to default if none matched
 	if not overrides.color_scheme then
 		overrides.color_scheme = default_scheme
 	end
@@ -186,6 +196,17 @@ config.keys = {
 	-- 		cycle_theme.theme_switcher(window, pane)
 	-- 	end),
 	-- },
+	-- Manual theme switcher (safe binding with ALT)
+	{
+		key = "T",
+		mods = "CTRL|SHIFT|ALT",
+		action = wezterm.action_callback(function(window, pane)
+			local current = window:get_config().color_scheme
+			local new_scheme = current == "Zenbones_dark" and "Seoulbones_light" or "Zenbones_dark"
+			window:set_config_overrides({ color_scheme = new_scheme })
+			debug_log("Manual theme switch: " .. current .. " -> " .. new_scheme)
+		end),
+	},
 	-- Rename tab
 	{
 		key = "e",
