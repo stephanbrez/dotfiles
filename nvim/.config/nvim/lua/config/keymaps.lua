@@ -197,6 +197,19 @@ vim.keymap.set("n", "<leader>mhD", function()
   vim.cmd("nohlsearch")
 end, { desc = "Decrease ALL headings" })
 
+vim.keymap.set(
+  "v",
+  "<leader>mhi",
+  [[:lua IncreaseHeadingsVisual()<CR>]],
+  { desc = "Increase Heading Level in Selection" }
+)
+vim.keymap.set(
+  "v",
+  "<leader>mhd",
+  [[:lua DecreaseHeadingsVisual()<CR>]],
+  { desc = "Decrease Heading Level in Selection" }
+)
+
 -- ===== Bullets =====
 -- Toggle bullet point at the beginning of the current line in normal mode
 -- If in a multiline paragraph, make sure the cursor is on the line at the top
@@ -315,4 +328,34 @@ end, { desc = "Toggle Zen Mode with Line Numbers" })
 if vim.g.vscode then
   print("⚡connected to neovim!💯‼️🤗😎")
   require("config.vscode_keymaps")
+end
+
+function IncreaseHeadingsVisual()
+  local start_line = vim.fn.line("'<")
+  local end_line = vim.fn.line("'>")
+  local buf = vim.api.nvim_get_current_buf()
+  for i = start_line, end_line do
+    local line = vim.api.nvim_buf_get_lines(buf, i - 1, i, false)[1]
+    if line and line:match("^#+") then
+      local new_heading = line:gsub("^(#+)", function(h)
+        return h .. "#"
+      end)
+      vim.api.nvim_buf_set_lines(buf, i - 1, i, false, { new_heading })
+    end
+  end
+end
+
+function DecreaseHeadingsVisual()
+  local start_line = vim.fn.line("'<")
+  local end_line = vim.fn.line("'>")
+  local buf = vim.api.nvim_get_current_buf()
+  for i = start_line, end_line do
+    local line = vim.api.nvim_buf_get_lines(buf, i - 1, i, false)[1]
+    if line and line:match("^#+") then
+      local new_heading = line:gsub("^(#+)", function(h)
+        return h:sub(2)
+      end)
+      vim.api.nvim_buf_set_lines(buf, i - 1, i, false, { new_heading })
+    end
+  end
 end
