@@ -128,7 +128,8 @@ alias al="echo '------------Your curent aliases are:------------¡'; alias" # Li
 alias reload="exec zsh -l"  	# Reload zsh config
 alias sudo="sudo -v; sudo "		# Make sudo work with aliases & refresh the password timeout
 alias root="sudo -i"			# Switch to root user
-alias ffs="sudo !!"			# Rerun prev command with sudo 
+alias se="sudo -e"			    # Edit files with sudo
+alias ffs="sudo !!"			    # Rerun prev command with sudo 
 alias ffa="!:0"                # Rerun prev command without arguments
 alias grep="grep --color=auto"		# Colorize Grep output
 alias ff="find . -type f -name"		# Find a file with name 
@@ -447,6 +448,18 @@ alias uvu="uv self update"           # Update uv to the latest version
 alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
 
 # --- Wezterm ---
-alias wtc="wezterm connect --new-tab "                  # Connect to a remote host from .wezterm.lua file in a new tab
-alias wtd="wezterm disconnect"                          # Disconnect from a wezterm session
-
+# Usage: wtc <hostname> or just use host-specific aliases below
+wtc() {
+    wezterm connect --new-tab "$1"                  # Connect to host in new tab
+}
+alias wtd="wezterm disconnect"                      # Disconnect from wezterm session
+alias wtl="wezterm cli list"                        # List all windows tabs and panes
+wta() {
+    wezterm connect "$1"                            # Connect/Attach to SSH domain 
+}
+# Quick host-specific aliases (using ~/.ssh/config hostnames)
+alias wtpi="wezterm connect pinus"
+alias wtcl="wezterm connect clawdbot"
+# Tab-specific connections (open in new tab)
+alias wtpit="wezterm connect --new-tab pinus"
+alias wtclt="wezterm connect --new-tab clawdbot"
