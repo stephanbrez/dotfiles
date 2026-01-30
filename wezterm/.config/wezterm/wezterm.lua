@@ -72,11 +72,12 @@ config.inactive_pane_hsb = {
 	brightness = 0.9,
 }
 -- -- Show active workspaces
--- wezterm.on("update-right-status", function(window, pane)
--- 	window:set_right_status(window:active_workspace())
--- end)
 -- Tab bar
 wezterm.on("update-right-status", function(window, pane)
+	if not pane then
+		return
+	end
+	
 	-- The elements to be shown in the tab bar
 	local elements = {}
 
@@ -151,12 +152,24 @@ local ssh_themes_path = wezterm.config_dir .. "/ssh-themes.lua"
 -- Try to load SSH themes config
 local success, ssh_config = pcall(dofile, ssh_themes_path)
 if success and ssh_config and ssh_config.host_to_scheme then
-    host_to_scheme = ssh_config.host_to_scheme
-    wezterm.log_info("Loaded SSH themes from: " .. ssh_themes_path)
+	host_to_scheme = ssh_config.host_to_scheme
+	wezterm.log_info("Loaded SSH themes from: " .. ssh_themes_path)
 else
-    wezterm.log_info("No SSH themes config found at: " .. ssh_themes_path)
-    -- This is normal if no sensitive hosts are configured
+	wezterm.log_info("No SSH themes config found at: " .. ssh_themes_path)
+	-- This is normal if no sensitive hosts are configured
 end
+
+-- Load SSH domains from ~/.ssh/config for multiplexing
+local ssh_domains = {}
+for host, config in pairs(wezterm.enumerate_ssh_hosts()) do
+	table.insert(ssh_domains, {
+		name = host,
+		remote_address = host,
+		assume_shell = "Posix",
+	})
+end
+config.ssh_domains = ssh_domains
+wezterm.log_info("Loaded " .. #ssh_domains .. " SSH domains from ~/.ssh/config")
 
 -- Set the global default
 config.color_scheme = default_scheme
@@ -174,7 +187,9 @@ wezterm.on("update-status", function(window, pane)
 					break
 				end
 			end
-			if overrides.color_scheme then break end
+			if overrides.color_scheme then
+				break
+			end
 		end
 	end
 
@@ -184,6 +199,8 @@ wezterm.on("update-status", function(window, pane)
 
 	window:set_config_overrides(overrides)
 end)
+
+
 
 -- Keybindings
 config.enable_kitty_keyboard = true
@@ -289,7 +306,7 @@ config.keys = {
 	},
 	-- Switch to the default workspace
 	{
-		key = "d",
+		key = "0",
 		mods = "ALT|SHIFT",
 		action = act.SwitchToWorkspace({
 			name = "default",
@@ -297,7 +314,7 @@ config.keys = {
 	},
 	-- Switch to a neovim workspace, which will have `nvim` launched into it
 	{
-		key = "c",
+		key = "1",
 		mods = "ALT|SHIFT",
 		action = act.SwitchToWorkspace({
 			name = "neovim",
@@ -305,6 +322,29 @@ config.keys = {
 				args = { "nvim" },
 			},
 		}),
+	},
+	-- SSH Sessions
+	-- Connect to SSH domain
+	{
+		key = "c",
+		mods = "ALT|SHIFT",
+		action = wezterm.action.PromptInputLine({
+			description = "SSH Hostname",
+			action = wezterm.action_callback(function(window, pane, host)
+				if host then
+					window:perform_action(wezterm.action.AttachDomain { DomainName = host }, pane)
+					if window:active_tab() then
+						window:active_tab():set_title(host)
+					end
+				end
+			end),
+		}),
+	},
+	-- Detach from SSH session
+	{
+		key = "d",
+		mods = "ALT|SHIFT",
+		action = wezterm.action.DetachDomain "CurrentPaneDomain",
 	},
 }
 --
