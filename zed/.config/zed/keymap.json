@@ -48,7 +48,7 @@
             "space a": "agents::ToggleAgentsPanel",
             // Terminal
             "space t": "terminal_panel::ToggleFocus",
-            "space shift-t": "terminal_panel::Toggle",
+            "space shift-t": "workspace::ToggleBottomDock",
             // Buffers
             "space ,": "tab_switcher::Toggle",
             // Files
@@ -62,6 +62,9 @@
             "alt-j": "editor::MoveLineDown",
             "x x": "editor::Cut", // Cut line
             "d d": "editor::DeleteLine", // Delete line without clipboard
+            // Diagnostics
+            "space d": "diagnostics::Deploy",
+            "space u d": "editor::ToggleDiagnostics",
         },
     },
     {
