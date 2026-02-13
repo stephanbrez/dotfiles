@@ -221,3 +221,6 @@ eval $(uv generate-shell-completion zsh)
 eval "$(zoxide init --cmd cd zsh)"
 
 
+
+# bun completions
+[ -s "/home/stephan/.bun/_bun" ] && source "/home/stephan/.bun/_bun"
