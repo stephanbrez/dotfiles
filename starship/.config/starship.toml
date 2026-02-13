@@ -123,7 +123,7 @@ base15 = '#cecacd'
 # Display a symbol that represents the current operating system
 [os]
 style = "fg:base00 bg:base09"
-format = "[ $symbol ]($style)"
+format = "[ $symbol]($style)"
 disabled = false
 
 [os.symbols]
@@ -172,12 +172,12 @@ Windows = "󰍲 "
 show_always = true
 style_user = "fg:base00 bg:base09"
 style_root = "fg:base00 bg:base09"
-format = '[$user ]($style)'
+format = '[$user@](bold fg:base00 bg:base09)'
 
 [hostname]
-ssh_only = true
+ssh_only = false
 style = "fg:base00 bg:base09"
-format = '[$ssh_symbol](bold fg:base07 bg:base09)[$hostname ]($style)'
+format = '[$hostname ]($style)'
 disabled = false
 
 # --- section --- #
