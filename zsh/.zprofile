@@ -62,19 +62,25 @@ export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
 ###########################
 #          PATHS          #
 ###########################
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
-
-export PATH="/usr/local/bin:/opt/nvim/:$XDG_CONFIG_HOME/.cargo/bin:$PATH"
+# export PATH="/usr/local/bin:/opt/nvim/:$XDG_CONFIG_HOME/.cargo/bin:$PATH"
 # export PATH="$XDG_CONFIG_HOME/scripts:$PATH"
+#
+# Build a deduped path
+typeset -U path PATH
 
+# Add entries only if they exist
+[[ -d $HOME/bin ]]         && path=($HOME/bin $path)
+[[ -d $HOME/.local/bin ]]  && path=($HOME/.local/bin $path)
+
+# Enforce preferred ordering
+path=(
+  /usr/local/bin
+  $HOME/.cargo/bin
+  /opt/nvim
+  $path
+)
+
+export PATH
 # ======== XDG Compliance ======== #
 # https://wiki.archlinux.org/title/XDG_Base_Directory
 
