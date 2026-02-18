@@ -1,1 +1,1 @@
-../agents/AGENTS.md
+/home/stephan/.config/agents/AGENTS.md
