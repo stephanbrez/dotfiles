@@ -159,36 +159,48 @@ else
 	-- This is normal if no sensitive hosts are configured
 end
 
--- Load SSH domains from ~/.ssh/config for multiplexing
-local ssh_domains = {}
-for host, config in pairs(wezterm.enumerate_ssh_hosts()) do
-	table.insert(ssh_domains, {
-		name = host,
-		remote_address = host,
-		assume_shell = "Posix",
-	})
+-- Use default SSH domains (creates SSH:hostname and SSHMUX:hostname domains)
+config.ssh_domains = wezterm.default_ssh_domains()
+for _, dom in ipairs(config.ssh_domains) do
+	dom.assume_shell = "Posix"
 end
-config.ssh_domains = ssh_domains
-wezterm.log_info("Loaded " .. #ssh_domains .. " SSH domains from ~/.ssh/config")
+wezterm.log_info("Loaded " .. #config.ssh_domains .. " SSH domains from ~/.ssh/config")
 
 -- Set the global default
 config.color_scheme = default_scheme
 
 -- Simplified SSH theme detection
 wezterm.on("update-status", function(window, pane)
-	local fg = pane:get_foreground_process_info() or {}
 	local overrides = {}
 
-	if fg.name == "ssh" and fg.argv then
-		for _, arg in ipairs(fg.argv) do
+	-- First check pane's domain name (for SSHMUX: and SSH: domains)
+	local domain_name = pane:get_domain_name()
+	if domain_name then
+		local hostname = domain_name:gsub("^SSH:", ""):gsub("^SSHMUX:", "")
+		if hostname ~= domain_name then
 			for pattern, scheme in pairs(host_to_scheme) do
-				if string.find(arg, pattern) then
+				if string.find(hostname, pattern) then
 					overrides.color_scheme = scheme
 					break
 				end
 			end
-			if overrides.color_scheme then
-				break
+		end
+	end
+
+	-- Also check foreground process for direct ssh commands
+	if not overrides.color_scheme then
+		local fg = pane:get_foreground_process_info() or {}
+		if fg.name == "ssh" and fg.argv then
+			for _, arg in ipairs(fg.argv) do
+				for pattern, scheme in pairs(host_to_scheme) do
+					if string.find(arg, pattern) then
+						overrides.color_scheme = scheme
+						break
+					end
+				end
+				if overrides.color_scheme then
+					break
+				end
 			end
 		end
 	end
