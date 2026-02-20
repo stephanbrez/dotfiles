@@ -45,7 +45,7 @@
             "ctrl-shift-y": "agent::KeepAll",
             "ctrl-shift-n": "agent::RejectAll",
             "shift-ctrl-r": "agent::OpenAgentDiff",
-            "space a": "agents::ToggleAgentsPanel",
+            "space a": "agent::Toggle",
             // Terminal
             "space t": "terminal_panel::ToggleFocus",
             "space shift-t": "workspace::ToggleBottomDock",
