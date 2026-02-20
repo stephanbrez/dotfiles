@@ -71,9 +71,9 @@ function uvpyk() {
 
 # Wezterm
 # Connect to a remote host from .ssh/config file in a new tab
-function wts() {
-    wezterm cli spawn --domain-name SSHMUX:$1
-}
+# function wts() {
+#     wezterm cli spawn --domain-name SSHMUX:$1
+# }
 
 
 # yazi

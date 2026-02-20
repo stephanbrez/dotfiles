@@ -449,17 +449,17 @@ alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
 
 # --- Wezterm ---
 # Usage: wtc <hostname> or just use host-specific aliases below
-wtc() {
-    wezterm cli spawn --domain-name  SSHMUX:"$1"    # Connect to wezterm on host from .ssh/config in new tab
-}
 wts() {
-    wezterm connect SSH:"$1"                        # Connect to SSH host from .ssh/config in new window
+    wezterm cli spawn --domain-name  SSHMUX:"$1"    # Connect to wezterm on host from .ssh/config in new window
+}
+wta() {
+    wezterm connect SSH:"$1"                        # Connect to SSH host from .ssh/config in current window
+}
+wtc() {
+    wezterm connect --new-tab SSH:"$1"              # Connect to regular SSH domain in a new tab
 }
 alias wtd="wezterm disconnect"                      # Disconnect from wezterm session
 alias wtl="wezterm cli list"                        # List all windows tabs and panes
-wta() {
-    wezterm connect "$1"                            # Connect/Attach to SSH domain 
-}
 # Quick host-specific aliases (using ~/.ssh/config hostnames)
 alias wtpi="wezterm connect pinus"
 alias wtcl="wezterm connect clawdbot"
