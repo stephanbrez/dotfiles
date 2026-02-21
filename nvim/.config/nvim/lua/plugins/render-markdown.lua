@@ -35,9 +35,13 @@ return {
         --  full:  full width of the window
         -- Can also be a list of the above values in which case the 'level' is used
         -- to index into the list using a clamp},
-        checkbox = {
-          enabled = true,
-        },
+      },
+      checkbox = {
+        enabled = true,
+        -- unchecked = { icon = "󰄱 " },
+        -- checked = { icon = "󰱒 " },
+        -- optional:
+        -- custom = { todo = { rendered = "◯ " } },
       },
     },
   },
