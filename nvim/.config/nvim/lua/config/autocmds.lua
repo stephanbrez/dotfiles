@@ -31,3 +31,40 @@ vim.api.nvim_create_autocmd({ "BufEnter", "InsertLeave" }, {
   end,
   -- callback = set_relative_number,
 })
+
+-- Set up keymaps for markdown files only
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.keymap.set(
+      "n",
+      "<leader>Fn",
+      "<cmd>lua require('footnote').new_footnote()<cr>",
+      { buffer = 0, silent = true, desc = "Create markdown footnote" }
+    )
+    vim.keymap.set(
+      "i",
+      "<C-f>",
+      "<cmd>lua require('footnote').new_footnote()<cr>",
+      { buffer = 0, silent = true, desc = "Create markdown footnote" }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>Fo",
+      "<cmd>lua require('footnote').organize_footnotes()<cr>",
+      { buffer = 0, silent = true, desc = "Organize footnotes" }
+    )
+    vim.keymap.set(
+      "n",
+      "]f",
+      "<cmd>lua require('footnote').next_footnote()<cr>",
+      { buffer = 0, silent = true, desc = "Next footnote" }
+    )
+    vim.keymap.set(
+      "n",
+      "[f",
+      "<cmd>lua require('footnote').prev_footnote()<cr>",
+      { buffer = 0, silent = true, desc = "Previous footnote" }
+    )
+  end,
+})
