@@ -1,10 +1,11 @@
 return {
   {
     "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
     opts = function(_, opts)
-      table.insert(opts.sections.lualine_x, "😄")
+      opts.sections.lualine_z = {
+        { require("opencode").statusline },
+      }
+      -- table.insert(opts.sections.lualine_x, "😄")
     end,
-    -- theme = "gruvbox-material",
   },
 }
