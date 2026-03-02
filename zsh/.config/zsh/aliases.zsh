@@ -397,7 +397,9 @@ alias uvrms="uv remove --script"        # Remove a dependency from a script
 
 # Projects
 # Creating and working on Python projects, i.e., with a pyproject.toml.
-alias uvi="uv init"                     # Create a new Python project
+alias uvi="uv init"                     # Create a new Python app project
+alias uvip="uv init --package"          # Create a new Python package project 
+alias uvipy="uv init --python"          # Create a new Python project with a specific Python version
 alias uva="uv add"                      # Add a dependency to the project
 alias uvrm="uv remove"                  # Remove a dependency from the project
 alias uvs="uv sync"                     # Sync the project's dependencies with the environment
@@ -449,14 +451,14 @@ alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
 
 # --- Wezterm ---
 # Usage: wtc <hostname> or just use host-specific aliases below
-wts() {
-    wezterm cli spawn --domain-name  SSHMUX:"$1"    # Connect to wezterm on host from .ssh/config in new window
-}
 wta() {
-    wezterm connect SSH:"$1"                        # Connect to SSH host from .ssh/config in current window
+    wezterm cli spawn --domain-name  SSHMUX:"$1"    # Connect to wezterm on host from .ssh/config in new tab
+}
+wts() {
+    wezterm cli spawn --domain-name SSHMUX:"$1" --new-window      # Connect to SSH host from .ssh/config in new window
 }
 wtc() {
-    wezterm connect --new-tab SSH:"$1"              # Connect to regular SSH domain in a new tab
+    wezterm connect SSH:"$1"                        # Connect to regular SSH domain in a new tab
 }
 alias wtd="wezterm disconnect"                      # Disconnect from wezterm session
 alias wtl="wezterm cli list"                        # List all windows tabs and panes
