@@ -69,8 +69,11 @@ export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
 typeset -U path PATH
 
 # Add entries only if they exist
-[[ -d $HOME/bin ]]         && path=($HOME/bin $path)
-[[ -d $HOME/.local/bin ]]  && path=($HOME/.local/bin $path)
+[[ -d /usr/local/cuda/bin ]] && path=(/usr/local/cuda/bin $path)
+[[ -d /opt/bin ]]            && path=(/opt/bin $path)
+
+[[ -d $HOME/bin ]]           && path=($HOME/bin $path)
+[[ -d $HOME/.local/bin ]]    && path=($HOME/.local/bin $path)
 
 # Enforce preferred ordering
 path=(
