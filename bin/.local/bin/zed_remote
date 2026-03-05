@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+umask 077
+
+secrets_dir="${XDG_CONFIG_HOME:-$HOME/.config}/zed/secrets"
+common_env="$secrets_dir/common.env"
+
+sanitize() {
+  # filesystem-safe: keep A-Za-z0-9 . _ - ; replace everything else with _
+  echo -n "$1" | tr -c 'A-Za-z0-9._-' '_'
+}
+
+extract_target() {
+  # Prefer an ssh:// URI if present; otherwise use first arg (path/uri).
+  local a
+  for a in "$@"; do
+    if [[ "$a" == ssh://* ]]; then
+      echo -n "$a"
+      return 0
+    fi
+  done
+  [[ $# -ge 1 ]] && echo -n "$1" || true
+}
+
+parse_ssh_uri() {
+  # Input: ssh://[user@]host[:port]/path...
+  # Output: host repo
+  local uri="$1"
+  local rest authority authority_no_user host path repo
+
+  rest="${uri#ssh://}"
+  authority="${rest%%/*}"                      # user@host:port
+  authority_no_user="${authority##*@}"         # host:port
+  host="${authority_no_user%%:*}"              # host
+
+  if [[ "$rest" == */* ]]; then
+    path="${rest#*/}"                          # path...
+  else
+    path=""
+  fi
+
+  # strip query/fragment
+  path="${path%%\?*}"
+  path="${path%%\#*}"
+  path="${path%/}"
+
+  if [[ -n "$path" ]]; then
+    repo="${path##*/}"
+  else
+    repo=""
+  fi
+
+  echo "$host $repo"
+}
+
+show_help() {
+  cat <<'EOF'
+Usage: zed_remote [OPTIONS] [ZED_ARGS...]
+
+Wraps zed to inject secrets from 1Password based on host/repo context.
+
+Looks for environment files in:
+  ~/.config/zed/secrets/
+    common.env                  - Applied to all invocations
+    host-<host>.env             - Applied when connecting to <host>
+    repo-<repo>.env             - Applied when opening <repo>
+    host-<host>-repo-<repo>.env - Specific to host+repo combination
+
+Options:
+  -h, --help            Show this help message and exit
+  --zed-path PATH       Use custom zed binary (overrides ZED_BINARY)
+
+Environment:
+  ZED_BINARY   Default zed binary path (default: zed)
+
+Examples:
+  zed_remote ssh://user@host:22/path/to/repo
+  zed_remote --zed-path /custom/zed ssh://host/repo
+  ZED_BINARY=/opt/zed/bin/zed zed_remote /local/project
+EOF
+}
+
+main() {
+  local zed_bin="${ZED_BINARY:-zed}"
+  local args=()
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -h|--help)
+        show_help
+        exit 0
+        ;;
+      --zed-path=*)
+        zed_bin="${1#--zed-path=}"
+        shift
+        ;;
+      --zed-path)
+        if [[ $# -lt 2 ]]; then
+          echo "error: --zed-path requires an argument" >&2
+          exit 1
+        fi
+        zed_bin="$2"
+        shift 2
+        ;;
+      *)
+        args+=("$1")
+        shift
+        ;;
+    esac
+  done
+  set -- "${args[@]}"
+
+  if [[ "$zed_bin" == */* ]]; then
+    if [[ ! -x "$zed_bin" ]]; then
+      echo "error: zed binary not found or not executable: $zed_bin" >&2
+      exit 127
+    fi
+  else
+    if ! command -v "$zed_bin" >/dev/null 2>&1; then
+      echo "error: $zed_bin not found in PATH" >&2
+      exit 127
+    fi
+  fi
+  if ! command -v op >/dev/null 2>&1; then
+    echo "error: 1Password CLI (op) not found in PATH" >&2
+    exit 127
+  fi
+
+  mkdir -p "$secrets_dir"
+  chmod 700 "$secrets_dir" 2>/dev/null || true
+
+  local target host repo
+  target="$(extract_target "$@")"
+
+  host=""
+  repo=""
+
+  if [[ "$target" == ssh://* ]]; then
+    read -r host repo < <(parse_ssh_uri "$target")
+  elif [[ -n "$target" ]]; then
+    # Local path fallback: repo = basename of the path
+    repo="${target%/}"
+    repo="${repo##*/}"
+  fi
+
+  local host_s repo_s
+  host_s="$(sanitize "$host")"
+  repo_s="$(sanitize "$repo")"
+
+  local files=()
+  [[ -f "$common_env" ]] && files+=("$common_env")
+  [[ -n "$host_s" && -f "$secrets_dir/host-$host_s.env" ]] && files+=("$secrets_dir/host-$host_s.env")
+  [[ -n "$repo_s" && -f "$secrets_dir/repo-$repo_s.env" ]] && files+=("$secrets_dir/repo-$repo_s.env")
+  [[ -n "$host_s" && -n "$repo_s" && -f "$secrets_dir/host-$host_s-repo-$repo_s.env" ]] && files+=("$secrets_dir/host-$host_s-repo-$repo_s.env")
+
+  if [[ ${#files[@]} -eq 0 ]]; then
+    # No env mappings found; run normally.
+    exec "$zed_bin" "$@"
+  fi
+
+  local tmp
+  tmp="$(mktemp)"
+  trap 'rm -f "$tmp"' EXIT
+
+  # Merge in increasing specificity; later lines override earlier if repeated.
+  cat "${files[@]}" > "$tmp"
+
+  exec op run --env-file "$tmp" -- "$zed_bin" "$@"
+}
+
+main "$@"
