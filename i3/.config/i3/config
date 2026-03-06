@@ -285,6 +285,9 @@ assign [class="rambox"] $ws5
 # ======== WS 6 (browser-primary) ======== #
 assign [class="librewolf"] $ws6
 
+# ======== WS 7 (coding) ======== #
+assign [class="^dev\.zed"] $ws7
+
 #
 # Saved Layouts (https://i3wm.org/docs/layout-saving.html)
 #########################################
