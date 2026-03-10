@@ -63,7 +63,7 @@ config.window_decorations = "RESIZE"
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = false
 config.tab_and_split_indices_are_zero_based = true
-config.font = wezterm.font("DejaVuSansM Nerd Font")
+config.font = wezterm.font("FiraMono Nerd Font")
 config.font_size = 12
 
 -- Pane dimming
@@ -77,7 +77,7 @@ wezterm.on("update-right-status", function(window, pane)
 	if not pane then
 		return
 	end
-	
+
 	-- The elements to be shown in the tab bar
 	local elements = {}
 
@@ -212,8 +212,6 @@ wezterm.on("update-status", function(window, pane)
 	window:set_config_overrides(overrides)
 end)
 
-
-
 -- Keybindings
 config.enable_kitty_keyboard = true
 config.keys = {
@@ -344,7 +342,7 @@ config.keys = {
 			description = "SSH Hostname",
 			action = wezterm.action_callback(function(window, pane, host)
 				if host then
-					window:perform_action(wezterm.action.AttachDomain { DomainName = host }, pane)
+					window:perform_action(wezterm.action.AttachDomain({ DomainName = host }), pane)
 					if window:active_tab() then
 						window:active_tab():set_title(host)
 					end
@@ -356,7 +354,7 @@ config.keys = {
 	{
 		key = "d",
 		mods = "ALT|SHIFT",
-		action = wezterm.action.DetachDomain "CurrentPaneDomain",
+		action = wezterm.action.DetachDomain("CurrentPaneDomain"),
 	},
 }
 --
