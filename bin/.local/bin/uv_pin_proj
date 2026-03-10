@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+spec="${1:?usage: uv-pin-project <python-version-or-requires-python-spec>}"
+pin req
+
+case "$spec" in
+# Exact minor, e.g. 3.14
+[0-9]*.[0-9]*)
+	pin="$spec"
+	IFS='.' read -r major minor <<<"$spec"
+	req=">=$major.$minor,<$major.$((minor + 1))"
+	;;
+# Explicit range/spec, e.g. >=3.14,<4  or  >=3.14.*
+*)
+	req="$spec"
+
+	# Best-effort interpreter pin extracted from the first X.Y in the spec.
+	if [[ "$spec" =~ ([0-9]+)\.([0-9]+) ]]; then
+		pin="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+	else
+		echo "Could not infer a Python pin from: $spec" >&2
+		echo "Use a spec containing at least one X.Y version, e.g. 3.14 or >=3.14,<4" >&2
+		return 1
+	fi
+	;;
+esac
+
+uv python pin "$pin" || return 1
+
+python - "$req" <<'PYCODE'
+from pathlib import Path
+import re
+import sys
+
+req = sys.argv[1]
+p = Path("pyproject.toml")
+text = p.read_text(encoding="utf-8")
+
+pattern = r'(?m)^requires-python\s*=\s*".*?"\s*$'
+replacement = f'requires-python = "{req}"'
+
+if re.search(pattern, text):
+text = re.sub(pattern, replacement, text, count=1)
+else:
+project_header = re.search(r'(?m)^\[project\]\s*$', text)
+if not project_header:
+    raise SystemExit("No [project] section found in pyproject.toml")
+insert_at = project_header.end()
+text = text[:insert_at] + f'\n{replacement}' + text[insert_at:]
+
+if not text.endswith("\n"):
+text += "\n"
+
+p.write_text(text, encoding="utf-8")
+print(f"Updated pyproject.toml -> {req}")
+PYCODE
+
+uv lock --refresh || return 1
+
+echo "Pinned interpreter -> $pin"
