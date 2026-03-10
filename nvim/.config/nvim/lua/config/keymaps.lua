@@ -267,7 +267,7 @@ end, { desc = "[P]Toggle bullet point (dash)" })
 -- ###################
 
 -- Open Zoxide telescope extension
-vim.keymap.set("n", "<leader>Z", "<cmd>Zi<CR>", { desc = "Open Zoxide" })
+-- vim.keymap.set("n", "<leader>Z", "<cmd>Zi<CR>", { desc = "Open Zoxide" })
 
 -- Bullets
 vim.keymap.set("n", "<leader>k", "<Plug>(bullets-toggle-checkbox)", { desc = "Toggle Checkbox" })
