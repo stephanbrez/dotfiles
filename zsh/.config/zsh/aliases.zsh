@@ -350,8 +350,16 @@ function gacp() {
 
 # --- Jupyter ---
 alias jn="jupyter notebook"
-alias ipyk-install='python -m ipykernel install --user --name="$(basename "$CONDA_PREFIX")" --display-name="Python ($(basename "$CONDA_PREFIX"))"'
+function ipyki() {
+  python -m ipykernel install --user --name=$1 --display-name="Python ($1)"
+}
 # More in $ZDOTDIR/functions.zsh
+
+# --- Jupytext --- (https://jupytext.readthedocs.io/en/latest/)
+alias jpair="jupytext --set-formats ipynb,py:percent --update-metadata --sync"
+alias jsync="jupytext --sync"
+alias jnb="jupytext --to notebook"
+alias jpy="jupytext --to py:percent"
 
 # --- Lazygit ---
 alias lg='lazygit'                # Open lazygit

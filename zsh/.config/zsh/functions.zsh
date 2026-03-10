@@ -55,10 +55,6 @@ function mcd() {
   cd $1
 }                                 
 
-# Jupyter
-function ipyki() {
-  python -m ipykernel install --user --name=$1 --display-name="Python ($1)"
-}
 # uv version
 function uvpyk() {
     local name="${1:-$(basename "$PWD")}"
@@ -68,13 +64,6 @@ function uvpyk() {
       --name "$name" \
       --display-name "Python ($name)"
 }
-
-# Wezterm
-# Connect to a remote host from .ssh/config file in a new tab
-# function wts() {
-#     wezterm cli spawn --domain-name SSHMUX:$1
-# }
-
 
 # yazi
 function y() {
