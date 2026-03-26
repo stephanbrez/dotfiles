@@ -47,6 +47,6 @@ source "$ZDOTDIR/lib/loader.zsh"
 
 # Source configs in priority order
 source "$ZDOTDIR/zprofile.d/00-base-env.zsh"
-source_os_config "$ZDOTDIR/zprofile.d"
-source_profile_config "$ZDOTDIR/zprofile.d"
+source_os_config "$ZDOTDIR/zprofile.d" "-env"
+source_profile_config "$ZDOTDIR/zprofile.d" "-env"
 source_host_config "$ZDOTDIR/hosts" "-env"
