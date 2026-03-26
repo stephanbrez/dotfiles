@@ -208,7 +208,8 @@ alias ciy="conda install -y"                    # Install given package without 
 alias cl="conda list"                           # List installed packages in the current environment
 alias cle="conda list --export"                 # Export the list of installed packages in the current environment
 alias cles="conda list --explicit > spec-file.txt"  # Export the list of installed packages in the current environment to a spec file
-alias cr="conda remove"                         # Remove given package
+alias cr="conda run"                            # Run an executable in the environment
+alias crm="conda remove"                         # Remove given package
 alias cra="conda remove -y --all -n"            # Remove all packages in the specified environment
 alias crp="conda remove -y --all -p"            # Remove environment at specified path
 alias cs="conda search"                        # Search conda repositories for package
@@ -237,7 +238,8 @@ alias miy="mamba install -y"                   # Install given package without c
 alias ml="mamba list"                          # List installed packages in the current environment
 alias mle="mamba list --export"                # Export the list of installed packages in the current environment
 alias mles="mamba list --explicit > spec-file.txt"  # Export the list of installed packages in the current environment to a spec file
-alias mr="mamba remove"                        # Remove given package
+alias mr="mamba run"                            # Run an executable in the environment
+alias mrm="mamba remove"                        # Remove given package
 alias mra="mamba remove -y -all -n"            # Remove all packages in the specified environment
 alias mrp="mamba remove -y --all -p"           # Remove environment at specified path
 alias ms="mamba search"                        # Search mamba repositories for package
@@ -246,6 +248,36 @@ alias muf="mamba env update --prune"           # Update & prune the current envi
 alias mua="mamba update --all"                 # Update all installed packages
 alias mue="mamba env update"                   # Update the current environment
 alias muc="mamba update mamba"                 # Update mamba package manager
+# Micromamba #
+alias mma="micromamba activate"                      # Activate the specified micromamba environment
+alias mmab="micromamba activate base"                # Activate the base micromamba environment
+alias mmcf="micromamba env create -f"                 # Create a new micromamba environment from a YAML file
+alias mmcn="micromamba create -y -n"                 # Create a new micromamba environment with the given name
+alias mmcp="micromamba create -y -p"                 # Create a new micromamba environment with the given prefix (path)
+alias mmc="micromamba create -n"                     # Create new virtual environment with given name
+function mmcc ()
+{
+  micromamba create --clone $1 --name $2
+}                                              # Clone the specified micromamba env
+alias mmconf="micromamba config"                     # View or modify micromamba configuration
+alias mmss="micromamba config --show-source"         # Show the locations of micromamba configuration sources
+alias mmda="micromamba deactivate"                   # Deactivate the current micromamba environment
+alias mmel="micromamba env list"                     # List all available micromamba environments
+alias mmi="micromamba install"                       # Install given package
+alias mmiy="micromamba install -y"                   # Install given package without confirmation
+alias mml="micromamba list"                          # List installed packages in the current environment
+alias mmle="micromamba list --export"                # Export the list of installed packages in the current environment
+alias mmles="micromamba list --explicit > spec-file.txt"  # Export the list of installed packages in the current environment to a spec file
+alais mmr="micromamba run"                            # Run an executable in the environment
+alias mmrm="micromamba remove"                        # Remove given package
+alias mmra="micromamba remove -y -all -n"            # Remove all packages in the specified environment
+alias mmrp="micromamba remove -y --all -p"           # Remove environment at specified path
+alias mms="micromamba search"                        # Search micromamba repositories for package
+alias mmu="micromamba update"                        # Update the specified package(s)
+alias mmuf="micromamba env update --prune"           # Update & prune the current environment based on environment file
+alias mmua="micromamba update --all"                 # Update all installed packages
+alias mmue="micromamba env update"                   # Update the current environment
+alias mmuc="micromamba update micromamba"            # Update micromamba package manager
 
 # --- Avante ---
 alias avante='nvim -c "lua vim.defer_fn(function()require(\"avante.api\").zen_mode()end, 100)"'
@@ -394,6 +426,7 @@ alias uvpyd="uv python dir"             # Show the uv installed Python versions 
 # Scripts
 # Executing standalone Python scripts, e.g., example.py.
 alias uvr="uv run"                      # Run a script
+alias uvra="uv run --active"            # Run a script in the active environment
 alias uvas="uv add --script"            # Add a dependency to a script
 alias uvrms="uv remove --script"        # Remove a dependency from a script
 
@@ -405,6 +438,7 @@ alias uvipy="uv init --python"          # Create a new Python project with a spe
 alias uva="uv add"                      # Add a dependency to the project
 alias uvrm="uv remove"                  # Remove a dependency from the project
 alias uvs="uv sync"                     # Sync the project's dependencies with the environment
+alais uvsa="uv sunc --active"           # Sync the project's dependencies with the active environment
 alias uvsrc="source .venv/bin/activate" # Activate the python env in the current working directory
 alias uvl="uv lock"                     # Create a lockfile for the project's dependencies
 alias uvup="uv lock --upgrade-package"  # Upgrade a specific package while keeping the rest of the environment locked
