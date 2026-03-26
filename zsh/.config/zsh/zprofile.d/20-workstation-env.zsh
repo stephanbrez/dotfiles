@@ -2,6 +2,13 @@
 # Path
 
 ###########################
+#          TOOLS          #
+###########################
+# --- Pixi: relocate everything ---
+export PIXI_HOME="$XDG_DATA_HOME/pixi"
+export PIXI_CACHE_DIR="$XDG_CACHE_HOME/pixi"
+
+###########################
 #         PLUGINS         #
 ###########################
 
