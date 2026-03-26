@@ -402,7 +402,7 @@ alias ovpnd="openvpn3 session-manage --config /etc/openvpn3/surfshark/us-nyc.pro
 
 # --- pixi ---
 alias pxi="pixi init"                     # Creates a new workspace
-alais pxip="pixi init --format pyproject" # Creates a new workspace with pyproject.toml
+alias pxip="pixi init --format pyproject" # Creates a new workspace with pyproject.toml
 alias pxinf="pixi info"                   # Information about the system, workspace and environments
 
 # Dependencies
