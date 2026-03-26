@@ -7,6 +7,7 @@
 # --- Pixi: relocate everything ---
 export PIXI_HOME="$XDG_DATA_HOME/pixi"
 export PIXI_CACHE_DIR="$XDG_CACHE_HOME/pixi"
+export PIXI_BIN_DIR="$HOME/.local/bin"
 
 ###########################
 #         PLUGINS         #
