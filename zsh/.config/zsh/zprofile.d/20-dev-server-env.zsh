@@ -11,10 +11,10 @@ export PIXI_CACHE_DIR="$XDG_CACHE_HOME/pixi"
 #          PATHS          #
 ###########################
 export PATH="/usr/local/cuda/bin/:$PATH"     # nvcc binary
-# --- Ensure pixi binary is on PATH ---
-case ":$PATH:" in
-  *":$PIXI_HOME/bin:"*) ;;
-  *) export PATH="$PIXI_HOME/bin:$PATH" ;;
-esac
+# # --- Ensure pixi binary is on PATH ---
+# case ":$PATH:" in
+#   *":$PIXI_HOME/bin:"*) ;;
+#   *) export PATH="$PIXI_HOME/bin:$PATH" ;;
+# esac
 
 
