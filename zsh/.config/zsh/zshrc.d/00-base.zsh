@@ -178,7 +178,7 @@ _fzf_compgen_dir() {
 
 
 # ======== opencode ======== #
-export PATH=/home/stephan/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
 
 # ======== starship ======== #
 # eval "$(starship init zsh)"
@@ -204,8 +204,6 @@ eval $(uv generate-shell-completion zsh)
 # init & replace cd
 # For completions to work, this must be added after compinit is called
 eval "$(zoxide init --cmd cd zsh)"
-
-
 
 # bun completions
 [ -s "/home/stephan/.bun/_bun" ] && source "/home/stephan/.bun/_bun"
