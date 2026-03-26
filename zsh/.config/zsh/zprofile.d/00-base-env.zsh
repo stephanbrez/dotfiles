@@ -105,9 +105,6 @@ export MAMBA_ROOT_PREFIX="$XDG_DATA_HOME/conda";
 #         PLUGINS         #
 ###########################
 
-# ======== 1Password ======== #
-export SSH_AUTH_SOCK=~/.1password/agent.sock
-
 # ======== emoji-fzf ======== #
 # Path to the emoji-fzf executable
 EMOJI_FZF_BIN_PATH="emoji-fzf"
