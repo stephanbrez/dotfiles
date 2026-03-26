@@ -8,8 +8,19 @@
 # Base environment for all machines
 # Sourced by .zprofile-dispatch
 #
-# Force XDG specification compliance: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest
-
+# ╔════════════════════════════════════════════════╗
+# ║  ░█▄█░█▀▀░▀█▀░█░█░█▀█░█▀▄░█▀█░█░░░█▀█░█▀▀░█░█  ║
+# ║  ░█░█░█▀▀░░█░░█▀█░█░█░█░█░█░█░█░░░█░█░█░█░░█░  ║
+# ║  ░▀░▀░▀▀▀░░▀░░▀░▀░▀▀▀░▀▀░░▀▀▀░▀▀▀░▀▀▀░▀▀▀░░▀░  ║
+# ╚════════════════════════════════════════════════╝
+#
+# Force XDG specification compliance: 
+# https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest
+# https://wiki.archlinux.org/title/XDG_Base_Directory
+# Then set system defaults, tools, plugins, and finally build the path last
+# in case paths require env variables.
+# 
+# ======== ======== #
 
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
@@ -26,7 +37,9 @@ export XDG_CACHE_HOME="$HOME/.cache"
 # source private environment variables (if file exists)
 [[ -f "$ZDOTDIR/.zsh-secrets" ]] && source "$ZDOTDIR/.zsh-secrets"
 
-# default programs
+###########################
+#        DEFAULTS         #
+###########################
 export EDITOR="nvim"
 # --- config ----
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -49,31 +62,8 @@ export LESSHISTFILE="$XDG_CACHE_HOME/less_history"
 export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
 
 ###########################
-#          PATHS          #
+#          TOOLS          #
 ###########################
-# export PATH="/usr/local/bin:/opt/nvim/:$XDG_CONFIG_HOME/.cargo/bin:$PATH"
-# export PATH="$XDG_CONFIG_HOME/scripts:$PATH"
-#
-# Build a deduped path
-typeset -U path PATH
-
-# Enforce preferred ordering
-path=(
-  /usr/local/bin
-  $HOME/.cargo/bin
-  /opt/nvim
-  $path
-)
-
-# Add entries only if they exist
-[[ -d $HOME/bin ]]           && path=($HOME/bin $path)
-[[ -d $HOME/.local/bin ]]    && path=($HOME/.local/bin $path)
-
-export PATH
-
-# ======== XDG Compliance ======== #
-# https://wiki.archlinux.org/title/XDG_Base_Directory
-
 # moving other files and some other vars
 # export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
 # export XPROFILE="$XDG_CONFIG_HOME/x11/xprofile"
@@ -100,7 +90,24 @@ export MAMBA_ROOT_PREFIX="$XDG_DATA_HOME/conda";
 # export FFMPEG_DATADIR="$XDG_CONFIG_HOME/ffmpeg"
 # export WINEPREFIX="$XDG_DATA_HOME/wineprefixes/default"
 # export DATE=$(date "+%A, %B %e  %_I:%M%P")
-#
+
+# colored less + termcap vars
+export LESS="-R"
+# Start blink → set text to bold red
+export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"
+# Start bold → set text to bold cyan
+export LESS_TERMCAP_md="$(printf '%b' '[1;36m')"
+# End all modes (reset to normal text)
+export LESS_TERMCAP_me="$(printf '%b' '[0m')"
+# Start standout (reverse video or highlight) → blue background + yellow text
+export LESS_TERMCAP_so="$(printf '%b' '[01;44;33m')"
+# End standout → reset formatting
+export LESS_TERMCAP_se="$(printf '%b' '[0m')"
+# Start underline → bold green
+export LESS_TERMCAP_us="$(printf '%b' '[1;32m')"
+# End underline → reset formatting
+export LESS_TERMCAP_ue="$(printf '%b' '[0m')"
+
 ###########################
 #         PLUGINS         #
 ###########################
@@ -161,19 +168,23 @@ export FZF_DEFAULT_OPTS="
 # export MANPAGER="less -R --use-color -Dd+r -Du+b" # colored man pages
 export STARSHIP_CONFIG=$HOME/.config/starship.toml
 
-# colored less + termcap vars
-export LESS="-R"
-# Start blink → set text to bold red
-export LESS_TERMCAP_mb="$(printf '%b' '[1;31m')"
-# Start bold → set text to bold cyan
-export LESS_TERMCAP_md="$(printf '%b' '[1;36m')"
-# End all modes (reset to normal text)
-export LESS_TERMCAP_me="$(printf '%b' '[0m')"
-# Start standout (reverse video or highlight) → blue background + yellow text
-export LESS_TERMCAP_so="$(printf '%b' '[01;44;33m')"
-# End standout → reset formatting
-export LESS_TERMCAP_se="$(printf '%b' '[0m')"
-# Start underline → bold green
-export LESS_TERMCAP_us="$(printf '%b' '[1;32m')"
-# End underline → reset formatting
-export LESS_TERMCAP_ue="$(printf '%b' '[0m')"
+###########################
+#          PATHS          #
+###########################
+
+# Build a deduped path
+typeset -U path PATH
+
+# Enforce preferred ordering
+path=(
+  /usr/local/bin
+  $HOME/.cargo/bin
+  /opt/nvim
+  $path
+)
+
+# Add entries only if they exist
+[[ -d $HOME/bin ]]           && path=($HOME/bin $path)
+[[ -d $HOME/.local/bin ]]    && path=($HOME/.local/bin $path)
+
+export PATH
