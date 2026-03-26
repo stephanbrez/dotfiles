@@ -12,3 +12,7 @@ else
 fi 
 unset __mamba_setup 
 # <<< mamba initialize <<<
+
+# --- pixi --- #
+eval "$(pixi completion --shell zsh)"
+
