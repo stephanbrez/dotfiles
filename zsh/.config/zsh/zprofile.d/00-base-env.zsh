@@ -72,20 +72,23 @@ export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
 # export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 # export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
 # export GNUPGHOME="$XDG_DATA_HOME/gnupg"
-# export CARGO_HOME="$XDG_DATA_HOME/cargo"
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export JUPYTER_CONFIG_DIR="$XDG_CONFIG_HOME/jupyter"
 export CONDA_ROOT="/opt/conda/";
 export CONDA_EXE="$CONDA_ROOT/bin/conda";
 export MAMBA_EXE="$CONDA_ROOT/bin/mamba";
 export MAMBA_ROOT_PREFIX="$XDG_DATA_HOME/conda";
-# export GOPATH="$XDG_DATA_HOME/go"
-# export GOBIN="$GOPATH/bin"
+export GOPATH="$XDG_DATA_HOME/go"
+export GOBIN="$GOPATH/bin"
 # export GOMODCACHE="$XDG_CACHE_HOME/go/mod"
 # export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 # export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 # export NUGET_PACKAGES="$XDG_CACHE_HOME/NuGetPackages"
 # export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME/java"
 # export _JAVA_AWT_WM_NONREPARENTING=1
+# export PIPX_HOME="$XDG_DATA_HOME/pipx"
+# export PIPX_BIN_DIR="$HOME/.local/bin"
 # export PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
 # export FFMPEG_DATADIR="$XDG_CONFIG_HOME/ffmpeg"
 # export WINEPREFIX="$XDG_DATA_HOME/wineprefixes/default"
@@ -178,7 +181,7 @@ typeset -U path PATH
 # Enforce preferred ordering
 path=(
   /usr/local/bin
-  $HOME/.cargo/bin
+  $CARGO_HOME/bin
   /opt/nvim
   $path
 )
