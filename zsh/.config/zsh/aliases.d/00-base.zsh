@@ -400,6 +400,50 @@ alias ovpnstop="openvpn3 session-manage --disconnect"
 alias ovpnc="1password && openvpn3 session-start --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn"
 alias ovpnd="openvpn3 session-manage --config /etc/openvpn3/surfshark/us-nyc.prod.surfshark.com_udp.ovpn --disconnect"
 
+# --- pixi ---
+alias pxi="pixi init"                     # Creates a new workspace
+alais pxip="pixi init --format pyproject" # Creates a new workspace with pyproject.toml
+alias pxinf="pixi info"                   # Information about the system, workspace and environments
+
+# Dependencies
+alias pxa="pixi add"                # Adds dependencies to the workspace
+alias pxap="pixi add --pypi"       # Adds python dependencies from PyPI to the workspace
+alias pxrm="pixi remove"            # Removes dependencies from the workspace
+alias pxu="pixi update"            # Update dependencies, update lockfile and environments
+alias pxug="pixi upgrade"           # Upgrade dependencies in lockfile and manifest
+alias pxpd="pixi tree --invert"     # See which package installed the specified dependency 
+
+# Lock & Tree
+alias pxl="pixi lock"               # Solve environment and update lock file without installing
+alias pxt="pixi tree"               # Show a tree of workspace dependencies
+
+# Environment
+alias pxr="pixi run"                 # Runs task in the pixi environment
+alias pxsh="pixi shell"             # Start a shell in a pixi environment
+alias pxx="pixi exec"               # Run a command and install in temporary environment
+alias pxcl="pixi clean"          # Cleanup the environments
+
+# Global tools
+alias pxgi="pixi global install"    # Install a package into global space
+alias pxgu="pixi global uninstall"  # Uninstall from global space
+alias pxs="pixi global list"        # List all global environments
+alias pxgd="pixi global dir"        # Show global tool directory
+alias pxge="pixi global edit"       # Edit global manifest
+
+# Build & Publish
+alias pxb="pixi build"              # Build a conda package from a Pixi package
+alias pxp="pixi upload"             # Upload conda packages to various channels
+
+# Tasks & List
+alias pxtask="pixi task"            # Interact with tasks in the workspace
+alias pxls="pixi list"              # List the packages of the current workspace
+
+# Utility
+alias pxc="pixi config"             # Configuration management
+alias pxauth="pixi auth"            # Login to prefix.dev or anaconda.org servers
+alias pxsr="pixi search"            # Search a conda package
+alias pxsu="pixi self-update"       # Update pixi to the latest version
+
 # --- PKM ---
 alias pkm="cd ~/Documents/BC_PKM/ && nv"
 
@@ -480,7 +524,6 @@ alias uvcc="uv cache clean"           # Remove cache entries
 alias uvcp="uv cache prune"           # Remove outdated cache entries
 alias uvcd="uv cache dir"             # Show the uv cache directory path
 alias uvu="uv self update"           # Update uv to the latest version
-
 
 # --- Utils ---
 alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
