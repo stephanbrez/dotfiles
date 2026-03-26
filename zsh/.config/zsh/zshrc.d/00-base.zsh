@@ -8,6 +8,17 @@
 # Base zsh config for all machines
 # Sourced by .zshrc-dispatch
 #
+# ╔════════════════════════════════════════════════╗
+# ║  ░█▄█░█▀▀░▀█▀░█░█░█▀█░█▀▄░█▀█░█░░░█▀█░█▀▀░█░█  ║
+# ║  ░█░█░█▀▀░░█░░█▀█░█░█░█░█░█░█░█░░░█░█░█░█░░█░  ║
+# ║  ░▀░▀░▀▀▀░░▀░░▀░▀░▀▀▀░▀▀░░▀▀▀░▀▀▀░▀▀▀░▀▀▀░░▀░  ║
+# ╚════════════════════════════════════════════════╝
+#
+# Set zsh specific config that (mostly) doesn't require
+# env variables.
+# Then setup plugins and tools that rely on zsh integration.
+# 
+# ======== ======== #
 
 # Additional aliases & functions sourced by zinit below
 
