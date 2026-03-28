@@ -409,9 +409,9 @@ alias pxinf="pixi info"                   # Information about the system, worksp
 alias pxa="pixi add"                # Adds dependencies to the workspace
 alias pxap="pixi add --pypi"       # Adds python dependencies from PyPI to the workspace
 alias pxrm="pixi remove"            # Removes dependencies from the workspace
-alias pxu="pixi update"            # Update dependencies, update lockfile and environments
+alias pxup="pixi update"            # Update dependencies, update lockfile and environments
 alias pxug="pixi upgrade"           # Upgrade dependencies in lockfile and manifest
-alias pxpd="pixi tree --invert"     # See which package installed the specified dependency 
+alias pxti="pixi tree --invert"     # See which package installed the specified dependency 
 
 # Lock & Tree
 alias pxl="pixi lock"               # Solve environment and update lock file without installing
@@ -420,13 +420,13 @@ alias pxt="pixi tree"               # Show a tree of workspace dependencies
 # Environment
 alias pxr="pixi run"                 # Runs task in the pixi environment
 alias pxsh="pixi shell"             # Start a shell in a pixi environment
-alias pxx="pixi exec"               # Run a command and install in temporary environment
+alias pxex="pixi exec"               # Run a command and install in temporary environment
 alias pxcl="pixi clean"          # Cleanup the environments
 
 # Global tools
 alias pxgi="pixi global install"    # Install a package into global space
 alias pxgu="pixi global uninstall"  # Uninstall from global space
-alias pxs="pixi global list"        # List all global environments
+alias pxgl="pixi global list"        # List all global environments
 alias pxgd="pixi global dir"        # Show global tool directory
 alias pxge="pixi global edit"       # Edit global manifest
 
@@ -439,10 +439,10 @@ alias pxtask="pixi task"            # Interact with tasks in the workspace
 alias pxls="pixi list"              # List the packages of the current workspace
 
 # Utility
-alias pxc="pixi config"             # Configuration management
+alias pxconf="pixi config"             # Configuration management
 alias pxauth="pixi auth"            # Login to prefix.dev or anaconda.org servers
 alias pxsr="pixi search"            # Search a conda package
-alias pxsu="pixi self-update"       # Update pixi to the latest version
+alias pxsup="pixi self-update"       # Update pixi to the latest version
 
 # --- PKM ---
 alias pkm="cd ~/Documents/BC_PKM/ && nv"
@@ -523,21 +523,35 @@ alias uvps="uv pip sync"              # Sync an environment with a lockfile
 alias uvcc="uv cache clean"           # Remove cache entries
 alias uvcp="uv cache prune"           # Remove outdated cache entries
 alias uvcd="uv cache dir"             # Show the uv cache directory path
-alias uvu="uv self update"           # Update uv to the latest version
+alias uvsup="uv self update"           # Update uv to the latest version
 
 # --- Utils ---
 alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
 
 # --- Wezterm ---
-# Usage: wtc <hostname> or just use host-specific aliases below
-wta() {
-    wezterm cli spawn --domain-name  SSHMUX:"$1"    # Connect to wezterm on host from .ssh/config in new tab
+# Attach to existing multiplexer in new window & new GUI instance
+wtnewwin() {
+    wezterm start --domain SSHMUX:"$1" --attach --always-new-process                   
 }
-wts() {
-    wezterm cli spawn --domain-name SSHMUX:"$1" --new-window      # Connect to SSH host from .ssh/config in new window
+
+# Connect/Create a multiplexer in a new window, adding a new tab.
+wtnewtab() {
+    wezterm cli spawn --domain-name SSHMUX:"$1" --new-window      
 }
-wtc() {
-    wezterm connect SSH:"$1"                        # Connect to regular SSH domain in a new tab
+    
+# Connect/Create a multiplexer session in a new window
+wtconn() {
+    wezterm connect SSHMUX:"$1"                        
+}
+
+# Attach a multiplexer session in the current window
+wtat() {
+    wezterm connect SSHMUX:"$1" --new-tab    
+}
+
+# Attach a multiplexer session in the current window, adding a new tab.
+wtattab() {
+    wezterm cli spawn --domain-name  SSHMUX:"$1"    
 }
 alias wtd="wezterm disconnect"                      # Disconnect from wezterm session
 alias wtl="wezterm cli list"                        # List all windows tabs and panes
