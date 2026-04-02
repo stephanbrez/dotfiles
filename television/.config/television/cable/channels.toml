@@ -1,0 +1,18 @@
+# from omerxx - https://github.com/omerxx/dotfiles/blob/master/television/cable/channels.toml
+[metadata]
+name = "channels"
+description = "A channel to find and select other channels"
+
+[source]
+command = "tv list-channels"
+
+[keybindings]
+enter = "actions:zap"
+
+[actions.zap]
+description = "Switch to the channel"
+command = "tv '{}'"
+mode = "execute"
+
+[preview]
+command = "batcat -n --color=always ~/.config/television/cable/'{}'.toml"
