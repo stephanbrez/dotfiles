@@ -1,4 +1,59 @@
 #!/usr/bin/env bash
+# zed_remote - Wrapper for Zed editor that injects 1Password secrets based on context
+#
+# This script wraps the Zed editor to automatically inject environment variables
+# from 1Password when opening remote repositories. This enables seamless authentication
+# to remote development environments, SSH servers, APIs, and other services that require
+# credentials without manually managing environment variables.
+#
+# The script detects the target host and repository from the command-line arguments
+# (supporting both ssh:// URIs and local paths), then loads environment variables from
+# configuration files in ~/.config/zed/secrets/ and injects them via 1Password's 'op run'.
+#
+# Why this is useful:
+#   - Work on remote repositories via Zed's built-in SSH support without managing SSH keys
+#   - Automatically load API tokens, database credentials, or cloud provider secrets
+#   - Different secrets for different hosts/repos without manual environment setup
+#   - All secrets stored securely in 1Password instead of shell profiles or env files
+#
+# Environment file lookup (later files override earlier ones):
+#   common.env                  - Applied to all invocations (e.g., personal API keys)
+#   host-<host>.env             - Applied when connecting to a specific host
+#   repo-<repo>.env             - Applied when opening a specific repository
+#   host-<host>-repo-<repo>.env - Specific to a host+repo combination (highest priority)
+#
+# Adding new secrets using 1Password:
+#   1. Store credentials in 1Password (use items like "SSH Key", "Password", or "Secure Note")
+#   2. Create an env file in ~/.config/zed/secrets/ following the naming convention above
+#   3. Reference 1Password items directly using "op://" URIs in your env files:
+#      See https://developer.1password.com/docs/cli/secrets-env-files/ for details on
+#      obtaining the correct URI for your items (use the "Copy Secret Reference" option)
+#
+#       # Reference a password field from a 1Password item
+#       GITHUB_TOKEN="op://Personal/GitHub API Token/password"
+#
+#       # Reference an SSH private key
+#       SSH_KEY="op://Private/SSH Key/private_key"
+#
+#       # Reference any custom field from a 1Password item
+#       DATABASE_URL="op://Work/Database/url"
+#
+#   4. The script uses 'op run --env-file' to make these variables available to Zed
+#
+# Usage: zed_remote [OPTIONS] [ZED_ARGS...]
+#
+# Options:
+#   -h, --help            Show this help message and exit
+#   --zed-path PATH       Use custom zed binary (overrides ZED_BINARY)
+#
+# Environment:
+#   ZED_BINARY   Default zed binary path (default: zed)
+#
+# Examples:
+#   zed_remote ssh://user@host:22/path/to/repo
+#   zed_remote --zed-path /custom/zed ssh://host/repo
+#   ZED_BINARY=/opt/zed/bin/zed zed_remote /local/project
+#
 set -euo pipefail
 
 umask 077
