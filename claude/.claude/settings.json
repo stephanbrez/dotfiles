@@ -1,21 +1,4 @@
 {
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "notify-send 'Claude Code' 'Claude Code needs your attention'"
-          }
-        ]
-      }
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "/bin/bash /home/stephan/.claude/statusline.sh"
-  },
   "permissions": {
     "allow": [
       "Bash(date:*)",
@@ -36,5 +19,23 @@
       "Bash(git diff:*)",
       "Bash(git tag:*)"
     ]
-  }
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send 'Claude Code' 'Claude Code needs your attention'"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/bin/bash /home/stephan/.claude/statusline.sh"
+  },
+  "model": "opus"
 }
