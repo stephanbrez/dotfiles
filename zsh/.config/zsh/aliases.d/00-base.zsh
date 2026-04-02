@@ -9,12 +9,6 @@
 # history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl |  head -n10
 
 # -----------------
-# Extra aliases   #
-# -----------------
-alias_path="$ZDOTDIR/server_aliases.zsh"
-[[ -f "$alias_path" ]] && source "$alias_path"
-
-# -----------------
 # Quick edit config files #
 # -----------------
 alias starshipcfg="nvim $STARSHIP_CONFIG"      # Edit starship config
@@ -530,29 +524,30 @@ alias sitecopy='wget -k -K -E -r -l 10 -p -N -F -nH '
 
 # --- Wezterm ---
 # Attach to existing multiplexer in new window & new GUI instance
-wtnewwin() {
+wtnewgui() {
     wezterm start --domain SSHMUX:"$1" --attach --always-new-process                   
 }
 
-# Connect/Create a multiplexer in a new window, adding a new tab.
-wtnewtab() {
+# Create a multiplexer in a new window, adding a new tab.
+wtnew() {
     wezterm cli spawn --domain-name SSHMUX:"$1" --new-window      
 }
+# Create a multiplexer session in the current window, as a tab, adding a new tab.
+wtattab() {
+    wezterm cli spawn --domain-name  SSHMUX:"$1"    
+}
     
-# Connect/Create a multiplexer session in a new window
+# Attach a multiplexer session in a new window (runs in current tab)
 wtconn() {
     wezterm connect SSHMUX:"$1"                        
 }
 
-# Attach a multiplexer session in the current window
+# Attach a multiplexer session in a new window (runs in current tab)
+# new-tab doesn't work
 wtat() {
     wezterm connect SSHMUX:"$1" --new-tab    
 }
 
-# Attach a multiplexer session in the current window, adding a new tab.
-wtattab() {
-    wezterm cli spawn --domain-name  SSHMUX:"$1"    
-}
 alias wtd="wezterm disconnect"                      # Disconnect from wezterm session
 alias wtl="wezterm cli list"                        # List all windows tabs and panes
 # Quick host-specific aliases (using ~/.ssh/config hostnames)
