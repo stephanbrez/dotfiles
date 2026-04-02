@@ -2,3 +2,18 @@
 on = "!"
 run = 'shell "$SHELL" --block'
 desc = "Open shell here"
+
+[[mgr.prepend_keymap]]
+on = "<C-t>"
+run = "plugin tv"
+desc = "Jump to a file via television"
+
+[[mgr.prepend_keymap]]
+on = "<C-d>"
+run = "plugin tv dirs"
+desc = "Jump to a directory via television"
+
+[[mgr.prepend_keymap]]
+on = "<C-f>"
+run = "plugin tv text"
+desc = "Open files using neovim and jump to where the string is located"
