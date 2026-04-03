@@ -15,4 +15,4 @@ command = "tv '{}'"
 mode = "execute"
 
 [preview]
-command = "batcat -n --color=always ~/.config/television/cable/'{}'.toml"
+command = "bat -n --color=always ~/.config/television/cable/'{}'.toml"

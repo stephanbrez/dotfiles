@@ -10,7 +10,7 @@ command = [
 ]
 
 [preview]
-command = "batcat -n --color=always '{}'"
+command = "bat -n --color=always '{}'"
 env = { BAT_THEME = "ansi" }
 
 [keybindings]

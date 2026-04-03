@@ -7,7 +7,7 @@ requirements = ["fd", "bat"]
 command = "fd -t f . ~/Downloads 2>/dev/null | head -200"
 
 [preview]
-command = "batcat -n --color=always '{}' 2>/dev/null || file '{}'"
+command = "bat -n --color=always '{}' 2>/dev/null || file '{}'"
 env = { BAT_THEME = "ansi" }
 
 [keybindings]
