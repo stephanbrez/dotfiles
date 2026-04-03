@@ -517,6 +517,10 @@ function install_packages() {
 		install_pipx_packages
 	fi
 
+	# ─── Distro binary symlinks ───
+	install_fd
+	install_bat
+
 	# ─── Fun stuff (always install) ───
 	# install_figlet_fonts
 }
@@ -566,15 +570,6 @@ if should_run; then
 	fi
 else
 	dry_print "Would run stowaway-check to symlink dotfiles"
-fi
-
-# ======== setup fd ======== #
-# debian only
-if should_run; then
-	mkdir -p "$bindir"
-	ln -s "$(which fdfind)" "$bindir"/fd
-else
-	dry_print "Would symlink fdfind to $bindir/fd"
 fi
 
 # ======== setup git ======== #
