@@ -128,8 +128,8 @@ alias ffa="!:0"                # Rerun prev command without arguments
 alias grep="grep --color=auto"		# Colorize Grep output
 alias ff="find . -type f -name"		# Find a file with name 
 alias fdir="find . -type d -name"	# Find a directory with name
-alias c="clear"				# Clear
-alias h="history | nl"			# History
+alias c="clear"				        # Clear
+alias h="history | nl"			    # History
 alias hs="history 50 | fzf +s --tac"  # Search last 50 terminal history
 alias j="jobs -l"                     # List jobs
 alias p="ps -f"                       # Display current processes
@@ -137,6 +137,7 @@ alias p="ps -f"                       # Display current processes
 # -----------------
 # Global aliases  #
 # -----------------
+alias -g F="| fzf"                # Pipes output to fzf, useful for searching
 alias -g H="| head"               # Pipes output to head which outputs the first part of a file
 alias -g T="| tail"               # Pipes output to tail which outputs the last part of a file
 alias -g G="| rg"                 # Pipes output to ripgrep to search for some word
