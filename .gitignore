@@ -3,3 +3,6 @@ test-logs/
 
 # Secrets file for zsh
 zsh/.config/zsh/.zsh-secrets
+
+# Local config
+.dotfiles.local
