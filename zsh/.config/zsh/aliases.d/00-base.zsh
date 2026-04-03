@@ -20,12 +20,6 @@ alias zfunctions="nvim $ZDOTDIR/functions.d/00-base.zsh" # Edit zsh functions
 # -----------------
 # File commands   #
 # -----------------
-# Debian fix
-if command -v batcat >/dev/null 2>&1; then
-    alias bat="batcat"
-else
-    alias bat="bat"
-fi
 alias mf="fzf | xargs ls -l"      # Show info for searched file
 alias pf="fzf --preview='$bat --theme=base16 --style=numbers,header,changes --color=always {}' --bind k:preview-up,j:preview-down"
 alias mdir="mkdir -p"          # Create parent directories
