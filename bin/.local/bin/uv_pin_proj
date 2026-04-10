@@ -20,12 +20,10 @@ case "$spec" in
 	else
 		echo "Could not infer a Python pin from: $spec" >&2
 		echo "Use a spec containing at least one X.Y version, e.g. 3.14 or >=3.14,<4" >&2
-		return 1
+		exit 1
 	fi
 	;;
 esac
-
-uv python pin "$pin" || return 1
 
 python - "$req" <<'PYCODE'
 from pathlib import Path
@@ -55,6 +53,8 @@ p.write_text(text, encoding="utf-8")
 print(f"Updated pyproject.toml -> {req}")
 PYCODE
 
-uv lock --refresh || return 1
+uv python pin "$pin"
+
+uv lock --refresh
 
 echo "Pinned interpreter -> $pin"
