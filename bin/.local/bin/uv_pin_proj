@@ -40,16 +40,16 @@ pattern = r'(?m)^requires-python\s*=\s*".*?"\s*$'
 replacement = f'requires-python = "{req}"'
 
 if re.search(pattern, text):
-text = re.sub(pattern, replacement, text, count=1)
+	text = re.sub(pattern, replacement, text, count=1)
 else:
-project_header = re.search(r'(?m)^\[project\]\s*$', text)
-if not project_header:
-    raise SystemExit("No [project] section found in pyproject.toml")
-insert_at = project_header.end()
-text = text[:insert_at] + f'\n{replacement}' + text[insert_at:]
+	project_header = re.search(r'(?m)^\[project\]\s*$', text)
+	if not project_header:
+		raise SystemExit("No [project] section found in pyproject.toml")
+	insert_at = project_header.end()
+	text = text[:insert_at] + f'\n{replacement}' + text[insert_at:]
 
 if not text.endswith("\n"):
-text += "\n"
+	text += "\n"
 
 p.write_text(text, encoding="utf-8")
 print(f"Updated pyproject.toml -> {req}")
