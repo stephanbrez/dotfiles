@@ -2,7 +2,6 @@
 set -euo pipefail
 
 spec="${1:?usage: uv-pin-project <python-version-or-requires-python-spec>}"
-pin req
 
 case "$spec" in
 # Exact minor, e.g. 3.14
