@@ -6,7 +6,8 @@
 vim.opt.conceallevel = 2
 -- vim.go.bg = "light"
 --
---
+-- Force OSC52 to avoid issues over SSH
+vim.g.clipboard = "osc52"
 --
 -- vim.opt.listchars = { tab = "  ", trail = "·", eol = "↵" }
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
