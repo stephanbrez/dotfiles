@@ -36,37 +36,35 @@ vim.opt.scrolloff = 8
 -- Snacks
 vim.g.lazyvim_picker = "snacks"
 
--- Make clipboard work over SSH
-local is_ssh = vim.env.SSH_CONNECTION ~= nil or vim.env.SSH_TTY ~= nil
+-- Asymmetric clipboard: yank -> nvim unnamed + system; paste -> nvim unnamed only.
+-- Use "+y / "+p explicitly when you actually want the system clipboard both ways.
+vim.opt.clipboard = ""
 
+local is_ssh = vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
 if is_ssh then
-  -- Keep normal Neovim behavior over SSH:
-  --   y -> unnamed register
-  --   p -> unnamed register
-  vim.opt.clipboard = ""
-
   local ok, osc52 = pcall(require, "vim.ui.clipboard.osc52")
   if ok then
-    local copy_osc52 = osc52.copy("+")
-
-    vim.api.nvim_create_autocmd("TextYankPost", {
-      group = vim.api.nvim_create_augroup("SSHOSC52YankSync", { clear = true }),
-      callback = function()
-        local ev = vim.v.event
-
-        -- Only mirror real yanks from the unnamed register.
-        -- This avoids double-copying explicit "+y or "*y operations.
-        if ev.operator ~= "y" or ev.regname ~= "" then
-          return
-        end
-
-        -- Send the yanked text to the local machine clipboard via OSC 52.
-        -- ev.regcontents is a list of lines; ev.regtype preserves the yank type.
-        copy_osc52(ev.regcontents, ev.regtype)
-      end,
-    })
+    vim.g.clipboard = {
+      name = "osc52-writeonly",
+      copy = {
+        ["+"] = osc52.copy("+"),
+        ["*"] = osc52.copy("*"),
+      },
+      paste = {
+        ["+"] = function() return { {}, "" } end,
+        ["*"] = function() return { {}, "" } end,
+      },
+    }
   end
-else
-  -- Local machine: use system clipboard normally.
-  vim.opt.clipboard = "unnamedplus"
 end
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = vim.api.nvim_create_augroup("MirrorYankToSystem", { clear = true }),
+  callback = function()
+    local ev = vim.v.event
+    if ev.operator ~= "y" or ev.regname ~= "" then
+      return
+    end
+    vim.fn.setreg("+", ev.regcontents, ev.regtype)
+  end,
+})
