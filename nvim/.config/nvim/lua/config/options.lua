@@ -39,38 +39,45 @@ vim.g.lazyvim_picker = "snacks"
 -- Make clipboard work over SSH
 local is_ssh = vim.env.SSH_CONNECTION ~= nil or vim.env.SSH_TTY ~= nil
 
+local function reload_clipboard_provider()
+  if vim.g.loaded_clipboard_provider ~= nil then
+    vim.g.loaded_clipboard_provider = nil
+  end
+  vim.cmd("runtime autoload/provider/clipboard.vim")
+end
+
 local function setup_ssh_osc52_yank_sync()
   local ok, osc52 = pcall(require, "vim.ui.clipboard.osc52")
   if not ok then
     return
   end
 
-  -- Keep y/p using Neovim's normal unnamed register.
+  -- Over SSH, keep normal unnamed-register behavior for y/p.
   vim.opt.clipboard = ""
 
-  -- Use OSC 52 only for copying to the local machine clipboard.
-  -- Do not allow paste/query from the terminal clipboard.
+  -- Custom copy-only clipboard provider.
+  -- `copy` writes to the local machine clipboard through OSC 52.
+  -- `paste` is intentionally a stub because you will use Cmd-V in WezTerm
+  -- and plain `p` should keep using Neovim's unnamed register.
   vim.g.clipboard = {
-    name = "OSC 52",
+    name = "OSC 52 (copy only)",
     copy = {
       ["+"] = osc52.copy("+"),
       ["*"] = osc52.copy("*"),
     },
     paste = {
       ["+"] = function()
-        return { "", "v" }
+        return { {}, "v" }
       end,
       ["*"] = function()
-        return { "", "v" }
+        return { {}, "v" }
       end,
     },
+    cache_enabled = 0,
   }
 
-  -- Reload clipboard provider if it was already initialized.
-  vim.g.loaded_clipboard_provider = nil
+  reload_clipboard_provider()
 
-  -- Mirror every yank to the local system clipboard via OSC 52,
-  -- while preserving normal Neovim register behavior.
   local group = vim.api.nvim_create_augroup("SSHOSC52YankSync", { clear = true })
 
   vim.api.nvim_create_autocmd("TextYankPost", {
@@ -81,6 +88,7 @@ local function setup_ssh_osc52_yank_sync()
         return
       end
 
+      -- Mirror the yank to the + register, which triggers the OSC 52 copy provider.
       vim.fn.setreg("+", ev.regcontents, ev.regtype)
     end,
   })
@@ -89,6 +97,6 @@ end
 if is_ssh then
   setup_ssh_osc52_yank_sync()
 else
-  -- Local machine: use system clipboard as default.
+  -- Local machine: default unnamed register goes to system clipboard.
   vim.opt.clipboard = "unnamedplus"
 end
