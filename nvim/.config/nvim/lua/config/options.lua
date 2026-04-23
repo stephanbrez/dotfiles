@@ -40,8 +40,49 @@ vim.g.lazyvim_picker = "snacks"
 -- Use "+y / "+p explicitly when you actually want the system clipboard both ways.
 vim.opt.clipboard = ""
 
-local is_ssh = vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
-if is_ssh then
+local function env_has(name)
+  local value = vim.env[name]
+  return value ~= nil and value ~= ""
+end
+
+local function is_truthy(value)
+  if not value then
+    return false
+  end
+  value = value:lower()
+  return value == "1" or value == "true" or value == "yes" or value == "on" or value == "force"
+end
+
+local function is_falsy(value)
+  if not value then
+    return false
+  end
+  value = value:lower()
+  return value == "0" or value == "false" or value == "no" or value == "off"
+end
+
+local function clipboard_env_state()
+  local wezterm_executable = vim.env.WEZTERM_EXECUTABLE or ""
+  local mode = vim.env.NVIM_OSC52_WRITEONLY
+  local has_mux_server = wezterm_executable:find("wezterm-mux-server", 1, true) ~= nil
+  local has_ssh_markers = env_has("SSH_TTY") or env_has("SSH_CONNECTION") or env_has("SSH_CLIENT")
+
+  return {
+    mode = mode,
+    force_on = is_truthy(mode),
+    force_off = is_falsy(mode),
+    has_mux_server = has_mux_server,
+    has_ssh_markers = has_ssh_markers,
+    is_remote = has_mux_server or has_ssh_markers,
+    wezterm_executable = wezterm_executable,
+  }
+end
+
+local clipboard_state = clipboard_env_state()
+local use_osc52_writeonly = not clipboard_state.force_off
+  and (clipboard_state.force_on or clipboard_state.is_remote)
+
+if use_osc52_writeonly then
   local ok, osc52 = pcall(require, "vim.ui.clipboard.osc52")
   if ok then
     vim.g.clipboard = {
@@ -57,6 +98,16 @@ if is_ssh then
     }
   end
 end
+
+vim.api.nvim_create_user_command("ClipboardDebug", function()
+  local state = clipboard_env_state()
+  state.loaded_clipboard_provider = vim.g.loaded_clipboard_provider
+  state.clipboard_option = vim.o.clipboard
+  state.term_program = vim.env.TERM_PROGRAM
+  state.provider = vim.fn["provider#clipboard#Executable"]()
+  state.active_provider_name = type(vim.g.clipboard) == "table" and vim.g.clipboard.name or vim.g.clipboard
+  print(vim.inspect(state))
+end, { desc = "Inspect clipboard provider selection" })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("MirrorYankToSystem", { clear = true }),
