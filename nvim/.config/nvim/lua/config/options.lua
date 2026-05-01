@@ -81,6 +81,10 @@ end
 local clipboard_state = clipboard_env_state()
 local use_osc52_writeonly = not clipboard_state.force_off
   and (clipboard_state.force_on or clipboard_state.is_remote)
+local paste_from_system_by_default = not clipboard_state.is_remote
+  and not use_osc52_writeonly
+
+vim.g.paste_from_system_by_default = paste_from_system_by_default
 
 if use_osc52_writeonly then
   local ok, osc52 = pcall(require, "vim.ui.clipboard.osc52")

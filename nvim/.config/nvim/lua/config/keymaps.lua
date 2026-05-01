@@ -82,6 +82,21 @@ vim.keymap.set("v", "D", '"aD')
 -- Make leader-x cut to clipboard
 vim.keymap.set("n", "<leader>x", '"+d', { desc = "Cut to clipboard" })
 vim.keymap.set("v", "<leader>x", '"+d', { desc = "Cut to clipboard" })
+
+if vim.g.paste_from_system_by_default then
+  vim.keymap.set(
+    { "n", "x" },
+    "p",
+    '"+p',
+    { desc = "Paste from system clipboard" }
+  )
+  vim.keymap.set(
+    { "n", "x" },
+    "P",
+    '"+P',
+    { desc = "Paste before from system clipboard" }
+  )
+end
 --
 -- Move line up and down
 -- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move Line Down" })
