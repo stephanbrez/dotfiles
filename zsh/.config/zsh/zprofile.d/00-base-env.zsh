@@ -177,14 +177,17 @@ export STARSHIP_CONFIG=$HOME/.config/starship.toml
 
 # Build a deduped path
 typeset -U path PATH
+typeset -a preferred_path
 
 # Enforce preferred ordering
-path=(
-  /usr/local/bin
-  $CARGO_HOME/bin
-  /opt/nvim
-  $path
-)
+preferred_path=(/usr/local/bin)
+[[ -n $CARGO_HOME && -d $CARGO_HOME/bin ]] && preferred_path+=($CARGO_HOME/bin)
+# Requires `npm config set prefix "$XDG_DATA_HOME/npm"`.
+[[ -d $XDG_DATA_HOME/npm/bin ]] && preferred_path+=($XDG_DATA_HOME/npm/bin)
+preferred_path+=(/opt/nvim)
+
+path=($preferred_path $path)
+unset preferred_path
 
 # Add entries only if they exist
 [[ -d $HOME/bin ]]           && path=($HOME/bin $path)
