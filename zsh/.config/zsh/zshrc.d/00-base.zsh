@@ -47,18 +47,20 @@ bindkey '^r' fzf-history-widget
 #########################################
 
 # ======== history ======== #
-export HISTSIZE=100000000
-export SAVEHIST=100000000
+export HISTSIZE=10000000
+export SAVEHIST=10000000
 HIST_STAMPS="%Y.%m.%d"
-HISTDUP=erase
+# HISTDUP=erase
 export HISTFILE=$XDG_CACHE_HOME/.zsh_history
-setopt extended_history
-setopt append_history         # append on exit instead of overwrites
-setopt share_history          # share across sessions
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_find_no_dups
+setopt extended_history             # timestamp + duration
+setopt inc_append_history         # append in real time
+unsetopt share_history          # prevent shells from live importing each other's history
+# setopt share_history          # share across sessions in real time
+setopt hist_ignore_space        # prefix with space for 'private' commands
+unsetopt hist_ignore_dups
+unsetopt hist_ignore_all_dups
+unsetopt hist_save_no_dups
+unsetopt hist_find_no_dups
 # ======== main opts ======== #
 # to see options: set -o
 # setopt inc_append_history     # history is appended as soon as cmds executed
