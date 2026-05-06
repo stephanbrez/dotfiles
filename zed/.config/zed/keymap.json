@@ -59,7 +59,7 @@
             // Buffers
             "space ,": "tab_switcher::Toggle",
             // Files
-            // "space f": "file_finder::Toggle",
+            "space space": "file_finder::Toggle", // When no TV
             "space f": [
                 "task::Spawn",
                 {
