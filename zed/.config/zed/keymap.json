@@ -3,8 +3,6 @@
 // For information on binding keys, see the Zed
 // documentation: https://zed.dev/docs/key-bindings
 //
-// To see the default key bindings run `zed: open default keymap`
-// from the command palette.
 [
     {
         "context": "Workspace",
@@ -24,6 +22,85 @@
             "shift-enter": "editor::Newline",
         },
     },
+    // Empty Pane
+    {
+        "context": "EmptyPane || SharedScreen",
+        "bindings": {
+            // Put key bindings here (in addition to the context above) if you want them to
+            // work when no editor exists.
+            // Files
+            "space space": "file_finder::Toggle",
+            "space f": [
+                "task::Spawn",
+                {
+                    "task_name": "Television File Finder",
+                    "reveal_target": "center",
+                },
+            ],
+        },
+    },
+    // Project Panel
+    {
+        "context": "ProjectPanel && not_editing",
+        "bindings": {
+            // Netrw / oil.nvim-ish file operations
+            "a": "project_panel::NewFile",
+            "shift-a": "project_panel::NewDirectory",
+            "r": "project_panel::Rename",
+            "d": "project_panel::Trash",
+            "shift-d": "project_panel::Delete",
+            "y": "project_panel::Copy",
+            "x": "project_panel::Cut",
+            "p": "project_panel::Paste",
+            "shift-y": "project_panel::Duplicate",
+            "u": "project_panel::Undo",
+            "ctrl-r": "project_panel::Redo",
+
+            // Open / preview behavior
+            "enter": "project_panel::Open",
+            "o": "project_panel::Open",
+            "l": "project_panel::Open",
+            "shift-o": "project_panel::OpenPermanent",
+            "g r": "project_panel::RevealInFileManager",
+            "=": "project_panel::CompareMarkedFiles",
+            "s": "project_panel::OpenSplitHorizontal",
+            "v": "project_panel::OpenSplitVertical",
+
+            // Tree navigation
+            "h": "project_panel::FoldDirectory",
+            "shift-h": "project_panel::CollapseSelectedEntry",
+            "shift-l": "project_panel::ExpandSelectedEntry",
+            "z m": "project_panel::CollapseAllEntries",
+            "z r": "project_panel::ExpandSelectedEntry",
+            "-": "project_panel::SelectParent",
+
+            // Vim-like movement
+            "j": "menu::SelectNext",
+            "k": "menu::SelectPrevious",
+            "ctrl-d": "project_panel::ScrollDown",
+            "ctrl-u": "project_panel::ScrollUp",
+            "g g": "menu::SelectFirst",
+            "shift-g": "menu::SelectLast",
+
+            // Git / diagnostics navigation
+            "] g": "project_panel::SelectNextGitEntry",
+            "[ g": "project_panel::SelectPrevGitEntry",
+            "] d": "project_panel::SelectNextDiagnostic",
+            "[ d": "project_panel::SelectPrevDiagnostic",
+
+            // Visibility toggles
+            "z h": "project_panel::ToggleHideHidden",
+            "z i": "project_panel::ToggleHideGitIgnore",
+
+            // Search from selected directory
+            "/": "project_panel::NewSearchInDirectory",
+
+            // Leave / hide panel
+            "q": "project_panel::ToggleFocus",
+            "escape": "workspace::ActivateLastPane",
+        },
+    },
+    // Dock
     {
         "context": "Dock",
         "bindings": {
@@ -39,6 +116,16 @@
         "context": "VimControl && !menu",
         "bindings": {
             // Put key bindings here if you want them to work in normal & visual mode.
+            "space": null, // Make space the leader key
+            // Editor
+            "alt-k": "editor::MoveLineUp",
+            "alt-j": "editor::MoveLineDown",
+        },
+    },
+    {
+        "context": "(vim_mode == normal || vim_mode == visual || vim_mode == visual_line || vim_mode == visual_block) && !menu",
+
+        "bindings": {
             // AI
             "ctrl-y": "agent::Keep",
             "ctrl-n": "agent::Reject",
@@ -46,6 +133,7 @@
             "ctrl-shift-n": "agent::RejectAll",
             "shift-ctrl-r": "agent::OpenAgentDiff",
             "space a": "agent::Toggle",
+
             // Terminal
             "space t": "terminal_panel::ToggleFocus",
             "space shift-t": "workspace::ToggleBottomDock",
@@ -56,8 +144,34 @@
                     "reveal_target": "center",
                 },
             ],
-            // Buffers
+            // Windows / panes
+            "ctrl-w h": "workspace::ActivatePaneLeft",
+            "ctrl-w j": "workspace::ActivatePaneDown",
+            "ctrl-w k": "workspace::ActivatePaneUp",
+            "ctrl-w l": "workspace::ActivatePaneRight",
+            "ctrl-w s": "pane::SplitDown",
+            "ctrl-w v": "pane::SplitRight",
+            "ctrl-w q": "pane::CloseActiveItem",
+            "ctrl-w o": "workspace::ToggleZoom",
+
+            "space w h": "workspace::ActivatePaneLeft",
+            "space w j": "workspace::ActivatePaneDown",
+            "space w k": "workspace::ActivatePaneUp",
+            "space w l": "workspace::ActivatePaneRight",
+            "space w s": "pane::SplitDown",
+            "space w v": "pane::SplitRight",
+            "space w z": "workspace::ToggleZoom",
+
+            // Buffers / tabs
+            "space b d": "pane::CloseActiveItem",
+            "space b o": "pane::CloseOtherItems",
+            "space b r": "pane::ReopenClosedItem",
+            "space b p": "pane::TogglePinTab",
+            "space b e": "pane::RevealInProjectPanel",
+            "shift-h": "pane::ActivatePreviousItem",
+            "shift-l": "pane::ActivateNextItem",
             "space ,": "tab_switcher::Toggle",
+
             // Files
             "space space": "file_finder::Toggle", // When no TV
             "space f": [
@@ -67,7 +181,17 @@
                     "reveal_target": "center",
                 },
             ],
-            "space e": "project_panel::ToggleFocus",
+            // LSP / code
+            "space c a": "editor::ToggleCodeActions",
+            "space c s": "outline_panel::Toggle",
+            "space l r": "editor::Rename",
+            "space c f": "editor::Format",
+            "space l d": "editor::GoToDefinition",
+            "space l i": "editor::GoToImplementation",
+            "space l t": "editor::GoToTypeDefinition",
+            "space l x": "editor::FindAllReferences",
+            "space l h": "editor::Hover",
+
             // Search
             "space f w": [
                 "task::Spawn",
@@ -76,43 +200,57 @@
                     "reveal_target": "center",
                 },
             ],
-            // Editor
+            // UI
             "space shift-e": "workspace::ToggleLeftDock",
             "space o": "outline_panel::ToggleFocus", // Toggle outline panel
-            "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
-            "alt-k": "editor::MoveLineUp",
-            "alt-j": "editor::MoveLineDown",
-            "x x": "editor::Cut", // Cut line
-            "d d": "editor::DeleteLine", // Delete line without clipboard
-            // Diagnostics
-            "space d": "diagnostics::Deploy",
+            "space e": "project_panel::ToggleFocus",
+            "space shift-c": "command_palette::Toggle",
+            "space q": "pane::CloseActiveItem",
+
+            // Diagnostics / debug
+            "space d": "debug_panel::ToggleFocus",
             "space u d": "editor::ToggleDiagnostics",
+            "] d": "editor::GoToDiagnostic",
+            "[ d": "editor::GoToPreviousDiagnostic",
+            "space x x": "diagnostics::Deploy",
+            "space x d": "editor::ToggleDiagnostics",
+
+            // Git
+            "space g d": "git::Diff",
+            "space g s": "git::StageAndNext",
+            "space g a": "git::StageAll",
+            "space g c": "git::Commit",
         },
     },
     {
         "context": "vim_mode == normal && !menu",
         "bindings": {
+            // Editor
+            "shift-y": ["workspace::SendKeystrokes", "y $"], // Use neovim's yank behavior: yank to end of line.
+
+            // Delete via black-hole register
+            "space d d": ["workspace::SendKeystrokes", "\" _ d d"],
+            "space shift-d": ["workspace::SendKeystrokes", "\" _ D"],
+            "space d w": ["workspace::SendKeystrokes", "\" _ d i w"],
+            "space d shift-w": ["workspace::SendKeystrokes", "\" _ d a w"],
+            "space d $": ["workspace::SendKeystrokes", "\" _ d $"],
             "x": ["workspace::SendKeystrokes", "v x"], // Cut character
         },
     },
     {
-        "context": "vim_mode == visual && !menu",
+        "context": "(vim_mode == visual || vim_mode == visual_line || vim_mode == visual_block) && !menu",
         "bindings": {
-            "d": "editor::Delete",
+            // In visual mode, make d delete selection without clobbering yank register.
+            "d": ["workspace::SendKeystrokes", "\" _ d"],
+
+            // Keep x as normal visual cut/yank behavior.
+            "x": "editor::Cut",
         },
     },
     {
         "context": "vim_mode == insert",
         "bindings": {
             // "j k": "vim::NormalBefore" // In insert mode, make jk escape to normal mode.
-        },
-    },
-    {
-        "context": "EmptyPane || SharedScreen",
-        "bindings": {
-            // Put key bindings here (in addition to the context above) if you want them to
-            // work when no editor exists.
-            // "space f": "file_finder::Toggle"
         },
     },
 ]
