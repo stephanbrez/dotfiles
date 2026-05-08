@@ -71,6 +71,8 @@ config.inactive_pane_hsb = {
 	saturation = 0.9,
 	brightness = 0.9,
 }
+-- Muxer
+
 -- -- Show active workspaces
 -- Tab bar
 wezterm.on("update-right-status", function(window, pane)
@@ -143,7 +145,7 @@ end) --
 -- config.color_scheme = Scheme_for_appearance(get_appearance())
 
 -- Default scheme
-local default_scheme = "Seoulbones_light"
+local default_scheme = "dawnfox"
 
 -- Load SSH themes from separate file (contains sensitive host information)
 local host_to_scheme = {}
