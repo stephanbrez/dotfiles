@@ -53,3 +53,23 @@
     - 🔒 SECURITY: For security-related considerations
     - 💡 TIP: For helpful hints or best practices
     - 🧪 TEST: For testing-related comments
+
+## Commit messages
+
+Use Conventional Commits for all commit messages.
+
+Format: `<type>[optional scope]: <description>`
+
+Use one of these types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`,
+`test`, `build`, `ci`, `chore`, or `revert`.
+
+Guidelines:
+
+- Use imperative mood: `add`, `fix`, `update`, `remove`.
+- Keep the subject concise and specific.
+- Use a scope when it clarifies the affected area, e.g.
+  `fix(api): handle empty responses`.
+- Describe the staged change, not the broader task.
+- Do not mention AI agents, prompts, or implementation attempts unless directly
+  relevant.
+- For breaking changes, use `!` and include a `BREAKING CHANGE:` footer.
