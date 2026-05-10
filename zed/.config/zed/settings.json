@@ -9,20 +9,15 @@
 {
     "ssh_connections": [
         {
-            "host": "pinus",
-            "args": [],
+            "host": "populus.birchcrown.com",
             "projects": [
                 {
-                    "paths": ["/home/stephan"],
+                    "paths": [
+                        "/home/stephan/.local/src/3d-reconstruction-from-monocular-multi-food-images",
+                    ],
                 },
                 {
-                    "paths": ["/home/stephan/.local/src/diff-rendering"],
-                },
-                {
-                    "paths": ["/home/stephan/.local/src/ml-practice"],
-                },
-                {
-                    "paths": ["/home/stephan/.local/src/recon-bench/./"],
+                    "paths": ["~/.local/src/pytorch_tuts"],
                 },
             ],
         },
