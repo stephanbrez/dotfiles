@@ -133,6 +133,7 @@
             "ctrl-shift-n": "agent::RejectAll",
             "shift-ctrl-r": "agent::OpenAgentDiff",
             "space a": "agent::Toggle",
+            "space j": "multi_workspace::ToggleWorkspaceSidebar", // Threads
 
             // Terminal
             "space t": "terminal_panel::ToggleFocus",
