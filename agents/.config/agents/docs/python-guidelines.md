@@ -15,32 +15,21 @@ When used together:
 ## Package Management & Execution Requirements (Strict)
 
 1. **ONLY recommend and assume `uv`**
-
     - uv is the sole tool for dependency resolution, environments, and
       execution.
 
 2. **NEVER suggest `pip`, `pipx`, `poetry`, or system Python commands**
-
     - Do not recommend `pip install`, `python script.py`, or similar.
     - All execution must be uv-mediated.
 
 3. **Use uv for all execution**
-
     - Tools, scripts, tests, and examples must be run via:
 
         ```python
         uv run <command>
         ```
 
-    - Example:
-
-        ```python
-        uv run pytest
-        uv run python examples/basic.py
-        ```
-
 4. **Assume `pyproject.toml` + `uv.lock`**
-
     - Dependencies are declared in `pyproject.toml`
     - Resolution is locked in `uv.lock`
     - No `requirements*.txt` by default
@@ -55,7 +44,6 @@ When used together:
 ## Import Rules (Strict)
 
 1. **Import entire modules or packages**
-
     - Preferred:
 
         ```python
@@ -71,7 +59,6 @@ When used together:
         ```
 
 2. **No inline imports**
-
     - Imports must appear at module top level.
     - Do not import inside functions, methods, or blocks.
 
@@ -85,40 +72,33 @@ When used together:
 ## Type Annotation Requirements (Strict)
 
 1. **Annotate everything**
-
     - Function parameters
     - Return types
     - Class attributes
     - Public constants
 
 2. **Prefer precise types**
-
     - Avoid `Any` unless absolutely necessary
     - Model structure explicitly
 
 3. **Python 3.12+ typing syntax only**
-
     - Use built-ins: `list`, `dict`, `tuple`
     - Use unions: `A | B`
     - Use `type` instead of `Type`
     - Avoid legacy `typing.List`, `Optional`, etc.
 
 4. **Constants**
-
     - Use `Literal[...]` types for constants
     - Name constants in `ALL_CAPS`
 
 5. **Protocols for duck typing**
-
     - Prefer `Protocol` over inheritance when modeling behavior
 
 6. **Type aliases**
-
     - Introduce aliases for complex or repeated types
     - Prefer explicit naming over inline complexity
 
 7. **Dynamic or untyped data**
-
     - If `Any` is unavoidable, add an explicit justification:
 
         ```python
@@ -126,7 +106,6 @@ When used together:
         ```
 
 8. **Type checker suppressions**
-
     - mypy:
 
         ```python
@@ -149,22 +128,8 @@ When used together:
 
 All formatting and linting is performed with Ruff via uv:
 
-- Format:
-
 ```python
-uv run ruff format .
-```
-
-- Lint:
-
-```python
-uv run ruff check .
-```
-
-- Auto-fix:
-
-```python
-uv run ruff check . --fix
+uv tool run ruff format .
 ```
 
 ### Syntax & Layout Rules
@@ -208,36 +173,22 @@ Avoid overly clever constructs that reduce readability.
 Use concurrency intentionally and explicitly:
 
 1. **AsyncIO**
-
     - Preferred for I/O-bound work
     - Use async context managers
     - Use task groups for structured concurrency
     - Handle cancellation and exceptions explicitly
 
 1. **CPU-bound work**
-
     - Use `concurrent.futures` or multiprocessing
     - Avoid blocking the event loop
 
 1. **Thread safety**
-
     - Use locks, queues, or other synchronization primitives
     - Do not assume thread safety of shared state
 
 1. **Async patterns**
     - Async generators and comprehensions where appropriate
     - Monitor performance and backpressure
-
----
-
-## Non-Goals 🚫
-
-These guidelines intentionally do **not** cover:
-
-- Project directory layout (see companion structure guide)
-- Tool installation instructions
-- Framework-specific patterns
-- Notebook-based workflows as primary interfaces
 
 ---
 
