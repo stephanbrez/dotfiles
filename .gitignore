@@ -4,5 +4,86 @@ test-logs/
 # Secrets file for zsh
 zsh/.config/zsh/.zsh-secrets
 
+# Wezterm pseudo-secrets
+wezterm/.config/wezterm/ssh-themes.lua
+
 # Local config
 .dotfiles.local
+
+# ===== ENVIRONMENT AND CONFIGURATION =====
+# dotenv
+.env
+.env.*
+
+# virtualenv
+.venv
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# ===== OS AND SYSTEM FILES =====
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===== PACKAGE MANAGERS =====
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pyenv
+.python-version
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# ===== PROJECT-SPECIFIC =====
+# auth
+*token*
+*.key
+
+# ===== PYTHON RUNTIME =====
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Cython debug symbols
+cython_debug/
+
+# SageMath parsed files
+*.sage.py
+
+# Translations
+*.mo
+*.pot
+
+# ===== TESTING AND COVERAGE =====
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+output/
+
