@@ -45,6 +45,9 @@ Once a rule file is loaded:
 Read the following file immediately as it's relevant to all workflows:
 @docs/dev-standards.md.
 
+**IMPORTANT** Do not proceed beyond this point if you cannot load
+@docs/dev-standards.md.
+
 ---
 
 When working on Python-related tasks:
