@@ -1,75 +1,96 @@
-# Development Guidelines & Standards
+# Development Guide
 
-## Core Coding Principles
+These rules apply to every task unless explicitly overridden. Prefer caution,
+clarity, and minimal changes over speed.
 
-1. **Readability, Modularity, and Scalability**: Prioritize these qualities in
-   all suggestions
-2. **Documentation**: Ensure data sources, assumptions, and methodologies are
-   clearly documented
-3. **Best Practices**: Reference official documentation for current APIs and
-   patterns
-4. **Configuration**: Recommend YAML over JSON for configuration files
-5. **Iterative Development**: Build minimal functionality first, verify before
-   adding complexity
-6. **Version Control**: Recommend git for tracking changes when appropriate
+## 1. Work Approach
 
-## Programming Style Guidelines
+- State assumptions on non-trivial work.
+- Ask when requirements are unclear; do not guess.
+- Prefer the simplest complete solution.
+- Push back when a simpler approach exists.
+- Define success criteria before implementation.
+- Stop and surface confusion, conflicts, skipped work, or uncertainty.
+- Build minimal functionality first, verify it, then add complexity only when
+  needed.
 
-1. Use descriptive, unambiguous variable names
-2. Implement robust error handling and logging throughout
-3. Use early returns to avoid nested conditionals and functions
-4. Handle edge cases at the beginning of functions
-5. Use named constants or environment variables instead of hardcoded values
-6. Validate data types and ranges to ensure data integrity
-7. Write documentation strings in NumPy style
-8. Prefer functional, stateless, and immutable approaches
-9. Follow DRY principles (Don't Repeat Yourself)
-10. Ensure modules, classes, and functions have single responsibility and are
-    self-contained
+## 2. Code Changes
 
-## Code Formatting Standards
+- Read relevant exports, callers, shared utilities, and nearby patterns before
+  editing.
+- Touch only what the task requires; do not refactor, reformat, or improve
+  adjacent code unless required.
+- Clean up only your own changes.
+- Match existing codebase conventions; when conventions conflict, choose one
+  deliberately and explain why.
 
-1. **Indentation**: Use four spaces, limit lines to 80 characters
-2. **Naming Conventions**:
-    - `lowercase_with_underscores` for variables, functions, and filenames
-    - `UPPER_CASE` for constants and environment variables
-    - `CamelCase` for class names
-    - `lowercase-with-dashes` for directories
+## 3. Coding Standards
 
-## Code Organization Requirements
+- Prioritize readable, modular, scalable code with descriptive names and
+  single-purpose units.
+- Use early returns, upfront edge-case handling, robust validation, error
+  handling, and logging.
+- Use named constants or environment variables instead of hardcoded values.
+- Prefer functional, stateless, and immutable approaches where practical.
+- Follow DRY unless abstraction would add unnecessary complexity.
+- Document data sources, assumptions, methodologies, and public APIs with
+  NumPy-style docstrings.
+- Check official documentation for current APIs and patterns when needed.
 
-1. Break up large functions with step comments using: `"─── Description ───"`
-2. Create sections in large files with headers: `"===== Section Name ====="`
-    - **IMPORTANT**: Only use section headers for main file content, never
-      inside functions
-3. Use emojis in comments and logging for clarity:
-    - ⚠️ WARNING: For potential issues or deprecated features
-    - 🚨 ERROR: For critical errors and exceptions
-    - ❗ IMPORTANT: For crucial information or breaking changes
-    - ✅ SUCCESS: For successful operations or validations
-    - 🔍 DEBUG: For debugging information
-    - 📝 NOTE: For general informational comments
-    - 🚀 PERFORMANCE: For performance-related notes
-    - 🔒 SECURITY: For security-related considerations
-    - 💡 TIP: For helpful hints or best practices
-    - 🧪 TEST: For testing-related comments
+## 4. Formatting and Naming
 
-## Commit messages
+- Limit lines to 80 characters where practical.
+- Use `lowercase_with_underscores` for variables, functions, and filenames.
+- Use `UPPER_CASE` for constants and environment variables.
+- Use `CamelCase` for class names.
+- Use `lowercase-with-dashes` for directories.
+- Prefer YAML over JSON for configuration files unless JSON is required.
 
-Use Conventional Commits for all commit messages.
+## 5. Code Organization
 
-Format: `<type>[optional scope]: <description>`
+- Break up large functions with step comments using: `─── Description ───`.
+- Create sections in large files with headers using: `===== Section Name =====`.
+- Use section headers only for main file content, never inside functions.
+- Use emojis in comments and logging for clarity, e.g. `⚠️ WARNING:` for
+  potential issues or deprecated features.
 
-Use one of these types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`,
-`test`, `build`, `ci`, `chore`, or `revert`.
+## 6. AI-Assisted Work
 
-Guidelines:
+Use AI for judgment tasks: classification, drafting, summarization, extraction,
+and tradeoffs. Use code for deterministic work: routing, retries, transforms,
+and verification.
+
+## 7. Testing and Verification
+
+- Tests should verify intent, not just behavior.
+- A test is weak if it would still pass after the business logic breaks.
+- Run relevant tests, linters, formatters, or type checks before marking work
+  complete.
+- State what was verified, skipped, untested, or uncertain.
+- Do not say work is complete if anything required was skipped.
+- Do not say tests pass if relevant tests were skipped.
+
+## 8. Checkpoints
+
+After every significant step, summarize what changed, what was verified, what
+remains, and any uncertainty. If the current state is unclear, stop and restate
+it before continuing.
+
+## 9. Version Control
+
+- Use git for tracking changes when appropriate.
+- Use Conventional Commits for all commit messages.
+
+Format:
+
+`<type>[optional scope]: <description>`
+
+Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`,
+`build`, `ci`, `chore`, `revert`
 
 - Use imperative mood: `add`, `fix`, `update`, `remove`.
 - Keep the subject concise and specific.
-- Use a scope when it clarifies the affected area, e.g.
-  `fix(api): handle empty responses`.
-- Describe the staged change, not the broader task.
+- Use a scope when it clarifies the affected area.
 - Do not mention AI agents, prompts, or implementation attempts unless directly
   relevant.
 - For breaking changes, use `!` and include a `BREAKING CHANGE:` footer.
