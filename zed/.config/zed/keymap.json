@@ -138,13 +138,7 @@
             // Terminal
             "space t": "terminal_panel::ToggleFocus",
             "space shift-t": "workspace::ToggleBottomDock",
-            "space g g": [
-                "task::Spawn",
-                {
-                    "task_name": "LazyGit",
-                    "reveal_target": "center",
-                },
-            ],
+
             // Windows / panes
             "ctrl-w h": "workspace::ActivatePaneLeft",
             "ctrl-w j": "workspace::ActivatePaneDown",
@@ -217,7 +211,15 @@
             "space x d": "editor::ToggleDiagnostics",
 
             // Git
+            "space g g": [
+                "task::Spawn",
+                {
+                    "task_name": "LazyGit",
+                    "reveal_target": "center",
+                },
+            ],
             "space g d": "git::Diff",
+            "space g m": "git::OpenModifiedFiles",
             "space g s": "git::StageAndNext",
             "space g a": "git::StageAll",
             "space g c": "git::Commit",
