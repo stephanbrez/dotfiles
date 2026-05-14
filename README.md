@@ -1,157 +1,210 @@
 # Dotfiles
 
-- [Dotfiles](#dotfiles)
-  - [Introduction](#introduction)
-    - [Try Before you Buy](#try-before-you-buy)
-    - [Machine Specific Config](#machine-specific-config)
-  - [Organization](#organization)
-    - [Home Directories](#home-directories)
-    - [Dotfiles](#dotfiles-1)
-    - [Installers](#installers)
+- [Introduction](#introduction)
+- [Organization](#organization)
+  - [Home Directories](#home-directories)
+  - [Dotfiles](#dotfiles)
+- [XDG Compliance](#xdg-compliance)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Installer System](#installer-system)
+  - [Command-Line Options](#command-line-options)
+  - [Setup Stages](#setup-stages)
+  - [Install Modes](#install-modes)
   - [Package Configuration](#package-configuration)
-    - [YAML Configuration](#yaml-configuration)
-    - [Adding a Third-Party Installer](#adding-a-third-party-installer)
-  - [Requirements](#requirements)
-    - [Git](#git)
-    - [Stow](#stow)
-  - [Installation](#installation)
-    - [Install Script](#install-script)
-    - [Manual Install](#manual-install)
+  - [Adding a Third-Party Installer](#adding-a-third-party-installer)
+- [Modular ZSH System](#modular-zsh-system)
+  - [Entry Points](#entry-points)
+  - [Priority Loading Order](#priority-loading-order)
+  - [Profile Selection](#profile-selection)
+  - [Directory Layout](#directory-layout)
+  - [Extending](#extending)
 
 ## Introduction
 
-This isn't trying to be _yet another collection of dotfiles_. Why? Through the process of writing an install script I got tired of having to spin up a new virtual machine to test each new version. This led to the following two major features (laziness: the true driver of innovation):
+This isn't trying to be _yet another collection of dotfiles_. Why? Through the
+process of writing an install script I got tired of having to spin up a new
+virtual machine to test each new version. I also wanted something that could
+handle the diverse types of machines I use. This led to building a complete
+system around three principles:
 
-### Try Before you Buy
+**Try before you buy** — Selectively adopt dotfiles per package via
+[stowaway-check](bin/.local/bin/stowaway-check), an interactive wrapper around
+[GNU stow](https://www.gnu.org/software/stow/) that handles conflict resolution,
+backups, and batch operations.
 
-With the use of [_Stowaway Dots_](https://github.com/stephanbrez/dotfiles/blob/main/bin/.local/bin/stowaway-check) (a wrapper for [stow](https://www.gnu.org/software/stow/)), you can selectively use, backup, and adopt dotfiles on a package by package basis. This means you can try these (or any) dotfiles before committing to them, before or after forking this repo. _e.g._ Changed your mind about a specific package? Run the installer again and re-do the dotfiles setup. It's also really useful if you have several machines and only want to use some packages and dotfiles on certain ones (see below).
+**Machine-aware** — Installer config adapts to the machine it runs on. Package
+installation differs by distro (Ubuntu, Debian, Fedora) and mode (minimal vs
+full). Shell config adapts to OS and profile (dev-server, laptop, workstation)
+with per-host overrides.
 
-### Machine Specific Config
+**Modular by design** — Every component is a composable unit: standalone
+installer scripts, priority-loaded zsh snippets, and per-package stow
+directories that mirror `$HOME`.
 
-Don't want to install packages & apps on your machine? No problem, you can only install dotfiles.
-Have more than one machine (like a desktop & laptop)? You can select separate package install configs.
+## Organization
 
-**Other useful ideas & concepts**
-There are a lot of great dotfiles managers and solutions out there. A lot of them unfortunately force you to use their naming scheme/file structure/methodology. Dotfiles are very personal, and you may have already spent a lot time organizing them how you want. If you're going to use this repo (isn't that the point of public repos?), wouldn't it be nice if it required minimal changes on your part? It would also be convenient if personalization only had to be done in one file wouldn't it? _Or better yet, wouldn't it be great if the installer was interactive so you didn't have to figure out how to make changes?_
+### Home Directories
 
-## Methodology
-
-### Organization
-
-#### Home Directories
-
-Following [xdg base directories standards](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+Follows
+[XDG Base Directory](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+conventions:
 
 ```
-.
-├── .config/ $XDG_CONFIG_HOME --> app specific configs
+~
+├── .config/          $XDG_CONFIG_HOME → app configs
 │   ├── nvim
 │   ├── tmux
-│   ├── zsh       --> each app has a folder
-│   │   └── zshrc --> config files
-│   └── etc...
-├── .dotfiles/   --> this repo
+│   └── zsh           → modular zsh system
+├── .dotfiles/        → this repo
 ├── .local/
-│   ├── bin/   $PATH            --> my scripts
-│   ├── cache/ $XDG_CACHE_HOME  --> runtime files
-│   ├── docs/  ~docs            --> my documents
-│   ├── lib/   $pkgManger_HOME  --> app libraries
-│   ├── share/ $XDG_DATA_HOME   --> shared app files
-│   ├── src/
-│   │   └── other_code/
-│   └── state/ $XDG_STATE_HOME  --> app state files
-│       └── zsh/
-│           └── history --> app created files
+│   ├── bin/          ~/.local/bin        → scripts (in $PATH)
+│   ├── cache/        $XDG_CACHE_HOME     → runtime files
+│   ├── docs/         → ~/Documents symlink
+│   ├── lib/          → app libraries
+│   ├── share/        $XDG_DATA_HOME      → shared app files
+│   ├── src/          → cloned source repos
+│   └── state/        $XDG_STATE_HOME     → app state
 ├── .ssh/
 │   ├── authorized_keys
 │   ├── config
 │   └── known_hosts
+├── .dotfiles.local   → untracked profile selection
 └──  ▄█▀ ▀█▀ ▐▄█ █▀ █▀
 ```
 
-#### Dotfiles
+### Dotfiles
 
-To make it easier to install and configure apps individually, each app has a folder in `~/.dotfiles`. The structure mirrors the home directory structure. The contents then can be symlinked to the proper location in `~` on an app by app basis.
+Each app has a directory in `~/.dotfiles` mirroring the home directory
+structure. Contents are symlinked into `~` on a per-package basis by
+`stowaway-check`:
 
 ```
 .dotfiles/
-├── README.md
-├── packages.yaml           --> package configuration
-├── setup                   --> main install script
-├── installers/             --> third-party installer scripts
-├── starship/               --> app folder
-│   └── .config
-│       └── starship.toml   --> symlinked to ~/.config
-└── tmux/
-    └── .config
-        └── tmux            --> symlinked to ~/.config
-            └── tmux.conf   --> config files
+├── setup                    # Main install script (run with sudo)
+├── packages.yaml            # Distro-aware package definitions
+├── installers/              # Third-party installer scripts
+├── bin/                     # → ~/.local/bin
+├── zsh/                     # → ~/.config/zsh  (modular dispatch)
+├── starship/                # → ~/.config/starship.toml
+├── wezterm/                 # → ~/.config/wezterm
+└── ...                      # app packages
 ```
 
-#### Installers
+## XDG Compliance
 
-Third-party packages that require special installation (repos, GPG keys, building from source) are handled by modular installer scripts in `installers/`:
+All tools are configured to respect XDG Base Directory variables set in
+`zprofile.d/00-base-env.zsh`:
 
-```
-installers/
-├── common.sh             # Shared helper functions (sourced by all)
-├── packages-fallback.sh  # Fallback package lists when YAML unavailable
-├── docker.sh             # Docker from official repo
-├── eza.sh                # eza (modern ls)
-├── fastfetch.sh          # System info tool
-├── figlet-fonts.sh       # Figlet font collection
-├── fzf.sh                # Fuzzy finder binary
-├── lazydocker.sh         # Docker TUI
-├── lazygit.sh            # Git TUI
-├── neovim.sh             # Neovim from source (apt only)
-├── onepassword.sh        # 1Password + CLI
-├── uv.sh                 # uv Python package manager
-├── wezterm.sh            # WezTerm terminal
-└── zoxide.sh             # Smarter cd command
-```
+| Variable           | Path             | Tools affected                                         |
+| ------------------ | ---------------- | ------------------------------------------------------ |
+| `$XDG_CONFIG_HOME` | `~/.config`      | git, nvim, tmux, zsh, starship, ghostty, wezterm, yazi |
+| `$XDG_DATA_HOME`   | `~/.local/share` | zinit, cargo, rustup, go, jupyter, conda/mamba         |
+| `$XDG_CACHE_HOME`  | `~/.cache`       | zsh history, less history, python                      |
 
-Each installer can be run standalone or via the main setup script:
+Tool-specific overrides: `CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`,
+`JUPYTER_CONFIG_DIR`, `LESSHISTFILE`, `PYTHON_HISTORY`.
+
+## Requirements
+
+- `git` — `sudo apt install git` or `brew install git`
+- `stow` — `sudo apt install stow` or `brew install stow`
+
+## Installation
 
 ```bash
-# Run a single installer
-sudo ./installers/docker.sh
-
-# Preview what would be installed
-sudo ./installers/docker.sh --dry-run
-
-# Verbose output
-sudo ./installers/eza.sh --verbose
+cd ~
+curl -LO https://raw.githubusercontent.com/stephanbrez/dotfiles/main/setup
+chmod +x setup && sudo ./setup
 ```
 
-## Package Configuration
+Or clone manually:
 
-### YAML Configuration
+```bash
+git clone https://github.com/stephanbrez/dotfiles.git ~/.dotfiles
+sudo ~/.dotfiles/setup
+```
 
-Packages are configured in `packages.yaml`. The file supports:
+## Installer System
 
-- **Common packages**: Installed on all distros
-- **Distro-specific packages**: Ubuntu, Debian, Fedora variants
-- **Installation modes**: `minimal` (no third-party) or `full`
-- **Third-party toggles**: Enable/disable individual installers
+### Command-Line Options
 
-Example structure:
+```bash
+sudo ./setup --help       # Show all options
+sudo ./setup --dry-run    # Preview what would be done
+sudo ./setup --verbose    # Show detailed output
+sudo ./setup --yes        # Non-interactive mode (for CI/testing)
+sudo ./setup --full       # Force full install on Ubuntu
+```
+
+### Setup Stages
+
+The main `setup` script (run with `sudo`) proceeds in stages:
+
+1. **Create XDG directories** — `~/.config`,
+   `~/.local/{bin,cache,lib,share,src,state}`
+2. **Bootstrap Python** — install python3 + PyYAML from system packages (never
+   pip)
+3. **Parse `packages.yaml`** — exports distro packages, pipx packages, and
+   third-party flags as bash variables
+4. **Install distro packages** — via `apt`, `dnf`, `pacman`, `zypper`, or `apk`
+5. **Run third-party installers** — from `installers/*.sh` based on YAML toggles
+6. **Symlink dotfiles** — via `stowaway-check` with interactive conflict
+   resolution
+7. **Setup tmux** — install TPM plugins
+8. **Configure git** — prompt for user.name and user.email
+9. **Change shell** — `chsh` to zsh
+
+### Install Modes
+
+- **Minimal** (Ubuntu default) — distro packages only, no third-party installers
+- **Full** (Debian / other distros, or `--full` flag) — distro packages +
+  third-party
+
+### Package Configuration
+
+Packages are defined in `packages.yaml`. The tool handles distro-specific
+sections and exports bash variables automatically:
 
 ```yaml
 common:
-  distro_packages:
-    - git
-    - tmux
-    - zsh
+    distro_packages:
+        - bat
+        - git
+        - tmux
+        - zsh
+        - ripgrep
+        - stow
 
 ubuntu:
-  full:
-    distro_packages:
-      - build-essential
-    third_party:
-      docker: true
-      lazygit: true
-      uv: true
+    minimal:
+        distro_packages:
+            - build-essential
+            - python3-dev
+        skip_third_party: true
+
+    full:
+        distro_packages:
+            - build-essential
+            - fd-find
+        third_party:
+            lazygit: true
+            eza: true
+            uv: true
+            zoxide: true
+        pipx_packages:
+            - emoji-fzf
+
+debian:
+    full:
+        third_party:
+            docker: true
+            neovim_source: true
 ```
+
+Third-party flags like `lazygit: true` are exported as `INSTALL_LAZYGIT=true` in
+bash. Setting `skip_third_party: true` skips all third-party installers for that
+mode.
 
 ### Adding a Third-Party Installer
 
@@ -167,8 +220,8 @@ source "$SCRIPT_DIR/common.sh"
 install_<name>() {
     _echo "installing <name>"
     if should_run; then
-        # Your install commands here
-        # Use $ASME to run as the user (not root)
+        # Install commands here.
+        # Use $ASME to run as the user (not root).
         $ASME curl -sSL https://example.com/install.sh | $ASME sh
         log_message "SUCCESS" "<name> installed"
     else
@@ -185,120 +238,138 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 ```
 
-2. **Make it executable**:
+1. **Make it executable**:
 
 ```bash
 chmod +x installers/<name>.sh
 ```
 
-3. **Add the trigger in `setup`** (search for `INSTALL_ZOXIDE`):
+1. **Add the trigger in `setup`** (search for `INSTALL_` blocks):
 
 ```bash
 [[ "$INSTALL_<NAME>" == "true" ]] && install_<name>
 ```
 
-4. **Enable in `packages.yaml`**:
+1. **Enable in `packages.yaml`**:
 
 ```yaml
 third_party:
-  <name>: true
+    <name>: true
 ```
 
 The YAML parser automatically exports `<name>: true` as `INSTALL_<NAME>=true`.
 
-## Requirements
+Available helpers from `installers/common.sh`:
 
-At the bare minimum you'll need these to install dotfiles:
+- `parse_installer_args "$@"` — handles `--dry-run`, `--verbose`, `--help`
+- `init_installer_env` — detects user context, architecture, package manager
+- `should_run` — returns false in dry-run mode
+- `dry_print` — prints what would be done
+- `log_message` — structured logging (respects verbose mode)
+- `$ASME` — run commands as the real user (via `sudo -u`)
+- `$ARCH_GH` / `$ARCH_DEB` — architecture strings for GitHub releases and DEB
+  packages
 
-### Git
+## Modular ZSH System
 
-```
-brew install git
-```
+Zsh configuration uses a **priority-layered dispatch system** with two entry
+points, managed entirely through `lib/loader.zsh`.
 
-or
+### Entry Points
 
-```
-sudo apt install git
-```
+| File                                        | Purpose           | Sources                                             |
+| ------------------------------------------- | ----------------- | --------------------------------------------------- |
+| `~/.zprofile` (stowed from `zsh/`)          | Environment setup | `zprofile.d/` via loader                            |
+| `~/.config/zsh/.zshrc` (stowed from `zsh/`) | Shell config      | `zshrc.d/`, `aliases.d/`, `functions.d/` via loader |
 
-### Stow
+### Priority Loading Order
 
-```
-brew install stow
-```
-
-or
-
-```
-sudo apt install stow
-```
-
-## Installation
-
-You can use the interactive install script, or if you're feeling a little masochistic, you can do a manual install.
-
-### Install Script
-
-Automate the setup of your dotfiles with this handy script!
-
-Manually download the script from [here](https://github.com/stephanbrez/dotfiles/blob/main/setup) or run the commands below in your favorite terminal.
-
-You'll need curl for the fully automated setup:
-`apt install curl` or `dnf install curl` or `pacman -S curl` or `brew install curl`
-
-First download the script into your **home**:
+Config files are loaded in this order, each layer overriding the previous:
 
 ```
-cd ~
-curl -LO https://raw.githubusercontent.com/stephanbrez/dotfiles/main/setup
+00-base          ─── Universal (all machines)
+10-<os>          ─── OS-specific (linux, macos)
+20-<profile>     ─── Role-specific (dev-server, laptop, workstation)
+hosts/<hostname> ─── Per-machine overrides
+.zshrc.local     ─── Local untracked overrides
 ```
 
-Check the script if you want to doublecheck everything (you should never trust explicitly!):
+### Profile Selection
 
-```
-less setup
-```
+Set your machine profile in the untracked `~/.dotfiles.local` file:
 
-Make it executable and then run it _with sudo_:
-
-```
-chmod +x setup && sudo ./setup
+```bash
+export DOTFILES_PROFILE="laptop"
 ```
 
-**Command-line options:**
+💡: make sure that the quoted value matches the <profile> part of the file name.
+
+Defaults to`default` (no profile-specific config) when unset.
+
+The profile value is read in `.zprofile` before any config is loaded, so all
+layers can respond to it.
+
+### Directory Layout
 
 ```
-sudo ./setup --help       # Show all options
-sudo ./setup --dry-run    # Preview what would be done
-sudo ./setup --verbose    # Show detailed output
-sudo ./setup --yes        # Non-interactive mode (for CI)
-sudo ./setup --full       # Force full install on Ubuntu (default is minimal)
+~/.config/zsh/
+├── .zshrc                    # Dispatch entry point
+├── lib/
+│   └── loader.zsh            # Context-aware sourcing: source_os_config,
+│                             # source_profile_config, source_host_config
+├── zprofile.d/               # Environment variables (loaded by .zprofile)
+│   ├── 00-base-env.zsh       # XDG vars, tool paths, LESS/FZF config
+│   ├── 10-linux-env.zsh      # CUDA, /opt/bin paths
+│   ├── 10-macos-env.zsh      # (placeholder)
+│   ├── 20-dev-server-env.zsh # (placeholder)
+│   ├── 20-laptop-env.zsh     # (placeholder)
+│   └── 20-workstation-env.zsh# (placeholder)
+├── zshrc.d/                  # Shell behavior, plugins, keybinds
+│   ├── 00-base.zsh           # zinit, history, completions, fzf,
+│   │                         # starship, zoxide, uv, thefuck
+│   ├── 10-linux.zsh          # fastfetch on login
+│   ├── 10-macos.zsh          # (placeholder)
+│   ├── 20-dev-server.zsh     # micromamba + pixi
+│   ├── 20-laptop.zsh         # (placeholder)
+│   └── 20-workstation.zsh    # (placeholder)
+├── aliases.d/                # Modular aliases by OS + profile
+│   ├── 00-base.zsh           # eza, docker, git, conda, uv,
+│   │                         # wezterm, lazygit, pixi (553 lines)
+│   ├── 10-linux.zsh          # apt update aliases
+│   ├── 10-macos.zsh          # brew update aliases
+│   ├── 20-dev-server.zsh     # (placeholder)
+│   ├── 20-laptop.zsh         # (placeholder)
+│   └── 20-workstation.zsh    # (placeholder)
+├── functions.d/              # Modular functions by OS
+│   ├── 00-base.zsh           # extract, mcd, y(), uvpyk, find_man
+│   ├── 10-linux.zsh          # (placeholder)
+│   └── 10-macos.zsh          # (placeholder)
+├── hosts/                    # Per-machine overrides (<hostname>.zsh)
+├── plugins/
+│   └── plugins.zsh           # Local plugin loader stub
+└── starship.zsh              # (reserved for starship config)
 ```
 
-If you want to have an installation log to review afterwards pipe to a tee to the previous command:
+### Extending
 
-```
-chmod +x setup && sudo ./setup | tee setup_dots.log
-```
+```bash
+# Add OS support:
+touch zshrc.d/10-<os>.zsh
+touch aliases.d/10-<os>.zsh
+# Then add a case to lib/loader.zsh source_os_config()
 
-### Manual Install
+# Add a profile:
+touch zshrc.d/20-<profile>.zsh
+touch aliases.d/20-<profile>.zsh
+touch zprofile.d/20-<profile>-env.zsh
+# Then add a case to lib/loader.zsh source_profile_config()
 
-Check out the [dotfiles repo](https://github.com/stephanbrez/dotfiles)
-
-```
-git clone https://github.com/stephanbrez/dotfiles.git
-cd ~/.dotfiles
-```
-
-Use `stow` to symlink all the files
-
-```
-stow . -t ~ --adopt
+# Machine-specific override (no loader changes needed):
+touch hosts/$(hostname -s).zsh
 ```
 
-The adopt flag will overwrite all files in `~/.dotfiles` with any matching files in `~`. To restore the files from the remote repo, run:
-
-```
-git restore .
-```
+Plugin management is handled by
+[zinit](https://github.com/zdharma-continuum/zinit) (installed automatically to
+`$XDG_DATA_HOME/zinit` on first shell start). The `00-base.zsh` config loads
+syntax highlighting, autosuggestions, completions, vi-mode, git aliases, and
+Starship via zinit's turbo loader.
