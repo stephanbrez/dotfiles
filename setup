@@ -366,6 +366,11 @@ try:
     if pipx_pkgs:
         print(f"PKG_PIPX_PACKAGES=({' '.join(pipx_pkgs)})")
 
+    # Export npm packages
+    npm_pkgs = config.get('common', {}).get('npm_packages', [])
+    if npm_pkgs:
+        print(f"PKG_NPM_PACKAGES=({' '.join(npm_pkgs)})")
+
 except Exception as e:
     print(f"echo 'Error parsing YAML: {e}' >&2", file=sys.stderr)
     sys.exit(1)
@@ -399,6 +404,17 @@ install_pipx_packages() {
 	else
 		dry_print "Would configure pipx and install: ${PKG_PIPX_PACKAGES[*]} python3-neovim"
 	fi
+}
+
+install_npm_packages() {
+    _echo "installing npm global packages"
+    if should_run; then
+        for pkg in "${PKG_NPM_PACKAGES[@]}"; do
+            $ASME npm install -g "$pkg"
+        done
+    else
+        dry_print "Would npm install -g: ${PKG_NPM_PACKAGES[*]}"
+    fi
 }
 
 function install_packages() {
@@ -515,6 +531,12 @@ function install_packages() {
 	# ─── Install pipx packages if configured ───
 	if [ -n "${PKG_PIPX_PACKAGES[*]}" ]; then
 		install_pipx_packages
+	fi
+
+	# ─── Install npm packages if configured ───
+	if [ -n "${PKG_NPM_PACKAGES[*]}" ]; then
+		install_nodejs
+		install_npm_packages
 	fi
 
 	# ─── Distro binary symlinks ───

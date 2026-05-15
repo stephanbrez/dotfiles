@@ -11,6 +11,12 @@ metadata:
 
 # ═════ Common Packages (All Distros) ═════
 common:
+  # ─── npm global packages ───
+  npm_packages:
+    - defuddle
+    - @tobilu/qmd
+    - @openai/codex
+
   distro_packages:
     # ─── Command line tools ───
     - bat
@@ -40,7 +46,6 @@ common:
     - gettext
     - meson
     - ninja-build
-    - npm
     - pipx
     - pkgconf
     - python3
@@ -48,6 +53,7 @@ common:
     - unzip
     - wget
     # - wl-clipboard
+
     # ─── Fun ───
     - toilet
 
