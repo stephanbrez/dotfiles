@@ -117,7 +117,10 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("MirrorYankToSystem", { clear = true }),
   callback = function()
     local ev = vim.v.event
-    if ev.operator ~= "y" or ev.regname ~= "" then
+    if ev.regname ~= "" then
+      return
+    end
+    if ev.operator ~= "y" and ev.operator ~= "d" then
       return
     end
     vim.fn.setreg("+", ev.regcontents, ev.regtype)
