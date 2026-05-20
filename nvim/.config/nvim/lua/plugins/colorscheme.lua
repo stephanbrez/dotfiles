@@ -17,6 +17,7 @@ return {
   },
   -- { "rose-pine/neovim", name = "rose-pine", dark_variant = "moon" },
   { "sainnhe/gruvbox-material" },
+  { "atelierbram/Base2Tone-nvim" },
   -- {
   --   "sainnhe/everforest",
   --   lazy = false,
