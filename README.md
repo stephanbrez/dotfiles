@@ -34,9 +34,9 @@ system around three principles:
 backups, and batch operations.
 
 **Machine-aware** — Installer config adapts to the machine it runs on. Package
-installation differs by distro (Ubuntu, Debian, Fedora) and mode (minimal vs
-full). Shell config adapts to OS and profile (dev-server, laptop, workstation)
-with per-host overrides.
+installation differs by distro (Ubuntu, Debian, Fedora, macOS) and mode
+(minimal vs full). Shell config adapts to OS and profile (dev-server, laptop,
+workstation) with per-host overrides.
 
 **Modular by design** — Every component is a composable unit: standalone
 installer scripts, priority-loaded zsh snippets, and per-package stow
@@ -147,7 +147,8 @@ The main `setup` script (run with `sudo`) proceeds in stages:
    pip)
 3. **Parse `packages.yaml`** — exports distro packages, pipx packages, and
    third-party flags as bash variables
-4. **Install distro packages** — via `apt`, `dnf`, `pacman`, `zypper`, or `apk`
+4. **Install distro packages** — via `apt`, `dnf`, `pacman`, `zypper`, `apk`,
+   or `brew`
 5. **Run third-party installers** — from `installers/*.sh` based on YAML toggles
 6. **Symlink dotfiles** — via `stowaway-check` with interactive conflict
    resolution
@@ -158,8 +159,8 @@ The main `setup` script (run with `sudo`) proceeds in stages:
 ### Install Modes
 
 - **Minimal** (Ubuntu default) — distro packages only, no third-party installers
-- **Full** (Debian / other distros, or `--full` flag) — distro packages +
-  third-party
+- **Full** (Debian / other distros / macOS, or `--full` flag) — distro packages
+  + third-party
 
 ### Package Configuration
 
@@ -200,11 +201,27 @@ debian:
         third_party:
             docker: true
             neovim_source: true
+
+macos:
+    skip_common: true
+    full:
+        distro_packages:
+            - bat
+            - fzf
+            - neovim
+            - zsh
+        third_party:
+            docker: true
+            eza: true
+            wezterm: true
+            zoxide: true
 ```
 
 Third-party flags like `lazygit: true` are exported as `INSTALL_LAZYGIT=true` in
 bash. Setting `skip_third_party: true` skips all third-party installers for that
-mode.
+mode. Setting `skip_common: true` at the distro level skips the `common`
+package list — used by `macos` since Homebrew package names and availability
+differ from Linux distros.
 
 ### Adding a Third-Party Installer
 
@@ -269,6 +286,26 @@ Available helpers from `installers/common.sh`:
 - `$ASME` — run commands as the real user (via `sudo -u`)
 - `$ARCH_GH` / `$ARCH_DEB` — architecture strings for GitHub releases and DEB
   packages
+- `$pkgmgr` — detected package manager (`apt`, `dnf`, `pacman`, `zypper`,
+  `apk`, `brew`)
+
+Installer scripts should branch on `$pkgmgr` to support multiple distros. On
+`brew` (macOS), run `$ASME brew install [--cask] <name>`:
+
+```bash
+install_<name>() {
+    _echo "installing <name>"
+    if [[ "$pkgmgr" == "apt" ]]; then
+        # apt-specific install (add repo, apt install)
+    elif [[ "$pkgmgr" == "brew" ]]; then
+        $ASME brew install <name>      # or: brew install --cask <name>
+        log_message "SUCCESS" "<name> installed via Homebrew"
+    else
+        log_message "WARNING" "<name> not configured for $pkgmgr" "true"
+        return 1
+    fi
+}
+```
 
 ## Modular ZSH System
 
