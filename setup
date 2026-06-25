@@ -284,6 +284,9 @@ bootstrap_python() {
 	pacman*)
 		pyyaml_pkg="python-yaml"
 		;;
+	brew*)
+		pyyaml_pkg="pyyaml"
+		;;
 	*)
 		log_message "WARNING" "Unknown package manager, cannot install PyYAML" "true"
 		return 1
@@ -339,11 +342,15 @@ try:
     with open('$yaml_file', 'r') as f:
         config = yaml.safe_load(f)
 
-    # Get common packages
-    common_pkgs = config.get('common', {}).get('distro_packages', [])
+    # Get distro-specific config (top-level may have skip_common)
+    distro_top = config.get('$distro', {})
+    skip_common = distro_top.get('skip_common', False)
 
-    # Get distro-specific config
-    distro_config = config.get('$distro', {}).get('$mode', {})
+    # Get common packages (skipped if distro sets skip_common: true)
+    common_pkgs = [] if skip_common else config.get('common', {}).get('distro_packages', [])
+
+    # Get mode-specific config
+    distro_config = distro_top.get('$mode', {})
     distro_pkgs = distro_config.get('distro_packages', [])
 
     # Combine and output
@@ -400,7 +407,10 @@ install_pipx_packages() {
 			$ASME pipx install "$pkg"
 		done
 		# install python neovim after neovim because debian will install old neovim
-		eval "$pkgmgr $pkginstall python3-neovim"
+		# (not needed on macOS — neovim via brew is current, pynvim via pip)
+		if [[ "$pkgmgr" != "brew" ]]; then
+			eval "$pkgmgr $pkginstall python3-neovim"
+		fi
 	else
 		dry_print "Would configure pipx and install: ${PKG_PIPX_PACKAGES[*]} python3-neovim"
 	fi
@@ -419,12 +429,12 @@ install_npm_packages() {
 
 function install_packages() {
 	_echo "configuring package manager"
-	distro=$(lsb_release -c | awk '{print $2}')
 	case "$OSTYPE" in
 	darwin*)
 		pkgmgr="brew"
 		pkginstall="install"
 		pkgupdate="update"
+		DISTRO_ID="macos"
 		;;
 	linux*)
 		linux_package
@@ -497,13 +507,22 @@ function install_packages() {
 		install_fallback_packages
 	fi
 
-	# manually add apt sources
-	if should_run; then
-		mkdir -p /etc/apt/keyrings
-		# add flatpak repo
-		flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-	else
-		dry_print "Would create /etc/apt/keyrings and add flatpak repo"
+	# ─── apt keyring directory (Debian/Ubuntu only) ───
+	if [[ "$pkgmgr" == "apt" ]]; then
+		if should_run; then
+			mkdir -p /etc/apt/keyrings
+		else
+			dry_print "Would create /etc/apt/keyrings"
+		fi
+	fi
+
+	# ─── flatpak repo (all Linux distros, not macOS) ───
+	if [[ "$OSTYPE" == "linux"* ]]; then
+		if should_run; then
+			flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+		else
+			dry_print "Would add flatpak flathub repo"
+		fi
 	fi
 
 	# ─── Third-party installations ───

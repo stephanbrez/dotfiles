@@ -140,6 +140,64 @@ debian:
       #- docutils
       - emoji-fzf
 
+# ═════ macOS-Specific Packages (Homebrew) ═════
+macos:
+  skip_common: true
+  full:
+    # ─── Distro packages (Homebrew formulae) ───
+    # Note: macOS skips common.distro_packages (Linux-only packages)
+    # All packages here use Homebrew formula names
+    distro_packages:
+      # ─── Command line tools ───
+      - bat
+      - btop
+      - diffutils
+      - file
+      - fzf
+      - gh
+      - git
+      - ripgrep
+      - shellcheck
+      - stow
+      - tldr
+      - tmux
+      - trash-cli
+      - zsh
+      - fd # Homebrew name (not fd-find)
+      - neovim # Homebrew has current version
+      # ─── System/build tools ───
+      - automake
+      - bash-completion
+      - cmake
+      - curl
+      - gcc
+      - gettext
+      - make
+      - meson
+      - ninja # Homebrew name (not ninja-build)
+      - pkg-config # Homebrew name (not pkgconf)
+      - python # Homebrew name (not python3); bundles pip
+      - pipx
+      - unzip
+      - wget
+      - ca-certificates
+      # ─── Fun ───
+      - toilet
+
+    # ─── Third-party installations ───
+    third_party:
+      docker: true
+      onepassword: true
+      eza: true
+      fastfetch: true
+      lazydocker: true
+      lazygit: true
+      fzf_binary: false # fzf already installed via distro_packages
+      neovim_source: false # neovim installed via distro_packages (brew)
+      uv: true
+      wezterm: true
+      zoxide: true
+
 # ═════ Fedora-Specific Packages ═════
 fedora:
   full:
