@@ -7,7 +7,16 @@ source "$SCRIPT_DIR/common.sh"
 install_neovim_source() {
 	# Build from source for Debian/Ubuntu (outdated repos)
 	# Other distros like Fedora use package manager version
-	if [[ "$pkgmgr" != "apt" ]]; then
+	if [[ "$pkgmgr" == "brew" ]]; then
+		_echo "installing neovim via Homebrew"
+		if should_run; then
+			$ASME brew install neovim
+			log_message "SUCCESS" "neovim installed via Homebrew"
+		else
+			dry_print "Would run: brew install neovim"
+		fi
+		return 0
+	elif [[ "$pkgmgr" != "apt" ]]; then
 		log_message "INFO" "Skipping neovim build - use package manager version for $DISTRO_ID" "true"
 		log_message "INFO" "Try: $pkgmgr $pkginstall neovim" "true"
 		return 0

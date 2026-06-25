@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_docker() {
-    _echo "installing Docker from official repository"
+    _echo "installing Docker"
     if [[ "$pkgmgr" == "apt" ]]; then
         # ─── Docker for Debian/Ubuntu ───
         if should_run; then
@@ -38,6 +38,14 @@ install_docker() {
             dry_print "Would add Docker CE repository for Fedora"
             dry_print "Would install: docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
             dry_print "Would enable docker service"
+        fi
+    elif [[ "$pkgmgr" == "brew" ]]; then
+        # ─── Docker for macOS (Homebrew cask) ───
+        if should_run; then
+            $ASME brew install --cask docker
+            log_message "SUCCESS" "Docker installed via Homebrew cask"
+        else
+            dry_print "Would run: brew install --cask docker"
         fi
     else
         log_message "WARNING" "Docker installation not configured for $pkgmgr" "true"

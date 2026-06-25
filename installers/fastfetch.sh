@@ -6,13 +6,22 @@ source "$SCRIPT_DIR/common.sh"
 
 install_fastfetch() {
     _echo "installing fastfetch"
-    if should_run; then
-        curl -Lo fastfetch-linux.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb" &&
-            dpkg -i fastfetch-linux.deb &&
-            rm -rf fastfetch-linux.deb
-        log_message "SUCCESS" "fastfetch installed"
+    if [[ "$pkgmgr" == "brew" ]]; then
+        if should_run; then
+            $ASME brew install fastfetch
+            log_message "SUCCESS" "fastfetch installed via Homebrew"
+        else
+            dry_print "Would run: brew install fastfetch"
+        fi
     else
-        dry_print "Would download and install fastfetch"
+        if should_run; then
+            curl -Lo fastfetch-linux.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb" &&
+                dpkg -i fastfetch-linux.deb &&
+                rm -rf fastfetch-linux.deb
+            log_message "SUCCESS" "fastfetch installed"
+        else
+            dry_print "Would download and install fastfetch"
+        fi
     fi
 }
 

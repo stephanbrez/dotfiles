@@ -6,11 +6,20 @@ source "$SCRIPT_DIR/common.sh"
 
 install_uv() {
     _echo "installing uv"
-    if should_run; then
-        $ASME curl -LsSf https://astral.sh/uv/install.sh | $ASME sh
-        log_message "SUCCESS" "uv installed"
+    if [[ "$pkgmgr" == "brew" ]]; then
+        if should_run; then
+            $ASME brew install uv
+            log_message "SUCCESS" "uv installed via Homebrew"
+        else
+            dry_print "Would run: brew install uv"
+        fi
     else
-        dry_print "Would download and run uv install script"
+        if should_run; then
+            $ASME curl -LsSf https://astral.sh/uv/install.sh | $ASME sh
+            log_message "SUCCESS" "uv installed"
+        else
+            dry_print "Would download and run uv install script"
+        fi
     fi
 }
 

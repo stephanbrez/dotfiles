@@ -69,6 +69,11 @@ detect_package_manager() {
         pkgmgr="apk"
         pkginstall="add --no-cache"
         pkgupdate="update"
+    elif [ -x "$(command -v brew)" ]; then
+        pkgmgr="brew"
+        pkginstall="install"
+        pkgupdate="update"
+        DISTRO_ID="macos"
     elif [ -x "$(command -v apt)" ]; then
         pkgmgr="apt"
         pkginstall="install -y"
