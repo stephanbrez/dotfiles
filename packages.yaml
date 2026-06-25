@@ -197,6 +197,7 @@ macos:
       uv: true
       wezterm: true
       zoxide: true
+      aerospace: true
 
 # ═════ Fedora-Specific Packages ═════
 fedora:
