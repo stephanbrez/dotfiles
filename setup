@@ -547,6 +547,8 @@ function install_packages() {
 	[[ "$INSTALL_ZOXIDE" == "true" ]] && install_zoxide
 	[[ "$INSTALL_UV" == "true" ]] && install_uv
 	[[ "$INSTALL_AEROSPACE" == "true" ]] && install_aerospace
+	[[ "$INSTALL_MISE" == "true" ]] && install_mise
+	[[ "$INSTALL_PASTEL" == "true" ]] && install_pastel_binary
 
 	# ─── Install pipx packages if configured ───
 	if [ -n "${PKG_PIPX_PACKAGES[*]}" ]; then

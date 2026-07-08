@@ -13,6 +13,8 @@
   - [Install Modes](#install-modes)
   - [Package Configuration](#package-configuration)
   - [Adding a Third-Party Installer](#adding-a-third-party-installer)
+  - [When to Add a Separate `apt` Branch](#when-to-add-a-separate-apt-branch)
+  - [Exceptions](#exceptions)
 - [Modular ZSH System](#modular-zsh-system)
   - [Entry Points](#entry-points)
   - [Priority Loading Order](#priority-loading-order)
@@ -289,23 +291,96 @@ Available helpers from `installers/common.sh`:
 - `$pkgmgr` — detected package manager (`apt`, `dnf`, `pacman`, `zypper`,
   `apk`, `brew`)
 
-Installer scripts should branch on `$pkgmgr` to support multiple distros. On
-`brew` (macOS), run `$ASME brew install [--cask] <name>`:
+Installer scripts branch on `$pkgmgr` to support multiple distros. The standard
+branching pattern is **`brew` + `else`** — a Homebrew branch for macOS and a
+universal fallback for all Linux distros:
+
+```bash
+install_<name>() {
+    _echo "installing <name>"
+    if [[ "$pkgmgr" == "brew" ]]; then
+        if should_run; then
+            $ASME brew install <name>      # or: brew install --cask <name>
+            log_message "SUCCESS" "<name> installed via Homebrew"
+        else
+            dry_print "Would run: brew install <name>"
+        fi
+    else
+        # Universal fallback for all Linux (curl script, GitHub binary, etc.)
+        if should_run; then
+            $ASME curl -sSL https://example.com/install.sh | $ASME sh
+            log_message "SUCCESS" "<name> installed"
+        else
+            dry_print "Would install <name>"
+        fi
+    fi
+}
+```
+
+Use this two-branch form when the Linux install method works on **all** distros
+(curl install scripts, static GitHub release tarballs). Examples: `uv.sh`,
+`zoxide.sh`, `lazygit.sh`, `lazydocker.sh`, `fzf.sh`.
+
+### When to Add a Separate `apt` Branch
+
+Only add a dedicated `apt` branch when the install method is **apt-specific** —
+it requires adding a third-party repository/PPA/GPG key or uses `dpkg` to
+install a `.deb`. In that case use **`apt` + `brew` + `else`**:
 
 ```bash
 install_<name>() {
     _echo "installing <name>"
     if [[ "$pkgmgr" == "apt" ]]; then
-        # apt-specific install (add repo, apt install)
+        if should_run; then
+            # Add repo/GPG key, then apt install — or dpkg -i a downloaded .deb
+            log_message "SUCCESS" "<name> installed"
+        else
+            dry_print "Would add <name> repository and install"
+        fi
     elif [[ "$pkgmgr" == "brew" ]]; then
-        $ASME brew install <name>      # or: brew install --cask <name>
-        log_message "SUCCESS" "<name> installed via Homebrew"
+        if should_run; then
+            $ASME brew install <name>
+            log_message "SUCCESS" "<name> installed via Homebrew"
+        else
+            dry_print "Would run: brew install <name>"
+        fi
     else
         log_message "WARNING" "<name> not configured for $pkgmgr" "true"
+        log_message "INFO" "Try: $pkgmgr $pkginstall <name>" "true"
         return 1
     fi
 }
 ```
+
+Examples: `eza.sh`, `wezterm.sh`, `onepassword.sh` (add apt repos), `mise.sh`
+(PPA + curl fallback), `fastfetch.sh` (`.deb` via `dpkg`), `neovim.sh` (source
+build → `.deb` on apt, pre-built binary on other Linux).
+
+Do **not** create an `apt` branch just to run `apt install <name>` when a
+universal fallback (curl, GitHub binary) works on apt too — that's what `else`
+is for.
+
+### Exceptions
+
+**macOS-only tools** (e.g., `aerospace.sh`) skip the `else` fallback and warn
+instead:
+
+```bash
+if [[ "$pkgmgr" == "brew" ]]; then
+    # brew install --cask <name>
+else
+    log_message "WARNING" "<name> is macOS-only, skipping for $DISTRO_ID" "true"
+    return 1
+fi
+```
+
+**Distro-neutral installers** don't branch on `$pkgmgr` at all — the method is
+the same everywhere (git clone, symlink workaround, universal curl script with
+XDG setup). Examples: `figlet-fonts.sh`, `bat.sh`, `fd.sh`, `pixi.sh`.
+
+**Tools needing per-distro repos** (e.g., `docker.sh`) add a `dnf` branch
+alongside `apt` — extend the pattern when a distro family needs its own repo
+setup, but don't branch for distros that the universal `else` already covers.
 
 ## Modular ZSH System
 
