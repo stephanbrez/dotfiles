@@ -104,7 +104,7 @@ ubuntu:
       wezterm: true
       zoxide: true
       mise: true
-      pastel: false
+      pastel_binary: false
 
     # ─── Python/pipx packages ───
     # pipx_packages:
@@ -139,7 +139,7 @@ debian:
       wezterm: true
       zoxide: true
       mise: true
-      pastel: false
+      pastel_binary: false
 
     # ─── Python/pipx packages ───
     pipx_packages:
@@ -205,7 +205,7 @@ macos:
       zoxide: true
       aerospace: true
       mise: true
-      pastel: false
+      pastel_binary: false
 
 # ═════ Fedora-Specific Packages ═════
 fedora:
@@ -233,6 +233,6 @@ fedora:
       # lazydocker: true
       # lazygit: true
       uv: true
-      pastel: false
+      pastel_binary: false
       # wezterm: true
       # zoxide: true

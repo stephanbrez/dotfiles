@@ -219,9 +219,10 @@ macos:
             zoxide: true
 ```
 
-Third-party flags like `lazygit: true` are exported as `INSTALL_LAZYGIT=true` in
-bash. Setting `skip_third_party: true` skips all third-party installers for that
-mode. Setting `skip_common: true` at the distro level skips the `common`
+Each `third_party` key maps to an `install_<name>()` function via the
+`PKG_THIRD_PARTY` array (enabled names are also exported as individual
+`INSTALL_<NAME>=true` flags for backwards compatibility). Setting
+`skip_third_party: true` skips all third-party installers for that mode. Setting `skip_common: true` at the distro level skips the `common`
 package list — used by `macos` since Homebrew package names and availability
 differ from Linux distros.
 
@@ -263,12 +264,6 @@ fi
 chmod +x installers/<name>.sh
 ```
 
-1. **Add the trigger in `setup`** (search for `INSTALL_` blocks):
-
-```bash
-[[ "$INSTALL_<NAME>" == "true" ]] && install_<name>
-```
-
 1. **Enable in `packages.yaml`**:
 
 ```yaml
@@ -276,7 +271,10 @@ third_party:
     <name>: true
 ```
 
-The YAML parser automatically exports `<name>: true` as `INSTALL_<NAME>=true`.
+The `setup` script sources every `installers/*.sh` and auto-discovers the
+`install_<name>()` function from the YAML key — no editing of `setup` required.
+Enabled names are exported as the `PKG_THIRD_PARTY` array (and, for backwards
+compatibility, as individual `INSTALL_<NAME>=true` flags).
 
 Available helpers from `installers/common.sh`:
 
@@ -319,7 +317,7 @@ install_<name>() {
 
 Use this two-branch form when the Linux install method works on **all** distros
 (curl install scripts, static GitHub release tarballs). Examples: `uv.sh`,
-`zoxide.sh`, `lazygit.sh`, `lazydocker.sh`, `fzf.sh`.
+`zoxide.sh`, `lazygit.sh`, `lazydocker.sh`, `fzf_binary.sh`.
 
 ### When to Add a Separate `apt` Branch
 
@@ -353,8 +351,8 @@ install_<name>() {
 ```
 
 Examples: `eza.sh`, `wezterm.sh`, `onepassword.sh` (add apt repos), `mise.sh`
-(PPA + curl fallback), `fastfetch.sh` (`.deb` via `dpkg`), `neovim.sh` (source
-build → `.deb` on apt, pre-built binary on other Linux).
+(PPA + curl fallback), `fastfetch.sh` (`.deb` via `dpkg`), `neovim_source.sh`
+(source build → `.deb` on apt, pre-built binary on other Linux).
 
 Do **not** create an `apt` branch just to run `apt install <name>` when a
 universal fallback (curl, GitHub binary) works on apt too — that's what `else`

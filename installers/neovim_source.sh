@@ -1,5 +1,5 @@
 #!/bin/bash
-# neovim.sh - Install neovim (source build on apt, pre-built binary elsewhere)
+# neovim_source.sh - Install neovim (source build on apt, pre-built binary elsewhere)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"

@@ -363,7 +363,10 @@ try:
 
     if skip_third_party:
         print("SKIP_THIRD_PARTY=true")
+        print("PKG_THIRD_PARTY=()")
     else:
+        enabled_names = [n for n, on in third_party.items() if on]
+        print(f"PKG_THIRD_PARTY=({' '.join(enabled_names)})")
         for name, enabled in third_party.items():
             if enabled:
                 print(f"INSTALL_{name.upper()}=true")
@@ -532,23 +535,17 @@ function install_packages() {
 		return
 	fi
 
-	# ─── Install third-party packages based on YAML config flags ───
-	log_message "INFO" "Third-party flags: DOCKER=$INSTALL_DOCKER, EZA=$INSTALL_EZA, FASTFETCH=$INSTALL_FASTFETCH" "true"
-	log_message "INFO" "Third-party flags: LAZYGIT=$INSTALL_LAZYGIT, NEOVIM=$INSTALL_NEOVIM_SOURCE, UV=$INSTALL_UV" "true"
-	[[ "$INSTALL_DOCKER" == "true" ]] && install_docker
-	[[ "$INSTALL_ONEPASSWORD" == "true" ]] && install_onepassword
-	[[ "$INSTALL_EZA" == "true" ]] && install_eza
-	[[ "$INSTALL_FASTFETCH" == "true" ]] && install_fastfetch
-	[[ "$INSTALL_FZF_BINARY" == "true" ]] && install_fzf_binary
-	[[ "$INSTALL_LAZYDOCKER" == "true" ]] && install_lazydocker
-	[[ "$INSTALL_LAZYGIT" == "true" ]] && install_lazygit
-	[[ "$INSTALL_NEOVIM_SOURCE" == "true" ]] && install_neovim_source
-	[[ "$INSTALL_WEZTERM" == "true" ]] && install_wezterm
-	[[ "$INSTALL_ZOXIDE" == "true" ]] && install_zoxide
-	[[ "$INSTALL_UV" == "true" ]] && install_uv
-	[[ "$INSTALL_AEROSPACE" == "true" ]] && install_aerospace
-	[[ "$INSTALL_MISE" == "true" ]] && install_mise
-	[[ "$INSTALL_PASTEL" == "true" ]] && install_pastel_binary
+	# ─── Install third-party packages via auto-discovery ───
+	# Each YAML third_party key <name> maps to install_<name>() defined in installers/<name>.sh
+	log_message "INFO" "Third-party installers enabled: ${PKG_THIRD_PARTY[*]:-(none)}" "true"
+	for name in "${PKG_THIRD_PARTY[@]}"; do
+		local func="install_${name}"
+		if declare -f "$func" >/dev/null 2>&1; then
+			"$func"
+		else
+			log_message "WARNING" "No installer function '$func' for '$name' — skipping" "true"
+		fi
+	done
 
 	# ─── Install pipx packages if configured ───
 	if [ -n "${PKG_PIPX_PACKAGES[*]}" ]; then
