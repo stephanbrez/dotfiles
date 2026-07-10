@@ -70,48 +70,6 @@ set $in-text    #969696
 set $u-bgcolor  #ff0000
 set $indicator  #a8a3c1
 #########################################
-# Applications                          #
-#########################################
-
-# ======== Defaults  ======== #
-set $default-web-browser librewolf
-set $default-terminal wezterm
-
-# ======== Autostart  ======== #
-# redshift to save the eyes
-exec --no-startup-id redshift -l 40.650002:-73.949997 -t 6500:3500
-# launch 1password to trigger system unlock
-exec --no-startup-id 1password
-# setup PKM workspace
-exec workspace 4; exec $default-terminal, exec obsidian; workspace 1
-
-# ======== Run  ======== #
-# start a terminal
-bindsym $mod+Shift+Return exec $default-terminal 
-bindsym $mod+Shift+w exec $default-web-browser
-
-# start dmenu (a program launcher)
-# bindsym $mod+d exec --no-startup-id dmenu_run
-# A more modern dmenu replacement is rofi:
-# bindcode $mod+40 exec "rofi -modi drun,run -show-icons -show drun"
-bindcode $mod+40 exec "rofi -show combi" 
-# There also is i3-dmenu-desktop which only displays applications shipping a
-# .desktop file. It is a wrapper around dmenu, so you need that installed.
-# bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
-
-# ======== Screenshots  ======== #
-#  Screenshots to file
-#  Uses xdo instead of the usual (buggy) xdotool
-bindsym $mod+F4 exec --no-startup-id maim --format=png "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S').png"
-bindsym $mod+F5 exec --no-startup-id maim --format=png -i $(printf %i $(xdo id)) "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S')_window.png"
-bindsym $mod+F6 exec --no-startup-id maim --format=png -s "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S')_selected.png"
-
-## Screenshots to clipboard
-bindsym Ctrl+$mod+F4 exec --no-startup-id maim --format=png | xsel --clipboard --input --mime-type image/png
-bindsym Ctrl+$mod+F5 exec --no-startup-id maim --format=png --window $(printf %i $(xdo id)) | xsel --clipboard --input --mime-type image/png
-bindsym Ctrl+$mod+F6 exec --no-startup-id maim --format=png -s | xsel --clipboard --input --mime-type image/png
-
-#########################################
 # Windows
 #########################################
 # hotkeys live (mostly) on the left hand side
@@ -288,10 +246,55 @@ assign [class="librewolf"] $ws6
 # ======== WS 7 (coding) ======== #
 assign [class="^dev\.zed"] $ws7
 
+# ======== WS 10 (extras) ======== #
+assign [class="1password" window_role="browser-window"] $ws10
+
 #
 # Saved Layouts (https://i3wm.org/docs/layout-saving.html)
 #########################################
 # ======== PKM ======== #
+
+#########################################
+# Applications                          #
+#########################################
+
+# ======== Defaults  ======== #
+set $default-web-browser librewolf
+set $default-terminal wezterm
+
+# ======== Autostart  ======== #
+# redshift to save the eyes
+exec --no-startup-id redshift -l 40.650002:-73.949997 -t 6500:3500
+# launch 1password to trigger system unlock
+exec --no-startup-id 1password
+# setup PKM workspace
+exec workspace 4; exec $default-terminal, exec obsidian; workspace 1
+
+# ======== Run  ======== #
+# start a terminal
+bindsym $mod+Shift+Return exec $default-terminal 
+bindsym $mod+Shift+w exec $default-web-browser
+
+# start dmenu (a program launcher)
+# bindsym $mod+d exec --no-startup-id dmenu_run
+# A more modern dmenu replacement is rofi:
+# bindcode $mod+40 exec "rofi -modi drun,run -show-icons -show drun"
+bindcode $mod+40 exec "rofi -show combi" 
+# There also is i3-dmenu-desktop which only displays applications shipping a
+# .desktop file. It is a wrapper around dmenu, so you need that installed.
+# bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
+
+# ======== Screenshots  ======== #
+#  Screenshots to file
+#  Uses xdo instead of the usual (buggy) xdotool
+bindsym $mod+F4 exec --no-startup-id maim --format=png "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S').png"
+bindsym $mod+F5 exec --no-startup-id maim --format=png -i $(printf %i $(xdo id)) "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S')_window.png"
+bindsym $mod+F6 exec --no-startup-id maim --format=png -s "/home/$USER/Pictures/screenshot-$(date +'%Y%m%d-%H%M%S')_selected.png"
+
+## Screenshots to clipboard
+bindsym Ctrl+$mod+F4 exec --no-startup-id maim --format=png | xsel --clipboard --input --mime-type image/png
+bindsym Ctrl+$mod+F5 exec --no-startup-id maim --format=png --window $(printf %i $(xdo id)) | xsel --clipboard --input --mime-type image/png
+bindsym Ctrl+$mod+F6 exec --no-startup-id maim --format=png -s | xsel --clipboard --input --mime-type image/png
 
 #########################################
 # General settings                      #
