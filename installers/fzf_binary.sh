@@ -5,7 +5,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_fzf_binary() {
-    _echo "installing/updating fzf"
+    if command -v fzf &>/dev/null; then
+        log_message "INFO" "fzf already installed, skipping"
+        return 0
+    fi
+    _echo "installing fzf"
     if [[ "$pkgmgr" == "brew" ]]; then
         if should_run; then
             $ASME brew install fzf

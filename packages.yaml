@@ -96,6 +96,8 @@ ubuntu:
       onepassword: false
       eza: true
       fastfetch: true
+      glow: true
+      ghui: true
       lazydocker: true
       lazygit: true
       fzf_binary: true
@@ -131,6 +133,8 @@ debian:
       onepassword: true
       eza: true
       fastfetch: true
+      glow: true
+      ghui: true
       lazydocker: true
       lazygit: true
       fzf_binary: true
@@ -196,6 +200,8 @@ macos:
       onepassword: true
       eza: true
       fastfetch: true
+      glow: true
+      ghui: true
       lazydocker: true
       lazygit: true
       fzf_binary: false # fzf already installed via distro_packages
@@ -233,6 +239,8 @@ fedora:
       # lazydocker: true
       # lazygit: true
       uv: true
+      glow: true
+      ghui: true
       pastel_binary: false
       # wezterm: true
       # zoxide: true

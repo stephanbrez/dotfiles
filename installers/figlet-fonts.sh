@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_figlet_fonts() {
+    if [[ -d /usr/share/figlet ]]; then
+        log_message "INFO" "figlet fonts already installed, skipping"
+        return 0
+    fi
     _echo "setting up ascii/ansi art tools"
     if should_run; then
         rm -rf /usr/share/figlet/

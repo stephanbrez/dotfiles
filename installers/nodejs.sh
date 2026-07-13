@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_nodejs() {
+    if command -v npm &>/dev/null; then
+        log_message "INFO" "npm already installed, skipping Node.js install"
+        return 0
+    fi
     _echo "installing Node.js"
     if should_run; then
         if [[ "$OSTYPE" == "darwin"* ]]; then

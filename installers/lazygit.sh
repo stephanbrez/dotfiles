@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_lazygit() {
+    if command -v lazygit &>/dev/null; then
+        log_message "INFO" "lazygit already installed, skipping"
+        return 0
+    fi
     _echo "installing lazygit"
     if [[ "$pkgmgr" == "brew" ]]; then
         if should_run; then

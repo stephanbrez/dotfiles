@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_uv() {
+    if command -v uv &>/dev/null; then
+        log_message "INFO" "uv already installed, skipping"
+        return 0
+    fi
     _echo "installing uv"
     if [[ "$pkgmgr" == "brew" ]]; then
         if should_run; then

@@ -191,3 +191,45 @@ init_installer_env() {
     log_message "DEBUG" "Arch: $ARCH ($ARCH_DEB), Distro: $DISTRO_ID"
     log_message "DEBUG" "Package manager: $pkgmgr"
 }
+
+# ═════ Ensure a runtime dependency is installed ═════
+# Usage: ensure_dep <cmd> [overrides]
+#   <cmd>       command name to check on $PATH (also the default package name)
+#   [overrides] space-separated "pkgmgr=pkgname" pairs for distros where the
+#               package name differs from the command. Only list exceptions;
+#               unlisted distros fall back to <cmd>.
+# Examples:
+#   ensure_dep gh "pacman=github-cli"
+#   ensure_dep fd "apt=fd-find dnf=fd-find brew=fd"
+#   ensure_dep ripgrep
+ensure_dep() {
+    local cmd=$1
+    local overrides=${2:-}
+    local pkg=$cmd
+
+    if command -v "$cmd" &>/dev/null; then return 0; fi
+    if [[ -z "$pkgmgr" ]]; then
+        log_message "WARNING" "Cannot install $cmd: no package manager detected" "true"
+        return 1
+    fi
+
+    if [[ -n "$overrides" ]]; then
+        for pair in $overrides; do
+            local mgr=${pair%%=*}
+            local name=${pair#*=}
+            [[ "$pkgmgr" == "$mgr" ]] && pkg=$name && break
+        done
+    fi
+
+    log_message "INFO" "$cmd not found, installing $pkg via $pkgmgr" "true"
+    if should_run; then
+        if [[ "$pkgmgr" == "brew" ]]; then
+            $ASME brew install "$pkg"
+        else
+            eval "$pkgmgr $pkginstall $pkg"
+        fi
+        command -v "$cmd" &>/dev/null || { log_message "WARNING" "$cmd unavailable after installing $pkg" "true"; return 1; }
+    else
+        dry_print "Would install $pkg via $pkgmgr"
+    fi
+}

@@ -5,7 +5,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_pastel_binary() {
-    _echo "installing/updating pastel"
+    if command -v pastel &>/dev/null; then
+        log_message "INFO" "pastel already installed, skipping"
+        return 0
+    fi
+    _echo "installing pastel"
     if [[ "$pkgmgr" == "apt" ]]; then
         if should_run; then
             PASTEL_VERSION=$(curl -s "https://api.github.com/repos/sharkdp/pastel/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')

@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_aerospace() {
+    if command -v aerospace &>/dev/null; then
+        log_message "INFO" "aerospace already installed, skipping"
+        return 0
+    fi
     _echo "installing AeroSpace"
     if [[ "$pkgmgr" == "brew" ]]; then
         if should_run; then

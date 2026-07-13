@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_eza() {
+    if command -v eza &>/dev/null; then
+        log_message "INFO" "eza already installed, skipping"
+        return 0
+    fi
     _echo "installing eza"
     if [[ "$pkgmgr" == "apt" ]]; then
         if should_run; then

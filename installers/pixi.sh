@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_pixi() {
+	if command -v pixi &>/dev/null; then
+		log_message "INFO" "pixi already installed, skipping"
+		return 0
+	fi
 	_echo "installing pixi"
 	if should_run; then
 		export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$myhome/.config}"

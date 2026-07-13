@@ -13,7 +13,9 @@
   - [Install Modes](#install-modes)
   - [Package Configuration](#package-configuration)
   - [Adding a Third-Party Installer](#adding-a-third-party-installer)
+  - [Runtime Dependencies](#runtime-dependencies)
   - [When to Add a Separate `apt` Branch](#when-to-add-a-separate-apt-branch)
+  - [npm-Based Fallback (brew + else)](#npm-based-fallback-brew--else)
   - [Exceptions](#exceptions)
 - [Modular ZSH System](#modular-zsh-system)
   - [Entry Points](#entry-points)
@@ -238,7 +240,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_<name>() {
+    if command -v <name> &>/dev/null; then
+        log_message "INFO" "<name> already installed, skipping"
+        return 0
+    fi
     _echo "installing <name>"
+    # Resolve runtime dependencies first (see Runtime Dependencies):
+    # ensure_dep <dep> "pacman=<alt-name>" || return 1
     if should_run; then
         # Install commands here.
         # Use $ASME to run as the user (not root).
@@ -257,6 +265,12 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     log_message "SUCCESS" "<name> installation complete" "true"
 fi
 ```
+
+**Every `install_<name>()` function must be idempotent** — check if the tool is
+already installed (`command -v <cmd>`) and return early before `_echo` if so.
+This prevents redundant reinstalls when `setup` is re-run and makes standalone
+invocation safe to repeat. For tools without a single binary to check, use an
+equivalent test (e.g. `[[ -d /path ]]` for font collections).
 
 1. **Make it executable**:
 
@@ -288,6 +302,12 @@ Available helpers from `installers/common.sh`:
   packages
 - `$pkgmgr` — detected package manager (`apt`, `dnf`, `pacman`, `zypper`,
   `apk`, `brew`)
+- `ensure_dep <cmd> [overrides]` — install a runtime dependency via the native
+  package manager if `<cmd>` isn't on `$PATH`. Use this for every dependency an
+  installer needs. `overrides` is a space-separated list of `pkgmgr=pkgname`
+  pairs for distros where the package name differs from the command (e.g.
+  `"pacman=github-cli"`); unlisted distros fall back to `<cmd>`. The helper is
+  a no-op if the command is already present and handles dry-run mode internally.
 
 Installer scripts branch on `$pkgmgr` to support multiple distros. The standard
 branching pattern is **`brew` + `else`** — a Homebrew branch for macOS and a
@@ -318,6 +338,52 @@ install_<name>() {
 Use this two-branch form when the Linux install method works on **all** distros
 (curl install scripts, static GitHub release tarballs). Examples: `uv.sh`,
 `zoxide.sh`, `lazygit.sh`, `lazydocker.sh`, `fzf_binary.sh`.
+
+### Runtime Dependencies
+
+**All installer scripts must resolve their own runtime dependencies.**
+Installers run standalone (`sudo ./installers/<name>.sh`) as well as via the
+main `setup` flow — in standalone mode, nothing else has been installed yet.
+Never assume a tool (`gh`, `git`, `curl`, etc.) is already on `$PATH`.
+
+Use `ensure_dep <cmd> [overrides]` at the top of `install_<name>()` for each
+runtime dependency before any branching. The function no-ops if the command is
+already present, installs it via the native package manager if not, and handles
+dry-run mode internally.
+
+```bash
+install_<name>() {
+    _echo "installing <name>"
+    ensure_dep <dep1> "pacman=<alt-name>" || return 1
+    ensure_dep <dep2> || return 1
+    # ...then proceed with install branches...
+}
+```
+
+Only list overrides for distros where the package name differs from the
+command; unlisted distros use `<cmd>` as the package name. Examples:
+
+- `ensure_dep gh "pacman=github-cli"` — `gh` on most distros, `github-cli` on
+  Arch
+- `ensure_dep fd "apt=fd-find dnf=fd-find brew=fd"` — varies across all three
+- `ensure_dep ripgrep` — same name everywhere, no overrides needed
+
+For complex tools that warrant a dedicated installer (e.g., Node.js), the
+installer should be **idempotent** — check for an existing install and return
+early. Callers source the installer and call it directly:
+
+```bash
+# Dist package dependency:
+ensure_dep gh "pacman=github-cli" || return 1
+
+# Complex tool with dedicated idempotent installer:
+declare -f install_nodejs >/dev/null 2>&1 || source "$SCRIPT_DIR/nodejs.sh"
+install_nodejs || return 1
+```
+
+Place `ensure_dep` / installer calls **outside** `should_run` blocks and follow
+each with `|| return 1` to abort cleanly if the dependency can't be satisfied.
+The helpers handle dry-run mode internally.
 
 ### When to Add a Separate `apt` Branch
 
@@ -357,6 +423,43 @@ Examples: `eza.sh`, `wezterm.sh`, `onepassword.sh` (add apt repos), `mise.sh`
 Do **not** create an `apt` branch just to run `apt install <name>` when a
 universal fallback (curl, GitHub binary) works on apt too — that's what `else`
 is for.
+
+### npm-Based Fallback (brew + else)
+
+Use this two-branch form when a tool ships a Homebrew tap (covers macOS) and an
+npm package for all other distros. The `else` branch sources the idempotent
+`nodejs.sh` installer, calls `install_nodejs` to ensure npm is available, then
+runs `$ASME npm install -g <pkg>`. Example: `ghui.sh`.
+
+```bash
+install_<name>() {
+    _echo "installing <name>"
+    ensure_dep <runtime-dep> "pacman=<alt>" || return 1
+    if [[ "$pkgmgr" == "brew" ]]; then
+        if should_run; then
+            $ASME brew install <user>/tap/<name>
+            log_message "SUCCESS" "<name> installed via Homebrew tap"
+        else
+            dry_print "Would run: brew install <user>/tap/<name>"
+        fi
+    else
+        # ─── npm fallback for all other distros ───
+        declare -f install_nodejs >/dev/null 2>&1 || source "$SCRIPT_DIR/nodejs.sh"
+        install_nodejs || return 1
+        if should_run; then
+            $ASME npm install -g <npm-pkg>
+            log_message "SUCCESS" "<name> installed via npm"
+        else
+            dry_print "Would run: npm install -g <npm-pkg>"
+        fi
+    fi
+}
+```
+
+`install_nodejs` is idempotent — it returns early if npm is already on `$PATH`,
+so it's safe to call unconditionally. It also handles dry-run mode internally
+(via its `should_run` check), so in dry-run the user sees both "Would install
+Node.js" and "Would run: npm install -g <npm-pkg>".
 
 ### Exceptions
 

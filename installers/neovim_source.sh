@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_neovim_source() {
+	if command -v nvim &>/dev/null; then
+		log_message "INFO" "nvim already installed, skipping"
+		return 0
+	fi
 	_echo "installing neovim"
 	if [[ "$pkgmgr" == "apt" ]]; then
 		# Build from source for Debian/Ubuntu (outdated repos)

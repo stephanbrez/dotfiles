@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_mise() {
+    if command -v mise &>/dev/null; then
+        log_message "INFO" "mise already installed, skipping"
+        return 0
+    fi
     _echo "installing mise"
     if [[ "$pkgmgr" == "apt" ]]; then
         if should_run; then

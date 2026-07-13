@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_docker() {
+    if command -v docker &>/dev/null; then
+        log_message "INFO" "docker already installed, skipping"
+        return 0
+    fi
     _echo "installing Docker"
     if [[ "$pkgmgr" == "apt" ]]; then
         # ─── Docker for Debian/Ubuntu ───

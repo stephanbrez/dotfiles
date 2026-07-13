@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_onepassword() {
+    if command -v op &>/dev/null; then
+        log_message "INFO" "1Password CLI already installed, skipping"
+        return 0
+    fi
     _echo "installing 1Password"
     if [[ "$pkgmgr" == "apt" ]]; then
         if should_run; then

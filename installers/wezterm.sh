@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 install_wezterm() {
+    if command -v wezterm &>/dev/null; then
+        log_message "INFO" "wezterm already installed, skipping"
+        return 0
+    fi
     _echo "installing wezterm"
     if [[ "$pkgmgr" == "apt" ]]; then
         if should_run; then
