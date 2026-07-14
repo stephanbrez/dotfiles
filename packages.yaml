@@ -105,6 +105,7 @@ ubuntu:
       uv: true
       wezterm: true
       zoxide: true
+      skillshare: true
       mise: true
       pastel_binary: false
 
@@ -142,6 +143,7 @@ debian:
       uv: true
       wezterm: true
       zoxide: true
+      skillshare: true
       mise: true
       pastel_binary: false
 
@@ -209,6 +211,7 @@ macos:
       uv: true
       wezterm: true
       zoxide: true
+      skillshare: true
       aerospace: true
       mise: true
       pastel_binary: false
@@ -241,6 +244,7 @@ fedora:
       uv: true
       glow: true
       ghui: true
+      skillshare: true
       pastel_binary: false
       # wezterm: true
       # zoxide: true
