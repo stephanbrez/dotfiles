@@ -1,1 +1,0 @@
-/home/stephan/.config/agents/extras/rules/uv-proj-structure.md

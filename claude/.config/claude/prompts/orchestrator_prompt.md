@@ -1,1 +1,0 @@
-/home/stephan/.config/agents/extras/prompts/orchestrator_prompt.md
