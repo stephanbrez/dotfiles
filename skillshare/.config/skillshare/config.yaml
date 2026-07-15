@@ -9,20 +9,20 @@ targets:
       path: /home/stephan/.gemini/skills
   claude:
     skills:
-      path: ~/.config/claude/skills
+      path: ~/.local/share/claude-code/skills
       target_naming: standard
       exclude:
-        - zenith/*
+        - claude-only/*
     agents:
-      path: ~/.config/claude/agents
+      path: ~/.local/share/claude-code/agents
   codex:
     skills:
-      path: /home/stephan/.codex/skills
+      path: ~/.local/share/codex/skills
       mode: merge
       target_naming: standard
       exclude:
         - .system/*
-        - zenith/*
+        - codex-only/*
   cursor:
     skills:
       path: /home/stephan/.cursor/skills
@@ -30,6 +30,9 @@ targets:
   opencode:
     skills:
       path: /home/stephan/.config/opencode/skills
+      target_naming: standard
+    agents:
+      path: /home/stephan/.config/opencode/agents
       target_naming: standard
   universal:
     skills:
@@ -39,29 +42,29 @@ extras:
   - name: codex-agents
     source: ~/.config/agents/agents
     targets:
-      - path: /home/stephan/.codex/agents
+      - path: ~/.local/share/codex/agents
         flatten: true
         extension: codex-agents
   - name: rules
     targets:
-      - path: ~/.config/claude/rules
+      - path: ~/.local/share/claude-code/rules
         flatten: true
-      - path: /home/stephan/.codex/rules
+      - path: ~/.local/share/.codex/rules
         flatten: true
       - path: /home/stephan/.config/opencode/rules
         flatten: true
   - name: prompts
     targets:
-      - path: ~/.config/claude/prompts
+      - path: ~/.local/share/claude-code/prompts
         flatten: true
-      - path: /home/stephan/.codex/prompts
+      - path: ~/.local/share/.codex/prompts
         flatten: true
       - path: /home/stephan/.config/opencode/prompts
         flatten: true
   - name: commands
     targets:
-      - path: ~/.config/claude/commands
-      - path: /home/stephan/.gemini/commands
+      - path: ~/.local/share/claude-code/commands
+      - path: ~/.gemini/commands
         extension: gemini-commands
 ignore:
   - .DS_Store
