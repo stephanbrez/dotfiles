@@ -79,18 +79,3 @@ it before continuing.
 ## 9. Version Control
 
 - Use git for tracking changes when appropriate.
-- Use Conventional Commits for all commit messages.
-
-Format:
-
-`<type>[optional scope]: <description>`
-
-Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`,
-`build`, `ci`, `chore`, `revert`
-
-- Use imperative mood: `add`, `fix`, `update`, `remove`.
-- Keep the subject concise and specific.
-- Use a scope when it clarifies the affected area.
-- Do not mention AI agents, prompts, or implementation attempts unless directly
-  relevant.
-- For breaking changes, use `!` and include a `BREAKING CHANGE:` footer.
