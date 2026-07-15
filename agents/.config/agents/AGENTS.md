@@ -31,24 +31,24 @@ Once a rule file is loaded:
 
 ## Required Development Rules
 
-**Read `@docs/dev-standards.md` before any workflow. Do not proceed if it cannot
-be loaded.**
+**Read `@rules/dev-standards.md` before any workflow. Do not proceed if it
+cannot be loaded.**
 
 ## Python Rules
 
 When working on Python code or projects:
 
-- Code style, typing, and execution rules: `@docs/python-guidelines.md`.
+- Code style, typing, and execution rules: `@rules/python-guidelines.md`.
 - Project structure and layout rules for uv projects:
-  `@docs/uv-proj-structure.md`.
+  `@rules/uv-proj-structure.md`.
 
 ## Rule File Management
 
 - This file governs rule usage, not rule content.
-- Domain-specific rules belong in `@docs/`.
+- Domain-specific rules belong in `@rules/`.
 - Add new rule files only when a reusable language, tool, or workflow needs
   strict rules.
-- New rule files must have clear scope-specific names, live under `@docs/`, be
+- New rule files must have clear scope-specific names, live under `@rules/`, be
   explicitly referenced, and work standalone.
 
 ## Non-Goals 🚫
