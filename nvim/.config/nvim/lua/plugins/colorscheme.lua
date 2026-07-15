@@ -1,6 +1,7 @@
 return {
   -- add gruvbox
   -- { "ellisonleao/gruvbox.nvim" },
+  { "atelierbram/Base2Tone-nvim" },
   {
     "zenbones-theme/zenbones.nvim",
     -- Optionally install Lush. Allows for more configuration or extending the colorscheme
@@ -17,7 +18,6 @@ return {
   },
   -- { "rose-pine/neovim", name = "rose-pine", dark_variant = "moon" },
   { "sainnhe/gruvbox-material" },
-  { "atelierbram/Base2Tone-nvim" },
   -- {
   --   "sainnhe/everforest",
   --   lazy = false,
