@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/runkids/skillshare/main/schemas/config.schema.json
+sources:
+  skills: /home/stephan/.config/agents/skills
+  agents: /home/stephan/.config/agents/agents
+mode: merge
+targets:
+  antigravity:
+    skills:
+      path: /home/stephan/.gemini/skills
+  claude:
+    skills:
+      path: ~/.config/claude/skills
+      target_naming: standard
+      exclude:
+        - zenith/*
+    agents:
+      path: ~/.config/claude/agents
+  codex:
+    skills:
+      path: /home/stephan/.codex/skills
+      mode: merge
+      target_naming: standard
+      exclude:
+        - .system/*
+        - zenith/*
+  cursor:
+    skills:
+      path: /home/stephan/.cursor/skills
+      target_naming: standard
+  opencode:
+    skills:
+      path: /home/stephan/.config/opencode/skills
+      target_naming: standard
+  universal:
+    skills:
+      path: /home/stephan/.agents/skills
+      target_naming: standard
+extras:
+  - name: codex-agents
+    source: ~/.config/agents/agents
+    targets:
+      - path: /home/stephan/.codex/agents
+        flatten: true
+        extension: codex-agents
+  - name: rules
+    targets:
+      - path: ~/.config/claude/rules
+        flatten: true
+      - path: /home/stephan/.codex/rules
+        flatten: true
+      - path: /home/stephan/.config/opencode/rules
+        flatten: true
+  - name: prompts
+    targets:
+      - path: ~/.config/claude/prompts
+        flatten: true
+      - path: /home/stephan/.codex/prompts
+        flatten: true
+      - path: /home/stephan/.config/opencode/prompts
+        flatten: true
+  - name: commands
+    targets:
+      - path: ~/.config/claude/commands
+      - path: /home/stephan/.gemini/commands
+        extension: gemini-commands
+ignore:
+  - .DS_Store
+  - .git/
+  - __pycache__/
+audit:
+  block_threshold: CRITICAL
