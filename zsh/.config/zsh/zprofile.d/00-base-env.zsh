@@ -75,6 +75,7 @@ export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export JUPYTER_CONFIG_DIR="$XDG_CONFIG_HOME/jupyter"
+export CLAUDE_CONFIG_DIR="$XDG_CONFIG_HOME/claude"
 export CONDA_ROOT="/opt/conda/";
 export CONDA_EXE="$CONDA_ROOT/bin/conda";
 export MAMBA_EXE="$CONDA_ROOT/bin/mamba";
