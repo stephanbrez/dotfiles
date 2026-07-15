@@ -20,6 +20,7 @@
       "Bash(git tag:*)"
     ]
   },
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "Notification": [
       {
@@ -37,5 +38,21 @@
     "type": "command",
     "command": "/bin/bash /home/stephan/.claude/statusline.sh"
   },
-  "model": "opus"
+  "enabledPlugins": {
+    "document-skills@anthropic-agent-skills": true,
+    "example-skills@anthropic-agent-skills": true
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    }
+  },
+  "effortLevel": "medium",
+  "tui": "fullscreen",
+  "theme": "light",
+  "editorMode": "vim",
+  "autoCompactEnabled": false
 }
