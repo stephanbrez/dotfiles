@@ -8,8 +8,11 @@
         "baseURL": "http://192.168.20.10:11434/v1"
       },
       "models": {
-        "devstral-small-2:24b": {
-          "name": "DevStral 2 Small"
+        "qwen3.6:35b": {
+          "name": "Qwen 3.6 35b"
+        },
+        "qwen3.6:27b": {
+          "name": "Qwen 3.6 27b"
         }
       }
     }
