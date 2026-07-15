@@ -7,6 +7,7 @@ targets:
   antigravity:
     skills:
       path: /home/stephan/.gemini/skills
+      target_naming: standard
   claude:
     skills:
       path: ~/.local/share/claude-code/skills
