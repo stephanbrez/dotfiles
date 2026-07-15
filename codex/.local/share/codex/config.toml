@@ -1,0 +1,53 @@
+model = "gpt-5.6-luna"
+model_verbosity = "low"
+model_reasoning_effort = "xhigh"
+[projects."/home/stephan/.local/src/transform-visualizer"]
+trust_level = "untrusted"
+
+[projects."/home/stephan/.local/src/camviz"]
+trust_level = "trusted"
+
+[projects."/home/stephan/.local/src/smb-website"]
+trust_level = "trusted"
+
+[projects."/home/stephan/.local/src/smb-website/astro"]
+trust_level = "trusted"
+
+[projects."/home/stephan/.dotfiles"]
+trust_level = "trusted"
+
+[projects."/home/stephan/.local/src/duotone-light-zed"]
+trust_level = "trusted"
+
+[projects."/home/stephan/.local/src/3d-food-reconstruction"]
+trust_level = "trusted"
+
+[projects."/home/stephan/.local/src/excalidraw-mcp"]
+trust_level = "trusted"
+
+[projects."/home/stephan"]
+trust_level = "trusted"
+
+[projects."/home/stephan/.local/src/build"]
+trust_level = "trusted"
+
+[notice.model_migrations]
+"gpt-5.3-codex" = "gpt-5.4"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+"gpt-5.6-sol" = 1
+
+# BEGIN zenith
+[mcp_servers.zenith]
+command = "uv"
+args = ["run", "--project", "/home/stephan/.local/src/build/zenith/zenith", "zenith-server", "--mode", "orchestrator"]
+startup_timeout_sec = 10
+tool_timeout_sec = 1000000
+
+[mcp_servers.zenith.env]
+ZENITH_ORCHESTRATOR_PROVIDER = "codex"
+ZENITH_WORKER_PROVIDER = "codex"
+ZENITH_WORKER_ACP_COMMAND = "codex-acp"
+# END zenith
+
