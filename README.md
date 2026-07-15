@@ -38,8 +38,8 @@ system around three principles:
 backups, and batch operations.
 
 **Machine-aware** — Installer config adapts to the machine it runs on. Package
-installation differs by distro (Ubuntu, Debian, Fedora, macOS) and mode
-(minimal vs full). Shell config adapts to OS and profile (dev-server, laptop,
+installation differs by distro (Ubuntu, Debian, Fedora, macOS) and mode (minimal
+vs full). Shell config adapts to OS and profile (dev-server, laptop,
 workstation) with per-host overrides.
 
 **Modular by design** — Every component is a composable unit: standalone
@@ -151,8 +151,8 @@ The main `setup` script (run with `sudo`) proceeds in stages:
    pip)
 3. **Parse `packages.yaml`** — exports distro packages, pipx packages, and
    third-party flags as bash variables
-4. **Install distro packages** — via `apt`, `dnf`, `pacman`, `zypper`, `apk`,
-   or `brew`
+4. **Install distro packages** — via `apt`, `dnf`, `pacman`, `zypper`, `apk`, or
+   `brew`
 5. **Run third-party installers** — from `installers/*.sh` based on YAML toggles
 6. **Symlink dotfiles** — via `stowaway-check` with interactive conflict
    resolution
@@ -160,11 +160,14 @@ The main `setup` script (run with `sudo`) proceeds in stages:
 8. **Configure git** — prompt for user.name and user.email
 9. **Change shell** — `chsh` to zsh
 
+> [Warning] claude-code & codex need the --no-folding flag for stow. To be done
+> later. TODO (maybe write a separate util to stow -D those two and rerun.)
+
 ### Install Modes
 
 - **Minimal** (Ubuntu default) — distro packages only, no third-party installers
 - **Full** (Debian / other distros / macOS, or `--full` flag) — distro packages
-  + third-party
+  - third-party
 
 ### Package Configuration
 
@@ -224,9 +227,10 @@ macos:
 Each `third_party` key maps to an `install_<name>()` function via the
 `PKG_THIRD_PARTY` array (enabled names are also exported as individual
 `INSTALL_<NAME>=true` flags for backwards compatibility). Setting
-`skip_third_party: true` skips all third-party installers for that mode. Setting `skip_common: true` at the distro level skips the `common`
-package list — used by `macos` since Homebrew package names and availability
-differ from Linux distros.
+`skip_third_party: true` skips all third-party installers for that mode. Setting
+`skip_common: true` at the distro level skips the `common` package list — used
+by `macos` since Homebrew package names and availability differ from Linux
+distros.
 
 ### Adding a Third-Party Installer
 
@@ -300,14 +304,14 @@ Available helpers from `installers/common.sh`:
 - `$ASME` — run commands as the real user (via `sudo -u`)
 - `$ARCH_GH` / `$ARCH_DEB` — architecture strings for GitHub releases and DEB
   packages
-- `$pkgmgr` — detected package manager (`apt`, `dnf`, `pacman`, `zypper`,
-  `apk`, `brew`)
+- `$pkgmgr` — detected package manager (`apt`, `dnf`, `pacman`, `zypper`, `apk`,
+  `brew`)
 - `ensure_dep <cmd> [overrides]` — install a runtime dependency via the native
   package manager if `<cmd>` isn't on `$PATH`. Use this for every dependency an
   installer needs. `overrides` is a space-separated list of `pkgmgr=pkgname`
   pairs for distros where the package name differs from the command (e.g.
-  `"pacman=github-cli"`); unlisted distros fall back to `<cmd>`. The helper is
-  a no-op if the command is already present and handles dry-run mode internally.
+  `"pacman=github-cli"`); unlisted distros fall back to `<cmd>`. The helper is a
+  no-op if the command is already present and handles dry-run mode internally.
 
 Installer scripts branch on `$pkgmgr` to support multiple distros. The standard
 branching pattern is **`brew` + `else`** — a Homebrew branch for macOS and a
@@ -360,8 +364,8 @@ install_<name>() {
 }
 ```
 
-Only list overrides for distros where the package name differs from the
-command; unlisted distros use `<cmd>` as the package name. Examples:
+Only list overrides for distros where the package name differs from the command;
+unlisted distros use `<cmd>` as the package name. Examples:
 
 - `ensure_dep gh "pacman=github-cli"` — `gh` on most distros, `github-cli` on
   Arch
