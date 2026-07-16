@@ -434,6 +434,7 @@ function install_packages() {
 	_echo "configuring package manager"
 	case "$OSTYPE" in
 	darwin*)
+		bootstrap_brew
 		pkgmgr="brew"
 		pkginstall="install"
 		pkgupdate="update"

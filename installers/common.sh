@@ -63,6 +63,42 @@ detect_architecture() {
     export ARCH ARCH_DEB ARCH_GH
 }
 
+# ═════ Homebrew Bootstrap ═════
+bootstrap_brew() {
+    command -v brew &>/dev/null && return 0
+    [[ "$(uname)" != "Darwin" ]] && return 1
+
+    _echo "bootstrapping Homebrew"
+    if should_run; then
+        log_message "INFO" "Installing Homebrew..." "true"
+        if [ -n "$SUDO_USER" ]; then
+            sudo -u "$SUDO_USER" NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        else
+            NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        fi
+
+        # Make brew available in the current shell session
+        local brew_path=""
+        [[ -x /opt/homebrew/bin/brew ]] && brew_path="/opt/homebrew/bin/brew"
+        [[ -x /usr/local/bin/brew ]] && brew_path="/usr/local/bin/brew"
+
+        if [[ -z "$brew_path" ]]; then
+            fail "Homebrew binary not found after installation"
+        fi
+
+        eval "$("$brew_path" shellenv)"
+
+        # Symlink for sudo PATH compatibility (Apple Silicon → /usr/local/bin)
+        if [[ "$brew_path" == "/opt/homebrew/bin/brew" ]] && [[ ! -e /usr/local/bin/brew ]]; then
+            ln -sf /opt/homebrew/bin/brew /usr/local/bin/brew
+        fi
+
+        command -v brew &>/dev/null && log_message "SUCCESS" "Homebrew installed" || fail "Homebrew installation failed"
+    else
+        dry_print "Would install Homebrew via official installer"
+    fi
+}
+
 # ═════ Package Manager Detection ═════
 detect_package_manager() {
     if [ -x "$(command -v apk)" ]; then
@@ -74,6 +110,18 @@ detect_package_manager() {
         pkginstall="install"
         pkgupdate="update"
         DISTRO_ID="macos"
+    elif [[ "$(uname)" == "Darwin" ]]; then
+        # macOS without Homebrew — bootstrap it
+        bootstrap_brew
+        if [ -x "$(command -v brew)" ]; then
+            pkgmgr="brew"
+            pkginstall="install"
+            pkgupdate="update"
+            DISTRO_ID="macos"
+        else
+            log_message "WARNING" "Homebrew is required on macOS but could not be installed" "true"
+            pkgmgr=""
+        fi
     elif [ -x "$(command -v apt)" ]; then
         pkgmgr="apt"
         pkginstall="install -y"

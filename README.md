@@ -160,6 +160,11 @@ The main `setup` script (run with `sudo`) proceeds in stages:
 8. **Configure git** — prompt for user.name and user.email
 9. **Change shell** — `chsh` to zsh
 
+> **macOS**: If Homebrew is not already installed, the installer automatically bootstraps
+> it via the official install script and creates a symlink at
+> `/usr/local/bin/brew` → `/opt/homebrew/bin/brew` on Apple Silicon so that
+> `$ASME brew install ...` works through sudo.
+
 > [Warning] claude-code & codex need the --no-folding flag for stow. To be done
 > later. TODO (maybe write a separate util to stow -D those two and rerun.)
 
