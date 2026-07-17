@@ -92,6 +92,7 @@ ubuntu:
 
     # ─── Third-party installations ───
     third_party:
+      claude-code: true
       docker: false
       onepassword: false
       eza: true
@@ -100,14 +101,14 @@ ubuntu:
       ghui: true
       lazydocker: true
       lazygit: true
-      fzf_binary: true
-      neovim_source: false
+      fzf-binary: true
+      neovim-source: false
       uv: true
       wezterm: true
       zoxide: true
       skillshare: true
       mise: true
-      pastel_binary: false
+      pastel-binary: false
 
     # ─── Python/pipx packages ───
     # pipx_packages:
@@ -130,6 +131,7 @@ debian:
 
     # ─── Third-party installations ───
     third_party:
+      claude-code: true
       docker: true
       onepassword: true
       eza: true
@@ -138,14 +140,14 @@ debian:
       ghui: true
       lazydocker: true
       lazygit: true
-      fzf_binary: true
-      neovim_source: true
+      fzf-binary: true
+      neovim-source: true
       uv: true
       wezterm: true
       zoxide: true
       skillshare: true
       mise: true
-      pastel_binary: false
+      pastel-binary: false
 
     # ─── Python/pipx packages ───
     pipx_packages:
@@ -187,6 +189,7 @@ macos:
 
     # ─── Third-party installations ───
     third_party:
+      claude-code: true
       docker: true
       onepassword: true
       eza: true
@@ -195,15 +198,15 @@ macos:
       ghui: true
       lazydocker: true
       lazygit: true
-      fzf_binary: false # fzf already installed via distro_packages
-      neovim_source: false # neovim installed via distro_packages (brew)
+      fzf-binary: false # fzf already installed via distro_packages
+      neovim-source: false # neovim installed via distro_packages (brew)
       uv: true
       wezterm: true
       zoxide: true
       skillshare: true
       aerospace: true
       mise: true
-      pastel_binary: false
+      pastel-binary: false
 
 # ═════ Fedora-Specific Packages ═════
 fedora:
@@ -225,6 +228,7 @@ fedora:
 
     # ─── Third-party installations ───
     third_party:
+      claude-code: true
       # docker: true
       # Note: 1password, eza, wezterm may not be available for Fedora
       # fastfetch: true
@@ -234,6 +238,6 @@ fedora:
       glow: true
       ghui: true
       skillshare: true
-      pastel_binary: false
+      pastel-binary: false
       # wezterm: true
       # zoxide: true

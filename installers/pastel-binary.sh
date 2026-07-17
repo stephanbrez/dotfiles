@@ -1,5 +1,5 @@
 #!/bin/bash
-# pastel_binary.sh - Install/update pastel color tool binary
+# pastel-binary.sh - Install/update pastel color tool binary
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"

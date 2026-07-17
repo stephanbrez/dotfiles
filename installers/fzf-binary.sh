@@ -1,5 +1,5 @@
 #!/bin/bash
-# fzf_binary.sh - Install/update fzf fuzzy finder binary
+# fzf-binary.sh - Install/update fzf fuzzy finder binary
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"

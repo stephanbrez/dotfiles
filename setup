@@ -365,11 +365,14 @@ try:
         print("SKIP_THIRD_PARTY=true")
         print("PKG_THIRD_PARTY=()")
     else:
+        # PKG_THIRD_PARTY keeps canonical hyphen names from YAML; bash
+        # identifiers (function names, INSTALL_<NAME> env vars) convert
+        # hyphens to underscores at their construction sites.
         enabled_names = [n for n, on in third_party.items() if on]
         print(f"PKG_THIRD_PARTY=({' '.join(enabled_names)})")
         for name, enabled in third_party.items():
             if enabled:
-                print(f"INSTALL_{name.upper()}=true")
+                print(f"INSTALL_{name.replace('-', '_').upper()}=true")
 
     # Export pipx packages
     pipx_pkgs = distro_config.get('pipx_packages', [])
@@ -537,10 +540,12 @@ function install_packages() {
 	fi
 
 	# ─── Install third-party packages via auto-discovery ───
-	# Each YAML third_party key <name> maps to install_<name>() defined in installers/<name>.sh
+	# Each YAML third_party key <name> maps to install_<name>() defined in
+	# installers/<name>.sh. YAML keys use canonical hyphens (matching package-
+	# manager conventions); bash function names convert hyphens to underscores.
 	log_message "INFO" "Third-party installers enabled: ${PKG_THIRD_PARTY[*]:-(none)}" "true"
 	for name in "${PKG_THIRD_PARTY[@]}"; do
-		local func="install_${name}"
+		local func="install_${name//-/_}"
 		if declare -f "$func" >/dev/null 2>&1; then
 			"$func"
 		else

@@ -214,7 +214,7 @@ debian:
     full:
         third_party:
             docker: true
-            neovim_source: true
+            neovim-source: true
 
 macos:
     skip_common: true
@@ -231,17 +231,24 @@ macos:
             zoxide: true
 ```
 
-Each `third_party` key maps to an `install_<name>()` function via the
-`PKG_THIRD_PARTY` array (enabled names are also exported as individual
-`INSTALL_<NAME>=true` flags for backwards compatibility). Setting
-`skip_third_party: true` skips all third-party installers for that mode. Setting
-`skip_common: true` at the distro level skips the `common` package list — used
-by `macos` since Homebrew package names and availability differ from Linux
-distros.
+Each `third_party` key uses **canonical hyphens** (matching package-manager
+conventions, e.g. `claude-code`, `fzf-binary`, `neovim-source`). Each key maps
+to an `install_<name>()` function via the `PKG_THIRD_PARTY` array — `setup`
+converts hyphens to underscores when constructing the bash function name
+(`install_<name-with-underscores>`) and the `INSTALL_<NAME>=true` backwards-
+compatibility flags. Setting `skip_third_party: true` skips all third-party
+installers for that mode. Setting `skip_common: true` at the distro level
+skips the `common` package list — used by `macos` since Homebrew package names
+and availability differ from Linux distros.
 
 ### Adding a Third-Party Installer
 
 1. **Create the installer script** `installers/<name>.sh`:
+
+> The YAML key and filename use hyphens (`<name>`); the bash function name uses
+> an underscore (`install_<name-with-underscores>`) since bash disallows hyphens
+> in identifiers. `setup` converts at lookup time. Example: YAML key
+> `fzf-binary` → file `installers/fzf-binary.sh` → function `install_fzf_binary`.
 
 ```bash
 #!/bin/bash
@@ -298,8 +305,13 @@ third_party:
 
 The `setup` script sources every `installers/*.sh` and auto-discovers the
 `install_<name>()` function from the YAML key — no editing of `setup` required.
-Enabled names are exported as the `PKG_THIRD_PARTY` array (and, for backwards
-compatibility, as individual `INSTALL_<NAME>=true` flags).
+The YAML key uses hyphens (e.g. `fzf-binary`); the installer filename matches
+(`installers/fzf-binary.sh`) but the bash function name uses an underscore
+(`install_fzf_binary`) since bash disallows hyphens in identifiers. `setup`
+performs the hyphen→underscore conversion at lookup time. Enabled names are
+exported as the `PKG_THIRD_PARTY` array in canonical hyphen form (and, for
+backwards compatibility, as individual `INSTALL_<NAME>=true` flags with
+underscores).
 
 Available helpers from `installers/common.sh`:
 
@@ -348,7 +360,7 @@ install_<name>() {
 
 Use this two-branch form when the Linux install method works on **all** distros
 (curl install scripts, static GitHub release tarballs). Examples: `uv.sh`,
-`zoxide.sh`, `lazygit.sh`, `lazydocker.sh`, `fzf_binary.sh`.
+`zoxide.sh`, `lazygit.sh`, `lazydocker.sh`, `fzf-binary.sh`.
 
 ### Runtime Dependencies
 
@@ -428,7 +440,7 @@ install_<name>() {
 ```
 
 Examples: `eza.sh`, `wezterm.sh`, `onepassword.sh` (add apt repos), `mise.sh`
-(PPA + curl fallback), `fastfetch.sh` (`.deb` via `dpkg`), `neovim_source.sh`
+(PPA + curl fallback), `fastfetch.sh` (`.deb` via `dpkg`), `neovim-source.sh`
 (source build → `.deb` on apt, pre-built binary on other Linux).
 
 Do **not** create an `apt` branch just to run `apt install <name>` when a
