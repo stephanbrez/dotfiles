@@ -14,8 +14,8 @@ common:
   # ─── npm global packages ───
   npm_packages:
     - defuddle
-    - @tobilu/qmd
-    - @openai/codex
+    - '@tobilu/qmd'
+    - '@openai/codex'
 
   distro_packages:
     # ─── Command line tools ───
@@ -163,36 +163,25 @@ macos:
       # ─── Command line tools ───
       - bat
       - btop
-      - diffutils
-      - file
       - fzf
       - gh
-      - git
       - ripgrep
       - shellcheck
       - stow
       - tldr
       - tmux
       - trash-cli
-      - zsh
       - fd # Homebrew name (not fd-find)
       - neovim # Homebrew has current version
       # ─── System/build tools ───
       - automake
-      - bash-completion
       - cmake
-      - curl
-      - gcc
       - gettext
-      - make
       - meson
       - ninja # Homebrew name (not ninja-build)
       - pkg-config # Homebrew name (not pkgconf)
-      - python # Homebrew name (not python3); bundles pip
       - pipx
-      - unzip
       - wget
-      - ca-certificates
       # ─── Fun ───
       - toilet
 
