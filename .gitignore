@@ -9,6 +9,7 @@ zed/.config/zed/secrets
 
 # Wezterm pseudo-secrets
 wezterm/.config/wezterm/ssh-themes.lua
+wezterm/.config/wezterm/wezterm-debug.log
 
 # Local config
 .dotfiles.local
