@@ -59,6 +59,9 @@ Options:
   -f, --full        Run setup in full install mode (override Ubuntu minimal)
   -i, --interactive Run container interactively (for debugging)
   -a, --all         Test all supported distros
+  --dispatch        Docker-free dispatch check only (YAML keys → installer
+                    functions; covers ALL distros incl. macOS). Auto-runs as
+                    a pre-flight before any container test.
   -h, --help        Show this help message
 
 Distros:
@@ -66,11 +69,15 @@ Distros:
   debian            Test on Debian Bookworm
   fedora            Test on Fedora latest
 
+Note: macOS cannot be container-tested, but its third_party dispatch coverage
+is included in the --dispatch check (and the auto pre-flight).
+
 Examples:
   $0 ubuntu                    # Minimal test on Ubuntu (default)
   $0 --full ubuntu             # Full install test on Ubuntu
   $0 --dry-run debian          # Dry-run test on Debian (safe, no changes)
   $0 --dry-run --verbose --all # Verbose dry-run on all distros
+  $0 --dispatch                # Dispatch check only (no Docker needed)
   $0 -i ubuntu                 # Interactive Ubuntu container for debugging
 
 Logs:
@@ -87,6 +94,7 @@ FULL_MODE=""
 INTERACTIVE=""
 TEST_ALL=""
 DISTRO=""
+DISPATCH_ONLY=""
 
 while [[ $# -gt 0 ]]; do
 	case $1 in
@@ -110,6 +118,10 @@ while [[ $# -gt 0 ]]; do
 		TEST_ALL="yes"
 		shift
 		;;
+	--dispatch)
+		DISPATCH_ONLY="yes"
+		shift
+		;;
 	-h | --help)
 		show_help
 		;;
@@ -123,6 +135,115 @@ while [[ $# -gt 0 ]]; do
 		;;
 	esac
 done
+
+# ─── Dispatch pre-flight: YAML third_party keys resolve to installer functions ───
+# Docker-free, PyYAML-free unit test covering ALL distros (incl. macOS, which
+# can't be container-tested). Runs two checks:
+#   1. Every third_party YAML key → install_<key-with-underscores>() exists
+#      (catches enabled-key-without-function; the silent-skip regression class)
+#   2. Every installers/*.sh (excl. common.sh, packages-fallback.sh) defines
+#      install_<name-with-underscores>() (catches rename-without-function-update)
+# Exits 0 on pass, 1 on fail. Safe under `set -e`.
+run_dispatch_check() {
+	local failures=0
+
+	print_header "Dispatch pre-flight (Docker-free)"
+
+	# ─── Source all installers (guarded) ───
+	local f
+	for f in "$DOTFILES_DIR"/installers/*.sh; do
+		[[ -f "$f" ]] || continue
+		case "$(basename "$f")" in
+		common.sh | packages-fallback.sh) continue ;;
+		esac
+		if ! source "$f" &>/dev/null; then
+			print_error "Failed to source: $(basename "$f")"
+			failures=$((failures + 1))
+		fi
+	done
+
+	# ─── Check 1: third_party YAML keys → function ───
+	# Extract keys via grep (6-space indent, inline bool); no PyYAML needed.
+	local keys key func
+	keys=$(grep -hE '^      [a-z][a-z0-9_-]*: (true|false)' "$DOTFILES_DIR/packages.yaml" \
+		| awk -F: '{print $1}' \
+		| tr -d ' ' \
+		| sort -u)
+
+	if [[ -z "$keys" ]]; then
+		print_error "No third_party keys found in packages.yaml"
+		return 1
+	fi
+
+	local key_count
+	key_count=$(printf '%s\n' "$keys" | grep -c .)
+	print_info "Check 1: $key_count unique third_party keys → install_<key>()"
+	while IFS= read -r key; do
+		[[ -z "$key" ]] && continue
+		func="install_${key//-/_}"
+		if ! declare -f "$func" &>/dev/null; then
+			print_error "YAML key '$key' → missing function '$func'"
+			failures=$((failures + 1))
+		fi
+	done < <(printf '%s\n' "$keys")
+
+	# ─── Check 2: installer filename → function ───
+	print_info "Check 2: installers/*.sh → install_<name>() defined"
+	local name
+	for f in "$DOTFILES_DIR"/installers/*.sh; do
+		[[ -f "$f" ]] || continue
+		name="$(basename "$f")"
+		case "$name" in
+		common.sh | packages-fallback.sh) continue ;;
+		esac
+		name="${name%.sh}"
+		func="install_${name//-/_}"
+		if ! declare -f "$func" &>/dev/null; then
+			print_error "Installer '$(basename "$f")' → missing function '$func'"
+			failures=$((failures + 1))
+		fi
+	done
+
+	if [[ $failures -eq 0 ]]; then
+		print_success "Dispatch check passed (all keys + files resolve)"
+		return 0
+	else
+		print_error "Dispatch check failed: $failures mismatch(es)"
+		return 1
+	fi
+}
+
+# ─── Log assertion: surface silent dispatch failures from container runs ───
+# setup's auto-discovery loop logs a WARNING (force-printed) and continues on
+# missing installer functions, so a regression can pass a coarse exit-0 check.
+# This asserts the log is free of those warnings. Safe under `set -e`.
+assert_distro_log() {
+	local logfile=$1
+	local distro=$2
+	local assert_failed=0
+
+	# HARD FAIL: dispatch miss (setup: "No installer function ... — skipping")
+	if grep -q "No installer function" "$logfile" 2>/dev/null; then
+		print_error "$distro: dispatch miss detected in log"
+		grep -- "No installer function" "$logfile" | while IFS= read -r line; do
+			print_error "  $line"
+		done
+		assert_failed=1
+	fi
+
+	# Informational: count WARNING lines (some are legitimate, e.g. macOS-only
+	# aerospace skipped on Linux). Reported, not failed.
+	local warn_count
+	warn_count=$(grep -c "WARNING" "$logfile" 2>/dev/null || echo 0)
+	if [[ "${warn_count:-0}" -gt 0 ]]; then
+		print_warning "$distro: $warn_count WARNING line(s) in log (review for legitimacy)"
+	fi
+
+	if [[ $assert_failed -eq 1 ]]; then
+		return 1
+	fi
+	return 0
+}
 
 # ─── Test function for a single distro ───
 test_distro() {
@@ -205,15 +326,22 @@ test_distro() {
 				echo "════════════════════════════════════════"
 				echo "Test completed successfully at $(date)"
 			} >>"$logfile"
-			print_success "$distro test passed"
-			print_info "Full log: $logfile"
-			return 0
+			if assert_distro_log "$logfile" "$distro"; then
+				print_success "$distro test passed"
+				print_info "Full log: $logfile"
+				return 0
+			else
+				print_error "$distro test failed: log assertion"
+				print_error "Check log for details: $logfile"
+				return 1
+			fi
 		else
 			{
 				echo ""
 				echo "════════════════════════════════════════"
 				echo "Test failed at $(date)"
 			} >>"$logfile"
+			assert_distro_log "$logfile" "$distro" || true
 			print_error "$distro test failed"
 			print_error "Check log for details: $logfile"
 			return 1
@@ -222,6 +350,21 @@ test_distro() {
 }
 
 # ─── Main ───
+
+# --dispatch only: Docker-free unit test, then exit (no container tests)
+if [[ -n "$DISPATCH_ONLY" ]]; then
+	run_dispatch_check
+	exit $?
+fi
+
+# ─── Auto pre-flight: dispatch check before anything Docker-bound ───
+# Fail-fast on YAML-key → installer-function regressions (covers ALL distros
+# incl. macOS, which can't be container-tested). Cheap, no Docker needed, so
+# it surfaces regressions even on hosts without Docker installed.
+if ! run_dispatch_check; then
+	print_error "Dispatch pre-flight failed; aborting before container tests"
+	exit 1
+fi
 
 # Check if Docker is available
 if ! command -v docker &>/dev/null; then
