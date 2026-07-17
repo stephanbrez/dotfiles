@@ -4,6 +4,9 @@ test-logs/
 # Secrets file for zsh
 zsh/.config/zsh/.zsh-secrets
 
+# Zed secrets
+zed/.config/zed/secrets
+
 # Wezterm pseudo-secrets
 wezterm/.config/wezterm/ssh-themes.lua
 
