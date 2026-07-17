@@ -233,8 +233,13 @@ assert_distro_log() {
 
 	# Informational: count WARNING lines (some are legitimate, e.g. macOS-only
 	# aerospace skipped on Linux). Reported, not failed.
-	local warn_count
-	warn_count=$(grep -c "WARNING" "$logfile" 2>/dev/null || echo 0)
+	# `grep -c` prints the count AND exits 1 on zero matches; redirect its
+	# output to a var and default to 0 only when the file is missing.
+	local warn_count=0
+	if [[ -f "$logfile" ]]; then
+		warn_count=$(grep -c "WARNING" "$logfile" 2>/dev/null || true)
+		[[ -z "$warn_count" ]] && warn_count=0
+	fi
 	if [[ "${warn_count:-0}" -gt 0 ]]; then
 		print_warning "$distro: $warn_count WARNING line(s) in log (review for legitimacy)"
 	fi
@@ -285,7 +290,7 @@ test_distro() {
         mkdir -p /home/testuser/.dotfiles && \
         tar -C /tmp/dotfiles-src --exclude='.git' --exclude='test-logs' -cf - . | tar -xf - -C /home/testuser/.dotfiles && \
         chown -R testuser:testuser /home/testuser/.dotfiles && \
-        su - testuser -c \"sudo bash /home/testuser/.dotfiles/setup $setup_flags && eza --tree -L 1 /home/testuser && eza --tree -L 2 /home/testuser/.config\""
+        su - testuser -c \"sudo bash /home/testuser/.dotfiles/setup $setup_flags; echo \\\$? > /tmp/setup_exit; command -v eza >/dev/null 2>&1 && { eza --tree -L 1 /home/testuser; eza --tree -L 2 /home/testuser/.config; } || true; exit \\\$(cat /tmp/setup_exit)\""
 
 	local logfile="$LOG_DIR/${distro}_${TIMESTAMP}.log"
 
