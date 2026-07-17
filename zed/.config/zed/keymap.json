@@ -195,12 +195,21 @@
                     "reveal_target": "center",
                 },
             ],
+            "space s w": "pane::DeploySearch", // Search word under cursor
+            "space s b": "buffer_search::Deploy", // Search current buffer
+
             // UI
             "space shift-e": "workspace::ToggleLeftDock",
             "space o": "outline_panel::ToggleFocus", // Toggle outline panel
             "space e": "project_panel::ToggleFocus",
             "space shift-c": "command_palette::Toggle",
             "space q": "pane::CloseActiveItem",
+            "space u i": "editor::ToggleInlayHints",
+            "space u w": "editor::ToggleSoftWrap",
+
+            // Open Markdown preview
+            "space m p": "markdown::OpenPreview",
+            "space m P": "markdown::OpenPreviewToTheSide",
 
             // Diagnostics / debug
             "space d": "debug_panel::ToggleFocus",
