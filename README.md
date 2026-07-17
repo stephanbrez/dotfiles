@@ -165,8 +165,10 @@ The main `setup` script (run with `sudo`) proceeds in stages:
 > `/usr/local/bin/brew` → `/opt/homebrew/bin/brew` on Apple Silicon so that
 > `$ASME brew install ...` works through sudo.
 
-> [Warning] claude-code & codex need the --no-folding flag for stow. To be done
-> later. TODO (maybe write a separate util to stow -D those two and rerun.)
+> [Note] claude-code & codex share their target dirs with runtime content, so
+> `setup` pre-creates `~/.local/share/{claude-code,codex}` and restows them
+> with `--no-folding` after `stowaway-check` to keep shared dirs real and
+> symlink only individual files.
 
 ### Install Modes
 

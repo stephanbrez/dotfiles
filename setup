@@ -614,6 +614,48 @@ else
 	dry_print "Would run stowaway-check to symlink dotfiles"
 fi
 
+# ======== restow no-folding helper ======== #
+# claude-code & codex share their target dirs (~/.local/share/<pkg>) with
+# runtime content (sessions, caches, skillshare-managed skills). Stow's
+# default folding would collapse those shared dirs into a single symlink to
+# the repo, so the apps would write runtime files into the repo. Pre-create
+# the runtime dirs and restow with --no-folding so stow symlinks only
+# individual files, keeping runtime dirs real.
+restow_no_folding() {
+	local pkg="$1"
+	local pkg_path="$basedir/$pkg"
+
+	if [ ! -d "$pkg_path" ]; then
+		log_message "WARNING" "Skipping --no-folding restow: $pkg_path not found" "true"
+		return 0
+	fi
+
+	log_message "INFO" "Restowing $pkg with --no-folding..." "true"
+	if $ASME stow -R -d "$basedir" -t "$myhome" --no-folding "$pkg"; then
+		log_message "SUCCESS" "$pkg restowed with --no-folding"
+	else
+		log_message "WARNING" "Failed to restow $pkg with --no-folding — resolve conflicts (e.g. real files in target not in repo), then re-run" "true"
+	fi
+}
+
+# ======== setup claude-code ======== #
+_echo "setting up claude-code"
+if should_run; then
+	$ASME mkdir -p "$myhome/.local/share/claude-code"
+	restow_no_folding "claude-code"
+else
+	dry_print "Would create ~/.local/share/claude-code and restow with --no-folding"
+fi
+
+# ======== setup codex ======== #
+_echo "setting up codex"
+if should_run; then
+	$ASME mkdir -p "$myhome/.local/share/codex"
+	restow_no_folding "codex"
+else
+	dry_print "Would create ~/.local/share/codex and restow with --no-folding"
+fi
+
 # ======== setup git ======== #
 if should_run; then
 	if ! $auto_yes; then
