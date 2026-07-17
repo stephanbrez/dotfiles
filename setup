@@ -355,6 +355,17 @@ try:
 
     # Combine and output
     all_pkgs = common_pkgs + distro_pkgs
+
+    # Symlink-fix flags: distro packages whose binary is renamed on apt
+    # (bat→batcat, fd-find/fd→fdfind). Lets setup guard the symlink
+    # installers on actual package inclusion, abstracting away the
+    # distro-specific package name (fd-find vs fd). Extendable for future
+    # packages whose binary name differs from the package name on apt.
+    if "bat" in all_pkgs:
+        print("PKG_BAT=true")
+    if "fd-find" in all_pkgs or "fd" in all_pkgs:
+        print("PKG_FD=true")
+
     print(f"PKG_DISTRO_PACKAGES=({' '.join(all_pkgs)})")
 
     # Export third-party flags
@@ -564,9 +575,13 @@ function install_packages() {
 		install_npm_packages
 	fi
 
-	# ─── Distro binary symlinks ───
-	install_fd
-	install_bat
+	# ─── Distro binary symlinks (only if the package is configured) ───
+	# PKG_BAT/PKG_FD are emitted by the YAML parser (or set by the fallback
+	# path); they abstract away the distro-specific package name (fd-find vs
+	# fd) so setup only acts on actual inclusion. The installers themselves
+	# additionally guard on $pkgmgr == apt since the rename is apt-specific.
+	[[ "${PKG_BAT:-}" == "true" ]] && install_bat
+	[[ "${PKG_FD:-}" == "true" ]] && install_fd
 
 	# ─── Fun stuff (always install) ───
 	# install_figlet_fonts

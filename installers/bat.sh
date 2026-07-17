@@ -6,6 +6,12 @@ source "$SCRIPT_DIR/common.sh"
 
 install_bat() {
 	local bindir="${bindir:-$myhome/.local/bin}"
+	# The bat→batcat rename only happens on apt (Debian/Ubuntu & derivatives);
+	# other distros ship `bat` directly and need no symlink.
+	if [[ "$pkgmgr" != "apt" ]]; then
+		log_message "INFO" "bat not renamed on $pkgmgr, skipping symlink"
+		return 0
+	fi
 	_echo "setting up bat symlink"
 	if should_run; then
 		if which batcat >/dev/null 2>&1; then

@@ -6,6 +6,12 @@ source "$SCRIPT_DIR/common.sh"
 
 install_fd() {
 	local bindir="${bindir:-$myhome/.local/bin}"
+	# The fd→fdfind rename only happens on apt (Debian/Ubuntu & derivatives);
+	# other distros ship `fd` directly and need no symlink.
+	if [[ "$pkgmgr" != "apt" ]]; then
+		log_message "INFO" "fd not renamed on $pkgmgr, skipping symlink"
+		return 0
+	fi
 	_echo "setting up fd symlink"
 	if should_run; then
 		if which fdfind >/dev/null 2>&1; then
