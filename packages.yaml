@@ -7,15 +7,15 @@
 metadata:
   version: "1.0"
   description: "Package definitions for dotfiles setup script"
-  updated: "2026-01-02"
+  updated: "2026-07-17"
 
 # ═════ Common Packages (All Distros) ═════
 common:
   # ─── npm global packages ───
   npm_packages:
     - defuddle
-    - '@tobilu/qmd'
-    - '@openai/codex'
+    - "@tobilu/qmd"
+    - "@openai/codex"
 
   distro_packages:
     # ─── Command line tools ───
@@ -171,7 +171,7 @@ macos:
       - shellcheck
       - stow
       - tldr
-      - tmux
+      #- tmux
       - trash-cli
       - fd # Homebrew name (not fd-find)
       - neovim # Homebrew has current version
@@ -182,10 +182,10 @@ macos:
       - meson
       - ninja # Homebrew name (not ninja-build)
       - pkg-config # Homebrew name (not pkgconf)
-      - pipx
+      #- pipx
       - wget
       # ─── Fun ───
-      - toilet
+      #- toilet
 
     # ─── Third-party installations ───
     third_party:
@@ -231,7 +231,7 @@ fedora:
       claude-code: true
       # docker: true
       # Note: 1password, eza, wezterm may not be available for Fedora
-      # fastfetch: true
+      fastfetch: true
       # lazydocker: true
       # lazygit: true
       uv: true
