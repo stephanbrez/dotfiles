@@ -44,7 +44,7 @@ log_message() {
         case $message_type in
         DEBUG) printf "  [ \033[36mDebug\033[0m ][%s] %s\n" "$timestamp" "$message" ;;
         INFO) printf "[ \033[34m>>\033[0m ] %s\n" "$message" ;;
-        WARNING) printf "[\033[31m;1 !!! \033[0m][%s] %s\n" "$timestamp" "$message" ;;
+        WARNING) printf "[\033[1;31m !!! \033[0m][%s] %s\n" "$timestamp" "$message" ;;
         SUCCESS) printf "\033[2K  [ \033[32mOK\033[0m ] %s\n" "$message" ;;
         *) printf "[UNKNOWN][%s] %s\n" "$timestamp" "$message" ;;
         esac
