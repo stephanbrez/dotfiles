@@ -256,10 +256,17 @@ if should_run; then
 	$ASME mkdir -p \
 		"$myhome"/.{config,local} \
 		"$myhome"/.local/{bin,cache,lib,share,src,state}
-	$ASME ln -s "$myhome"/Documents "$myhome"/.local/docs
+	# Symlink ~/Documents → ~/.local/docs (Linux only). On macOS, Documents is
+	# a native directory with TCC privacy protections and may not exist on a
+	# fresh account; skip to avoid dangling symlinks and permission friction.
+	if [[ "$OSTYPE" != "darwin"* ]] && [[ -d "$myhome/Documents" ]]; then
+		$ASME ln -sfn "$myhome"/Documents "$myhome"/.local/docs
+	fi
 else
 	dry_print "Would create ~/.config, ~/.local and subdirectories"
-	dry_print "Would symlink ~/Documents to ~/.local/docs"
+	if [[ "$OSTYPE" != "darwin"* ]]; then
+		dry_print "Would symlink ~/Documents to ~/.local/docs"
+	fi
 fi
 
 #########################################
@@ -294,12 +301,22 @@ bootstrap_python() {
 	esac
 
 	# Install python3 and PyYAML from system packages (NOT pip!)
-	if ! python3 -c "import yaml" 2>/dev/null; then
-		log_message "INFO" "Installing python3 and PyYAML from system packages..." "true"
+	# Split the check: python3 may not exist (fresh macOS without Xcode CLT),
+	# and PyYAML may be missing even if python3 is present. Each case gets a
+	# distinct install command and log message.
+	if ! command -v python3 &>/dev/null; then
+		log_message "INFO" "python3 not found, installing python3 and $pyyaml_pkg..." "true"
 		if should_run; then
 			eval "$pkgmgr $pkginstall python3 $pyyaml_pkg"
 		else
 			dry_print "Would install: python3 $pyyaml_pkg"
+		fi
+	elif ! python3 -c "import yaml" 2>/dev/null; then
+		log_message "INFO" "python3 found but PyYAML missing, installing $pyyaml_pkg..." "true"
+		if should_run; then
+			eval "$pkgmgr $pkginstall $pyyaml_pkg"
+		else
+			dry_print "Would install: $pyyaml_pkg"
 		fi
 	fi
 
@@ -434,14 +451,14 @@ install_pipx_packages() {
 }
 
 install_npm_packages() {
-    _echo "installing npm global packages"
-    if should_run; then
-        for pkg in "${PKG_NPM_PACKAGES[@]}"; do
-            $ASME npm install -g "$pkg"
-        done
-    else
-        dry_print "Would npm install -g: ${PKG_NPM_PACKAGES[*]}"
-    fi
+	_echo "installing npm global packages"
+	if should_run; then
+		for pkg in "${PKG_NPM_PACKAGES[@]}"; do
+			$ASME npm install -g "$pkg"
+		done
+	else
+		dry_print "Would npm install -g: ${PKG_NPM_PACKAGES[*]}"
+	fi
 }
 
 function install_packages() {
@@ -677,6 +694,7 @@ else
 fi
 
 # ======== setup git ======== #
+_echo "setting up git"
 if should_run; then
 	if ! $auto_yes; then
 		# Git config name
