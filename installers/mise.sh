@@ -10,15 +10,8 @@ install_mise() {
         return 0
     fi
     _echo "installing mise"
-    if [[ "$pkgmgr" == "apt" ]]; then
-        if should_run; then
-            add-apt-repository -y ppa:jdxcode/mise
-            apt update && apt install -y mise
-            log_message "SUCCESS" "mise installed via PPA"
-        else
-            dry_print "Would add jdxcode/mise PPA and install mise"
-        fi
-    elif [[ "$pkgmgr" == "brew" ]]; then
+    ensure_dep curl || return 1
+    if [[ "$pkgmgr" == "brew" ]]; then
         if should_run; then
             $ASME brew install mise
             log_message "SUCCESS" "mise installed via Homebrew"
@@ -26,6 +19,9 @@ install_mise() {
             dry_print "Would run: brew install mise"
         fi
     else
+        # Universal fallback: mise.run curl installer (works on all Linux
+        # distros). The jdxcode/mise PPA only publishes for newer Ubuntu
+        # releases, so the curl installer is the reliable cross-distro method.
         if should_run; then
             $ASME curl -sS https://mise.run | $ASME sh
             log_message "SUCCESS" "mise installed via mise.run"
