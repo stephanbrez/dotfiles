@@ -68,11 +68,13 @@ PKG_DNF="dejavu-fonts exfat-utils fd-find the_silver_searcher gnupg2 srm python3
 install_fallback_packages() {
 	log_message "INFO" "Installing packages from fallback definitions..." "true"
 
-	# ─── Symlink-fix flags (parity with YAML parser) ───
-	# bat is in PKG_COMMON; fd-find is in PKG_APT_COMMON / PKG_DNF. The
-	# installers guard on $pkgmgr == apt, so setting these on dnf is harmless.
+	# ─── Post-install flags (parity with YAML parser) ───
+	# bat/fd-find are in PKG_COMMON / PKG_APT_COMMON / PKG_DNF; the installers
+	# guard on $pkgmgr == apt, so setting these on dnf is harmless.
+	# tmux is in PKG_COMMON; TPM install runs after tmux.conf is stowed.
 	PKG_BAT=true
 	PKG_FD=true
+	PKG_TMUX=true
 
 	# ─── Install distro-specific packages first ───
 	case $pkgmgr in

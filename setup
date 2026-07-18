@@ -373,15 +373,17 @@ try:
     # Combine and output
     all_pkgs = common_pkgs + distro_pkgs
 
-    # Symlink-fix flags: distro packages whose binary is renamed on apt
-    # (bat→batcat, fd-find/fd→fdfind). Lets setup guard the symlink
-    # installers on actual package inclusion, abstracting away the
-    # distro-specific package name (fd-find vs fd). Extendable for future
-    # packages whose binary name differs from the package name on apt.
+    # Symlink-fix / post-install flags: distro packages that need a follow-up
+    # after package installation. Lets setup guard the follow-up on actual
+    # package inclusion, abstracting away distro-specific package names.
+    #   bat/fd-find: binary renamed on apt (batcat/fdfind) → symlink fix
+    #   tmux: TPM plugin install runs after tmux.conf is stowed
     if "bat" in all_pkgs:
         print("PKG_BAT=true")
     if "fd-find" in all_pkgs or "fd" in all_pkgs:
         print("PKG_FD=true")
+    if "tmux" in all_pkgs:
+        print("PKG_TMUX=true")
 
     print(f"PKG_DISTRO_PACKAGES=({' '.join(all_pkgs)})")
 
@@ -717,28 +719,13 @@ else
 fi
 
 # ======== setup tmux ======== #
-_echo "setting up tmux"
-if should_run; then
-	if which tmux >/dev/null 2>&1; then
-		tpm="$myhome/.tmux/plugins/tpm"
-		$ASME mkdir -p "$tpm"
-		if [ -e "$myhome/.config/tmux/plugins/tpm" ]; then
-			mv "$myhome/.config/tmux/plugins/tpm" "$tpm"
-			pushd "$tpm" >/dev/null &&
-				$ASME git pull -q origin master &&
-				popd >/dev/null || return
-		else
-			$ASME git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm" &&
-				$ASME "$tpm"/scripts/install_plugins.sh >/dev/null &&
-				$ASME "$tpm"/scripts/clean_plugins.sh >/dev/null &&
-				$ASME "$tpm"/scripts/update_plugin.sh >/dev/null
-		fi
-	else
-		fail "Skipping tmux setup because tmux isn't installed."
-	fi
-else
-	dry_print "Would setup tmux plugin manager (tpm)"
-fi
+# PKG_TMUX is emitted by the YAML parser (or set by the fallback path) when
+# tmux is in the distro's package list. The installer itself guards on
+# command -v tmux (package may not have installed) and is idempotent (skips
+# if TPM is already cloned). Replaces the inline block that ran unconditionally
+# and called fail() — which aborted the entire script — when tmux wasn't
+# installed (e.g. macOS, where tmux is commented out in packages.yaml).
+[[ "${PKG_TMUX:-}" == "true" ]] && install_tmux
 
 # ======== zsh ======== #
 _echo "setting up zsh"
