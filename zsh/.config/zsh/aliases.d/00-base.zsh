@@ -81,12 +81,12 @@ alias lrT="eza -al -soldest --icons"          # List all files as a long list so
 alias lls="eza -l -ssize --icons"             # List files as a long list sorted by size
 alias llS="eza -al -ssize --icons"            # List all files as a long list sorted by size
 alias lrS="eza -l -ssize --reverse --icons"   # List files as a long list sorted by reverse date
-alias tree="eza -l --tree"
-alias tree2="eza -l --tree --level=2"
-alias tree3="eza -l --tree --level=3"
-alias tree4="eza -l --tree --level=4"
-alias tree5="eza -l --tree --level=5"
-alias tree6="eza -l --tree --level=6"
+alias tree="eza -la --tree"
+alias tree2="eza -la --tree --level=2"
+alias tree3="eza -la --tree --level=3"
+alias tree4="eza -la --tree --level=4"
+alias tree5="eza -la --tree --level=5"
+alias tree6="eza -la --tree --level=6"
 
 ###################
 # Navigation      #
