@@ -678,21 +678,27 @@ restow_no_folding() {
 }
 
 # ======== setup claude-code ======== #
-_echo "setting up claude-code"
-if should_run; then
-	$ASME mkdir -p "$myhome/.local/share/claude-code"
-	restow_no_folding "claude-code"
-else
-	dry_print "Would create ~/.local/share/claude-code and restow with --no-folding"
+# Gate on the stow package existing in the repo — skip entirely (no banner,
+# no empty runtime dir) if the user doesn't have the package.
+if [[ -d "$basedir/claude-code" ]]; then
+	_echo "setting up claude-code"
+	if should_run; then
+		$ASME mkdir -p "$myhome/.local/share/claude-code"
+		restow_no_folding "claude-code"
+	else
+		dry_print "Would create ~/.local/share/claude-code and restow with --no-folding"
+	fi
 fi
 
 # ======== setup codex ======== #
-_echo "setting up codex"
-if should_run; then
-	$ASME mkdir -p "$myhome/.local/share/codex"
-	restow_no_folding "codex"
-else
-	dry_print "Would create ~/.local/share/codex and restow with --no-folding"
+if [[ -d "$basedir/codex" ]]; then
+	_echo "setting up codex"
+	if should_run; then
+		$ASME mkdir -p "$myhome/.local/share/codex"
+		restow_no_folding "codex"
+	else
+		dry_print "Would create ~/.local/share/codex and restow with --no-folding"
+	fi
 fi
 
 # ======== setup git ======== #
