@@ -12,10 +12,10 @@ install_aerospace() {
     _echo "installing AeroSpace"
     if [[ "$pkgmgr" == "brew" ]]; then
         if should_run; then
-            $ASME brew install --cask aerospace
-            log_message "SUCCESS" "AeroSpace installed via Homebrew cask"
+            $ASME brew install --cask nikitabobko/tap/aerospace
+            log_message "SUCCESS" "AeroSpace installed via Homebrew cask (nikitabobko/tap)"
         else
-            dry_print "Would run: brew install --cask aerospace"
+            dry_print "Would run: brew install --cask nikitabobko/tap/aerospace"
         fi
     else
         log_message "WARNING" "AeroSpace is macOS-only, skipping for $DISTRO_ID" "true"
