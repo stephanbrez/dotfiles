@@ -4,16 +4,6 @@
 # chmod +x ~/.config/sketchybar/plugins/aerospace.sh
 source "$CONFIG_DIR/colors.sh"
 
-# Map aerospace monitor-id to sketchybar display id
-map_monitor_to_display() {
-	case "$1" in
-		1) echo "3" ;;  # PA247CV: aerospace monitor 1 -> sketchybar display 3
-		2) echo "2" ;;  # LG SDQHD: aerospace monitor 2 -> sketchybar display 2
-		3) echo "1" ;;  # Built-in: aerospace monitor 3 -> sketchybar display 1
-		*) echo "1" ;;
-	esac
-}
-
 # if [ "$SENDER" == "mouse.entered" ]; then
 #   if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
 #     exit 0
@@ -58,12 +48,13 @@ for sid in $(echo "$APPS_INFO" | jq -r '.[]["app-name"]'); do
   fi
 done
 
-# Get monitor id from aerospace (not available in JSON, need separate query)
-aerospace_monitor=$(aerospace list-windows --workspace "$1" --format "%{monitor-id}" | head -1)
+# Resolve the sketchybar display from aerospace's AppKit NSScreen id, which
+# lines up 1:1 with sketchybar's `display` number and follows monitors as they
+# are plugged/unplugged/rearranged (no hardcoded monitor map). Not in the JSON,
+# so query it separately.
+monitor=$(aerospace list-windows --workspace "$1" --format "%{monitor-appkit-nsscreen-screens-id}" | head -1)
 
-if [ -n "$aerospace_monitor" ]; then
-  monitor=$(map_monitor_to_display "$aerospace_monitor")
-else
+if [ -z "$monitor" ]; then
   monitor="1"
 fi
 

@@ -9,25 +9,21 @@
 
 backgroundBorderWidth=1
 
-# Map aerospace monitor-id to sketchybar display id
-map_monitor_to_display() {
-	case "$1" in
-		1) echo "3" ;;  # PA247CV: aerospace monitor 1 -> sketchybar display 3
-		2) echo "2" ;;  # LG SDQHD: aerospace monitor 2 -> sketchybar display 2
-		3) echo "1" ;;  # Built-in: aerospace monitor 3 -> sketchybar display 1
-		*) echo "1" ;;
-	esac
-}
-
-# Aerospace workspaces 1 2 3 4 5 6 7 8 9 10
-for sid in $(aerospace list-workspaces --all); do
-	aerospace_monitor=$(aerospace list-windows --workspace "$sid" --format "%{monitor-id}")
-
-	if [ -z "$aerospace_monitor" ]; then
-		aerospace_monitor="1"
+# Aerospace reports each workspace's home monitor via the AppKit NSScreen id,
+# which lines up 1:1 with sketchybar's `display` number (both follow the
+# NSScreen ordering). Reading it directly means the bar follows monitors as
+# they're plugged/unplugged/rearranged — no hardcoded monitor map needed.
+# One call gives every workspace (including empty ones): "<workspace>|<display>".
+# Piped into `while read` (not `< <(...)`) so it stays POSIX-compatible: the
+# shebang-less sketchybarrc is executed by /bin/sh, where process substitution
+# is unavailable.
+aerospace list-workspaces --all \
+	--format "%{workspace}|%{monitor-appkit-nsscreen-screens-id}" |
+	while IFS='|' read -r sid monitor; do
+	# Fall back to the primary display if aerospace can't resolve a monitor.
+	if [ -z "$monitor" ]; then
+		monitor="1"
 	fi
-
-	monitor=$(map_monitor_to_display "$aerospace_monitor")
 
 	if [ "$sid" = "1" ]; then
 		icon=" "
@@ -78,7 +74,7 @@ for sid in $(aerospace list-workspaces --all); do
 		label.drawing=on \
 		click_script="aerospace workspace $sid" \
 		script="$PLUGIN_DIR/aerospace.sh $sid"
-done
+	done
 
 # Add a hidden item that listens for workspace changes and refreshes all spaces
 sketchybar --add item aerospace_refresh left \
