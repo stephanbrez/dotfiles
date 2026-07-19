@@ -72,6 +72,12 @@ bootstrap_brew() {
     if should_run; then
         log_message "INFO" "Installing Homebrew..." "true"
         if [ -n "$SUDO_USER" ]; then
+            # Refresh $SUDO_USER's sudo timestamp before the Homebrew installer's
+            # `sudo -n` check. NONINTERACTIVE=1 makes the installer fail hard on a
+            # missing/expired timestamp (default 5-min timeout on macOS); `sudo -v`
+            # revalidates the session inherited from `sudo ./setup` — silent if
+            # still valid, prompts on the tty if expired.
+            sudo -u "$SUDO_USER" sudo -v
             sudo -u "$SUDO_USER" NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         else
             NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
