@@ -105,9 +105,9 @@
 
 set -euo pipefail
 
-declare -g BACKUPS_CREATED=()
-declare -g ASME=""
-declare -g auto_yes=false
+declare BACKUPS_CREATED=()
+declare ASME=""
+declare auto_yes=false
 
 cleanup() {
     local restored=0
@@ -487,7 +487,9 @@ stowaway_check() {
 	log-message "DEBUG" "Searching for dots in $target_dir"
 
 	local ignore_patterns=()
-	mapfile -t ignore_patterns < <(parse_stowaway_ignore "$src")
+	while IFS= read -r line; do
+		ignore_patterns+=("$line")
+	done < <(parse_stowaway_ignore "$src")
 
 	local find_args=("$src" "-mindepth" "1" "-maxdepth" "1" "-type" "d" "!" "-name" "*.git*")
 
