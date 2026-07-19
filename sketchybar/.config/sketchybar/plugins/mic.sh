@@ -6,6 +6,14 @@
 
 source "$CONFIG_DIR/colors.sh"
 
+# The mic device is read via SwitchAudioSource (brew install switchaudio-osx).
+# Degrade gracefully if it isn't on PATH (e.g. launched as a service without
+# Homebrew in PATH, or not installed) instead of erroring on every update.
+if ! command -v SwitchAudioSource >/dev/null 2>&1; then
+  sketchybar --set mic icon= icon.color="$GREY"
+  exit 0
+fi
+
 # Attempt to get the current input device name
 MIC_NAME=$(SwitchAudioSource -t input -c)
 # I just want the first word, in case it's too long
