@@ -80,6 +80,7 @@ verbose_mode=false
 dry_run=false
 auto_yes=false
 install_mode="" # Will be set based on distro or -f flag
+_pyyaml_installed_via_pip=false # Track pip-installed PyYAML for cleanup on macOS
 
 # Parse command-line arguments
 show_help() {
@@ -336,6 +337,7 @@ bootstrap_python() {
 			if [[ "$pkgmgr" == "brew" ]]; then
 				[[ -x "$(brew --prefix)/bin/python3" ]] || pkg_run $pkgmgr $pkginstall python3
 				$ASME "$(brew --prefix)/bin/python3" -m pip install --break-system-packages pyyaml
+				_pyyaml_installed_via_pip=true
 			else
 				pkg_run $pkgmgr $pkginstall $pyyaml_pkg
 			fi
@@ -550,6 +552,20 @@ function install_packages() {
 	else
 		log_message "WARNING" "Using inline package definitions (fallback)" "true"
 		USE_YAML_CONFIG=false
+	fi
+
+	# ─── Clean up pip-installed PyYAML on macOS ───
+	# PyYAML was only needed for parse_packages_yaml above. The pip install
+	# used --break-system-packages as a one-time exception to PEP 668; remove
+	# it now to restore the externally-managed invariant. Idempotent: a no-op
+	# if pyyaml wasn't pip-installed (Linux, dry-run, or already removed).
+	if [[ "$_pyyaml_installed_via_pip" == "true" ]] && should_run; then
+		log_message "INFO" "Removing pip-installed PyYAML to preserve externally-managed rules..." "true"
+		if $ASME "$(brew --prefix)/bin/python3" -m pip uninstall --break-system-packages -y pyyaml &>/dev/null; then
+			log_message "SUCCESS" "PyYAML pip package removed"
+		else
+			log_message "WARNING" "PyYAML uninstall failed — manual cleanup: $(brew --prefix)/bin/python3 -m pip uninstall pyyaml" "true"
+		fi
 	fi
 
 	# install all the things \o/
