@@ -128,7 +128,7 @@ install_fallback_packages() {
 
 	# ─── Install distro-neutral packages ───
 	if should_run; then
-		eval "$pkgmgr $pkginstall ${PKG_COMMON[*]}"
+		pkg_run $pkgmgr $pkginstall "${PKG_COMMON[@]}"
 	else
 		dry_print "Would install distro-neutral packages: ${PKG_COMMON[*]}"
 	fi

@@ -168,6 +168,19 @@ should_run() {
 	! $dry_run
 }
 
+# Run a package-manager command as the appropriate user.
+# Homebrew refuses to run as root, so on macOS delegate to $ASME (the
+# original sudo user). Linux package managers (apt, dnf, pacman, etc.)
+# require root, so run directly — setup runs under sudo.
+# Usage: pkg_run $pkgmgr $pkginstall <packages...>
+pkg_run() {
+	if [[ "$pkgmgr" == "brew" ]]; then
+		$ASME "$@"
+	else
+		"$@"
+	fi
+}
+
 log_message() {
 	# Function to format and print messages based on the type with optional override to force display (ignore verbose)
 	# Usage: log_message "str:MSGTYPE" "str:Message" "boolean:force display"
@@ -307,14 +320,14 @@ bootstrap_python() {
 	if ! command -v python3 &>/dev/null; then
 		log_message "INFO" "python3 not found, installing python3 and $pyyaml_pkg..." "true"
 		if should_run; then
-			eval "$pkgmgr $pkginstall python3 $pyyaml_pkg"
+			pkg_run $pkgmgr $pkginstall python3 $pyyaml_pkg
 		else
 			dry_print "Would install: python3 $pyyaml_pkg"
 		fi
 	elif ! python3 -c "import yaml" 2>/dev/null; then
 		log_message "INFO" "python3 found but PyYAML missing, installing $pyyaml_pkg..." "true"
 		if should_run; then
-			eval "$pkgmgr $pkginstall $pyyaml_pkg"
+			pkg_run $pkgmgr $pkginstall $pyyaml_pkg
 		else
 			dry_print "Would install: $pyyaml_pkg"
 		fi
@@ -495,7 +508,7 @@ function install_packages() {
 
 	_echo "updating package manager"
 	if should_run; then
-		"$pkgmgr" "$pkgupdate"
+		pkg_run "$pkgmgr" "$pkgupdate"
 	else
 		dry_print "Would run: $pkgmgr $pkgupdate"
 	fi
@@ -535,7 +548,7 @@ function install_packages() {
 		# ─── Install packages from YAML configuration ───
 		log_message "INFO" "Installing packages from YAML config..." "true"
 		if should_run; then
-			eval "$pkgmgr $pkginstall ${PKG_DISTRO_PACKAGES[*]}"
+			pkg_run $pkgmgr $pkginstall "${PKG_DISTRO_PACKAGES[@]}"
 		else
 			dry_print "Would install distro packages: ${PKG_DISTRO_PACKAGES[*]}"
 		fi
