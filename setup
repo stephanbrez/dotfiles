@@ -305,7 +305,7 @@ bootstrap_python() {
 		pyyaml_pkg="python-yaml"
 		;;
 	brew*)
-		pyyaml_pkg="pyyaml"
+		pyyaml_pkg=""
 		;;
 	*)
 		log_message "WARNING" "Unknown package manager, cannot install PyYAML" "true"
@@ -313,23 +313,34 @@ bootstrap_python() {
 		;;
 	esac
 
-	# Install python3 and PyYAML from system packages (NOT pip!)
+	# Install python3 and PyYAML from system packages.
 	# Split the check: python3 may not exist (fresh macOS without Xcode CLT),
 	# and PyYAML may be missing even if python3 is present. Each case gets a
 	# distinct install command and log message.
 	if ! command -v python3 &>/dev/null; then
-		log_message "INFO" "python3 not found, installing python3 and $pyyaml_pkg..." "true"
+		log_message "INFO" "python3 not found, installing python3..." "true"
 		if should_run; then
-			pkg_run $pkgmgr $pkginstall python3 $pyyaml_pkg
+			if [[ "$pkgmgr" == "brew" ]]; then
+				pkg_run $pkgmgr $pkginstall python3
+			else
+				pkg_run $pkgmgr $pkginstall python3 $pyyaml_pkg
+			fi
 		else
-			dry_print "Would install: python3 $pyyaml_pkg"
+			dry_print "Would install: python3${pyyaml_pkg:+ $pyyaml_pkg}"
 		fi
-	elif ! python3 -c "import yaml" 2>/dev/null; then
-		log_message "INFO" "python3 found but PyYAML missing, installing $pyyaml_pkg..." "true"
+	fi
+
+	if ! python3 -c "import yaml" 2>/dev/null; then
+		log_message "INFO" "PyYAML missing, installing..." "true"
 		if should_run; then
-			pkg_run $pkgmgr $pkginstall $pyyaml_pkg
+			if [[ "$pkgmgr" == "brew" ]]; then
+				[[ -x "$(brew --prefix)/bin/python3" ]] || pkg_run $pkgmgr $pkginstall python3
+				$ASME "$(brew --prefix)/bin/python3" -m pip install --break-system-packages pyyaml
+			else
+				pkg_run $pkgmgr $pkginstall $pyyaml_pkg
+			fi
 		else
-			dry_print "Would install: $pyyaml_pkg"
+			dry_print "Would install: ${pyyaml_pkg:-pyyaml via pip}"
 		fi
 	fi
 
