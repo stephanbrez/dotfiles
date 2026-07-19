@@ -293,6 +293,15 @@ fi
 bootstrap_python() {
 	_echo "bootstrapping Python environment for package configuration"
 
+	# On brew, use Homebrew's python3 explicitly. macOS may also have system
+	# python3 (from Xcode CLT) on PATH, and PyYAML is pip-installed into
+	# Homebrew's python3 site-packages. Bare `python3` could resolve to
+	# system python3 and fail to import yaml.
+	local pybin="python3"
+	if [[ "$pkgmgr" == "brew" ]]; then
+		pybin="$(brew --prefix)/bin/python3"
+	fi
+
 	# Determine the correct PyYAML package name for this distro
 	local pyyaml_pkg=""
 	case "$pkgmgr" in
@@ -318,7 +327,7 @@ bootstrap_python() {
 	# Split the check: python3 may not exist (fresh macOS without Xcode CLT),
 	# and PyYAML may be missing even if python3 is present. Each case gets a
 	# distinct install command and log message.
-	if ! command -v python3 &>/dev/null; then
+	if ! command -v "$pybin" &>/dev/null; then
 		log_message "INFO" "python3 not found, installing python3..." "true"
 		if should_run; then
 			if [[ "$pkgmgr" == "brew" ]]; then
@@ -331,12 +340,12 @@ bootstrap_python() {
 		fi
 	fi
 
-	if ! python3 -c "import yaml" 2>/dev/null; then
+	if ! "$pybin" -c "import yaml" 2>/dev/null; then
 		log_message "INFO" "PyYAML missing, installing..." "true"
 		if should_run; then
 			if [[ "$pkgmgr" == "brew" ]]; then
-				[[ -x "$(brew --prefix)/bin/python3" ]] || pkg_run $pkgmgr $pkginstall python3
-				$ASME "$(brew --prefix)/bin/python3" -m pip install --break-system-packages pyyaml
+				[[ -x "$pybin" ]] || pkg_run $pkgmgr $pkginstall python3
+				$ASME "$pybin" -m pip install --break-system-packages pyyaml
 				_pyyaml_installed_via_pip=true
 			else
 				pkg_run $pkgmgr $pkginstall $pyyaml_pkg
@@ -347,7 +356,7 @@ bootstrap_python() {
 	fi
 
 	# Verify PyYAML is available
-	if python3 -c "import yaml" 2>/dev/null; then
+	if "$pybin" -c "import yaml" 2>/dev/null; then
 		log_message "SUCCESS" "Python environment ready"
 		return 0
 	else
@@ -363,13 +372,20 @@ parse_packages_yaml() {
 	local distro="$2"
 	local mode="$3"
 
+	# Use the same python3 as bootstrap_python — on brew, PyYAML is installed
+	# into Homebrew's python3 site-packages, not system python3.
+	local pybin="python3"
+	if [[ "$pkgmgr" == "brew" ]]; then
+		pybin="$(brew --prefix)/bin/python3"
+	fi
+
 	if [ ! -f "$yaml_file" ]; then
 		log_message "WARNING" "packages.yaml not found, using inline definitions" "true"
 		return 1
 	fi
 
 	# ─── Check if python3 and PyYAML are available ───
-	if ! python3 -c "import yaml" 2>/dev/null; then
+	if ! "$pybin" -c "import yaml" 2>/dev/null; then
 		log_message "WARNING" "Python3 or PyYAML not available, using fallback" "true"
 		return 1
 	fi
@@ -377,7 +393,7 @@ parse_packages_yaml() {
 	# Use Python to parse YAML and output bash variable assignments
 	local python_output
 	python_output=$(
-		python3 <<EOF
+		"$pybin" <<EOF
 import yaml
 import sys
 
