@@ -172,7 +172,6 @@ macos:
       - stow
       - tldr
       #- tmux
-      - trash-cli
       - fd # Homebrew name (not fd-find)
       - neovim # Homebrew has current version
       # ─── System/build tools ───
