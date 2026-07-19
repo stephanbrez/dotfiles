@@ -514,6 +514,12 @@ function install_packages() {
 		pkginstall="install"
 		pkgupdate="update"
 		DISTRO_ID="macos"
+		# Include brew's bin in ASME's PATH so $ASME brew works through sudo's
+		# secure_path (which doesn't include /opt/homebrew/bin on Apple Silicon).
+		# bootstrap_brew evals shellenv in this process, so brew --prefix works.
+		local brew_bin
+		brew_bin="$(brew --prefix)/bin"
+		ASME="sudo -u $me env PATH=$brew_bin:/usr/bin:/bin:/usr/sbin:/sbin"
 		;;
 	linux*)
 		linux_package

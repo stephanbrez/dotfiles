@@ -161,9 +161,9 @@ The main `setup` script (run with `sudo`) proceeds in stages:
 9. **Change shell** — `chsh` to zsh
 
 > **macOS**: If Homebrew is not already installed, the installer automatically bootstraps
-> it via the official install script and creates a symlink at
-> `/usr/local/bin/brew` → `/opt/homebrew/bin/brew` on Apple Silicon so that
-> `$ASME brew install ...` works through sudo.
+> it via the official install script. `$ASME` (sudo -u $me) is configured to include
+> brew's bin directory in PATH so that `$ASME brew install ...` works through sudo's
+> secure_path (which doesn't include /opt/homebrew/bin on Apple Silicon).
 
 > [Note] claude-code & codex share their target dirs with runtime content, so
 > `setup` pre-creates `~/.local/share/{claude-code,codex}` and restows them

@@ -84,19 +84,17 @@ bootstrap_brew() {
 
         # Make brew available in the current shell session
         local brew_path=""
-        [[ -x /opt/homebrew/bin/brew ]] && brew_path="/opt/homebrew/bin/brew"
-        [[ -x /usr/local/bin/brew ]] && brew_path="/usr/local/bin/brew"
+        if [[ -x /opt/homebrew/bin/brew ]]; then
+            brew_path="/opt/homebrew/bin/brew"
+        elif [[ -x /usr/local/bin/brew ]]; then
+            brew_path="/usr/local/bin/brew"
+        fi
 
         if [[ -z "$brew_path" ]]; then
             fail "Homebrew binary not found after installation"
         fi
 
         eval "$("$brew_path" shellenv)"
-
-        # Symlink for sudo PATH compatibility (Apple Silicon → /usr/local/bin)
-        if [[ "$brew_path" == "/opt/homebrew/bin/brew" ]] && [[ ! -e /usr/local/bin/brew ]]; then
-            ln -sf /opt/homebrew/bin/brew /usr/local/bin/brew
-        fi
 
         command -v brew &>/dev/null && log_message "SUCCESS" "Homebrew installed" || fail "Homebrew installation failed"
     else
@@ -184,6 +182,14 @@ detect_user_context() {
     fi
 
     ASME="sudo -u $me"
+    # On macOS with Homebrew, include brew's bin in PATH so $ASME brew works
+    # through sudo's secure_path (which doesn't include /opt/homebrew/bin on
+    # Apple Silicon). Without this, sudo -u resets PATH and brew isn't found.
+    if [[ "$(uname)" == "Darwin" ]] && command -v brew &>/dev/null; then
+        local brew_bin
+        brew_bin="$(brew --prefix)/bin"
+        ASME="sudo -u $me env PATH=$brew_bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    fi
     export me myhome ASME
 }
 
