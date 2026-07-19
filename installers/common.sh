@@ -116,16 +116,20 @@ detect_package_manager() {
         pkgupdate="update"
         DISTRO_ID="macos"
     elif [[ "$(uname)" == "Darwin" ]]; then
-        # macOS without Homebrew — bootstrap it
-        bootstrap_brew
-        if [ -x "$(command -v brew)" ]; then
-            pkgmgr="brew"
-            pkginstall="install"
-            pkgupdate="update"
-            DISTRO_ID="macos"
+        # macOS without Homebrew on PATH — don't auto-bootstrap. Standalone
+        # installers should never force the user to run ./setup. Check standard
+        # install locations and give a targeted error with the eval or install
+        # command.
+        local brew_prefix=""
+        [[ -x /opt/homebrew/bin/brew ]] && brew_prefix="/opt/homebrew"
+        [[ -x /usr/local/bin/brew ]] && brew_prefix="/usr/local"
+        if [[ -n "$brew_prefix" ]]; then
+            fail "Homebrew is installed at $brew_prefix but not on PATH.
+Run: eval \"\$($brew_prefix/bin/brew shellenv)\""
         else
-            log_message "WARNING" "Homebrew is required on macOS but could not be installed" "true"
-            pkgmgr=""
+            fail "Homebrew not found. Install it:
+  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"
+Then add to PATH: eval \"\$(/opt/homebrew/bin/brew shellenv)\""
         fi
     elif [ -x "$(command -v apt)" ]; then
         pkgmgr="apt"
