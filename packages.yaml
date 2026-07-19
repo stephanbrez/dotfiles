@@ -204,6 +204,7 @@ macos:
       zoxide: true
       skillshare: true
       aerospace: true
+      sketchybar: true
       mise: true
       pastel-binary: false
 
