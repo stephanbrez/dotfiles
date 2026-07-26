@@ -67,7 +67,8 @@ inner.horizontal = 10
 inner.vertical = 10
 outer.left = 8
 outer.bottom = 8
-outer.top = [{ monitor.main = 8 }, { monitor."LG SDQHD" = 40 }, 4]
+outer.top = 40
+# outer.top = [{ monitor.main = 8 }, { monitor."LG SDQHD" = 40 }, 4]
 outer.right = 8
 
 # 'main' binding mode declaration
@@ -191,7 +192,7 @@ alt-shift-c = 'reload-config'
 
 # ===== Monitors =====
 [workspace-to-monitor-force-assignment]
-1 = 'PA247CV'  # You can specify multiple patterns.
+1 = 'CB272U'   # You can specify multiple patterns.
 2 = 'LG SDQHD' # You can specify multiple patterns.
 3 = 'LG SDQHD' # You can specify multiple patterns.
 4 = 'LG SDQHD' # Non-main monitor in case when there are only two monitors
@@ -201,7 +202,7 @@ alt-shift-c = 'reload-config'
 8 = 'built-in' # Main monitor
 9 = 'built-in' # Monitor sequence number from left to right. 1-based indexing
 # 9 = '^built-in display$' # Case insensitive regex match 
-10 = 'PA247CV'
+10 = 'CB272U'
 # A = 'PA247CV'
 #   The first matching pattern will be used
 
@@ -234,6 +235,9 @@ down = 'volume down'
 up = 'volume up'
 shift-down = ['volume set 0', 'mode main']
 
+# ====== Extra Binds =====
+alt-shift-s = 'exec-and-forget screencapture -i -c'
+
 # ========== Apps ==========
 [mode.apps.binding]
 w = ['exec-and-forget open -n /Applications/WezTerm.app', 'mode main']
@@ -241,7 +245,7 @@ f = ['exec-and-forget open -n /Applications/Firefox.app', 'mode main']
 o = ['exec-and-forget open -n /Applications/Obsidian.app', 'mode main']
 s = ['exec-and-forget open -n /Applications/Safari.app', 'mode main']
 
-# Workspace Assignment
+# ===== Workspace Assignment =====
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
 run = 'move-node-to-workspace 1'
