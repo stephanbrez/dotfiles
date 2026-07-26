@@ -13,9 +13,15 @@ install_aerospace() {
     if [[ "$pkgmgr" == "brew" ]]; then
         if should_run; then
             $ASME brew install --cask nikitabobko/tap/aerospace
-            log_message "SUCCESS" "AeroSpace installed via Homebrew cask (nikitabobko/tap)"
+            $ASME brew tap FelixKratz/formulae
+            $ASME brew trust FelixKratz/formulae 2>/dev/null || true
+            $ASME brew install borders
+            log_message "SUCCESS" "AeroSpace and jankyborders installed via Homebrew"
         else
             dry_print "Would run: brew install --cask nikitabobko/tap/aerospace"
+            dry_print "Would run: brew tap FelixKratz/formulae"
+            dry_print "Would run: brew trust FelixKratz/formulae"
+            dry_print "Would run: brew install borders"
         fi
     else
         log_message "WARNING" "AeroSpace is macOS-only, skipping for $DISTRO_ID" "true"
