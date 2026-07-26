@@ -55,9 +55,10 @@ aerospace list-workspaces --all \
 	fi
 
 	sketchybar --add item space."$sid" left \
-		--subscribe space."$sid" display_change system_woke mouse.entered mouse.exited \
+		--subscribe space."$sid" display_change system_woke mouse.entered mouse.exited aerospace_workspace_change front_app_switched \
 		--set space."$sid" \
 		display="$monitor" \
+		update_freq=5 \
 		padding_left=2 \
 		padding_right=2 \
 		icon="$icon" \

@@ -26,8 +26,6 @@ source "$CONFIG_DIR/colors.sh"
 #   exit 0
 # fi
 
-icons=""
-
 APPS_INFO=$(aerospace list-windows --workspace "$1" --json)
 
 # Check if workspace is empty
@@ -39,14 +37,14 @@ if [ "$WINDOW_COUNT" -eq 0 ]; then
   exit 0
 fi
 
-IFS=$'\n'
-for sid in $(echo "$APPS_INFO" | jq -r '.[]["app-name"]'); do
-  # If $icons doesn't contain $sid, add it to $icons
-  if [[ ! "$icons" =~ $sid ]]; then
-    icons+=$sid
-    icons+=" "
-  fi
-done
+# Build the label: each distinct app name once, in first-seen order, joined by
+# a middle dot so multiple apps in one workspace read as separate entries
+# (e.g. "Finder · Ghostty"). The order-preserving dedup lives in jq so app names
+# containing spaces or regex characters are handled literally.
+icons=$(echo "$APPS_INFO" |
+  jq -r '[.[]["app-name"]]
+    | reduce .[] as $a ([]; if index($a) then . else . + [$a] end)
+    | join("·")')
 
 # Resolve the sketchybar display from aerospace's AppKit NSScreen id, which
 # lines up 1:1 with sketchybar's `display` number and follows monitors as they
