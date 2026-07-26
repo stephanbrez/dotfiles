@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/runkids/skillshare/main/schemas/config.schema.json
 sources:
-  skills: /home/stephan/.config/agents/skills
-  agents: /home/stephan/.config/agents/agents
+  skills: ~/.config/agents/skills
+  agents: ~/.config/agents/agents
 mode: merge
 targets:
   antigravity:
     skills:
-      path: /home/stephan/.gemini/skills
+      path: ~/.gemini/skills
       target_naming: standard
   claude:
     skills:
@@ -26,18 +26,18 @@ targets:
         - codex-only/*
   cursor:
     skills:
-      path: /home/stephan/.cursor/skills
+      path: ~/.cursor/skills
       target_naming: standard
   opencode:
     skills:
-      path: /home/stephan/.config/opencode/skills
+      path: ~/.config/opencode/skills
       target_naming: standard
     agents:
-      path: /home/stephan/.config/opencode/agents
+      path: ~/.config/opencode/agents
       target_naming: standard
   universal:
     skills:
-      path: /home/stephan/.agents/skills
+      path: ~/.agents/skills
       target_naming: standard
 extras:
   - name: codex-agents
@@ -50,17 +50,17 @@ extras:
     targets:
       - path: ~/.local/share/claude-code/rules
         flatten: true
-      - path: ~/.local/share/.codex/rules
+      - path: ~/.local/share/codex/rules
         flatten: true
-      - path: /home/stephan/.config/opencode/rules
+      - path: ~/.config/opencode/rules
         flatten: true
   - name: prompts
     targets:
       - path: ~/.local/share/claude-code/prompts
         flatten: true
-      - path: ~/.local/share/.codex/prompts
+      - path: ~/.local/share/codex/prompts
         flatten: true
-      - path: /home/stephan/.config/opencode/prompts
+      - path: ~/.config/opencode/prompts
         flatten: true
   - name: commands
     targets:
