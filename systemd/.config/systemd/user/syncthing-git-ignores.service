@@ -1,0 +1,17 @@
+[Unit]
+Description=Refresh Syncthing ignores for git-managed projects
+Documentation=man:syncthing-config(5)
+After=syncthing.service
+# Pointless to run if the source directory isn't there yet.
+ConditionPathIsDirectory=%h/.local/src
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/syncthing-git-ignores
+# Regenerating an ignore file is cheap and idempotent; keep it out of
+# the way of interactive work.
+Nice=10
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=default.target

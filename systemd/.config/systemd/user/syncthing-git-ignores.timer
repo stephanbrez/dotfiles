@@ -1,0 +1,13 @@
+[Unit]
+Description=Periodically refresh Syncthing git-managed ignores
+
+[Timer]
+# Catch repos created while the machine was off.
+OnBootSec=5min
+OnUnitActiveSec=1h
+# Run once after a missed window rather than never.
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
