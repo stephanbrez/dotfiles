@@ -91,3 +91,10 @@ coverage.xml
 cover/
 output/
 
+# Zsh completion caches (generated)
+zsh/.config/zsh/.zcompdump*
+zsh/.config/zsh/.zcompcache/
+
+# Claude Code settings (machine-local: model, theme, effort)
+claude-code/.local/share/claude-code/settings.json
+
