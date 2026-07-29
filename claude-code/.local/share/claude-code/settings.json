@@ -20,7 +20,7 @@
       "Bash(git tag:*)"
     ]
   },
-  "model": "claude-fable-5[1m]",
+  "model": "opus[1m]",
   "hooks": {
     "Notification": [
       {
@@ -36,7 +36,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "/bin/bash /home/stephan/.claude/statusline.sh"
+    "command": "/bin/bash \"${CLAUDE_CONFIG_DIR}/statusline.sh\""
   },
   "enabledPlugins": {
     "document-skills@anthropic-agent-skills": true,
@@ -52,7 +52,7 @@
   },
   "effortLevel": "medium",
   "tui": "fullscreen",
-  "theme": "light",
+  "theme": "auto",
   "editorMode": "vim",
   "autoCompactEnabled": false
 }
