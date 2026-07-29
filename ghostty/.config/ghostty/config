@@ -61,7 +61,7 @@ font-family = "Fira Code"
 # background-opacity = 0.8
 # unfocused-split-opacity = 0.8
 window-decoration = none
-theme = light:Builtin Solarized Light,dark:Builtin Solarized Dark
+theme = light:iTerm2 Solarized Light,dark:iTerm2 Solarized Dark
 
 # Keybinds
 # ==========================
