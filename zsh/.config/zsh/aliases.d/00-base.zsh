@@ -363,6 +363,11 @@ function gacp() {
   git push
 }
 
+# --- Headroom ---
+alias hrcl="export HEADROOM_ROLLOUT_CHANNEL=beta HEADROOM_OUTPUT_SHAPER=1; headroom wrap claude"    # Activate headroom with output reduction for claude
+alias hrco="export HEADROOM_ROLLOUT_CHANNEL=beta HEADROOM_OUTPUT_SHAPER=1; headroom wrap codex"     # Activate headroom with output reduction for codex
+alias hrc="export HEADROOM_ROLLOUT_CHANNEL=beta HEADROOM_OUTPUT_SHAPER=1; headroom wrap opencode"   # Activate headroom with output reduction for opencode
+
 # --- Jupyter ---
 alias jn="jupyter notebook"
 function ipyki() {
