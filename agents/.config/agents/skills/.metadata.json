@@ -1,6 +1,12 @@
 {
   "version": 1,
   "entries": {
+    "pkm/obsidian-skills/_obsidian-skills": {
+      "source": "https://github.com/kepano/obsidian-skills.git",
+      "tracked": true,
+      "group": "pkm/obsidian-skills",
+      "branch": "main"
+    },
     "skillshare": {
       "source": "github.com/runkids/skillshare/skills/skillshare",
       "type": "github-subdir",
