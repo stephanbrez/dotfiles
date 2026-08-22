@@ -72,6 +72,9 @@ export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
 # export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 # export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
 # export GNUPGHOME="$XDG_DATA_HOME/gnupg"
+# bun resolves global installs against $BUN_INSTALL; without it bun defaults
+# to $XDG_CACHE_HOME/.bun, putting binaries off-PATH inside the cache dir
+export BUN_INSTALL="$XDG_DATA_HOME/bun"
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export JUPYTER_CONFIG_DIR="$XDG_CONFIG_HOME/jupyter"
@@ -186,6 +189,7 @@ preferred_path=(/usr/local/bin)
 [[ -n $CARGO_HOME && -d $CARGO_HOME/bin ]] && preferred_path+=($CARGO_HOME/bin)
 # Requires `npm config set prefix "$XDG_DATA_HOME/npm"`.
 [[ -d $XDG_DATA_HOME/npm/bin ]] && preferred_path+=($XDG_DATA_HOME/npm/bin)
+[[ -d $BUN_INSTALL/bin ]] && preferred_path+=($BUN_INSTALL/bin)
 preferred_path+=(/opt/nvim)
 
 path=($preferred_path $path)
