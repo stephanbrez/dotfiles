@@ -214,7 +214,6 @@ eval $(tv init zsh)
 # ======== uv ======== #
 # uv completions
 eval $(uv generate-shell-completion zsh)
-. "$XDG_DATA_HOME/../bin/env"
 
 # ======== zoxide ======== #
 # init & replace cd
@@ -222,4 +221,4 @@ eval $(uv generate-shell-completion zsh)
 eval "$(zoxide init --cmd cd zsh)"
 
 # bun completions
-[ -s "/home/stephan/.bun/_bun" ] && source "/home/stephan/.bun/_bun"
+[ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
