@@ -28,7 +28,7 @@ export LANG=en_US.UTF-8
 # follow XDG base dir specification
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_STATE_HOME="$HOME/.local/state"
 
 # ZDOTDIR is set in ~/.zprofile (the entry point)
 # This file is sourced after ZDOTDIR is already set
@@ -72,14 +72,13 @@ export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
 # export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 # export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
 # export GNUPGHOME="$XDG_DATA_HOME/gnupg"
-# bun resolves global installs against $BUN_INSTALL; without it bun defaults
-# to $XDG_CACHE_HOME/.bun, putting binaries off-PATH inside the cache dir
-export BUN_INSTALL="$XDG_DATA_HOME/bun"
+export BUN_INSTALL="$XDG_DATA_HOME/bun"         # force bun global installs out of $XDG_CACHE_HOME/.bun
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export JUPYTER_CONFIG_DIR="$XDG_CONFIG_HOME/jupyter"
 export CLAUDE_CONFIG_DIR="$XDG_DATA_HOME/claude-code"
 export CODEX_HOME="$XDG_DATA_HOME/codex"
+export PI_CONFIG_DIR=".config/omp"              # OMP uses a path relative to $HOME. need to run `omp config init-xdg` first
 export CONDA_ROOT="/opt/conda/"
 export CONDA_EXE="$CONDA_ROOT/bin/conda"
 export MAMBA_EXE="$CONDA_ROOT/bin/mamba"
