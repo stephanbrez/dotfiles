@@ -1,0 +1,12 @@
+# managed by `headroom wrap omp` — do not hand-edit while wrapped.
+# `headroom unwrap omp` restores the pre-wrap file (or removes this one
+# if it did not exist). The original is kept at <models.yml.headroom-backup>.
+providers:
+  anthropic:
+    baseUrl: http://127.0.0.1:8787
+  openrouter:
+    baseUrl: http://127.0.0.1:8787/v1
+  opencode-zen:
+    baseUrl: http://127.0.0.1:8787
+  opencode-go:
+    baseUrl: http://127.0.0.1:8787/v1

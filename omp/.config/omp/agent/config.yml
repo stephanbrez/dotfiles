@@ -1,0 +1,16 @@
+providers: 
+  webSearchOrder: 
+    []
+modelRoles: 
+  default: opencode-zen/glm-5.2:high
+  designer: opencode-zen/glm-5.2:high
+  plan: opencode-zen/glm-5.2:high
+  slow: opencode-zen/glm-5.2:max
+  smol: opencode-zen/glm-5.2:auto
+symbolPreset: unicode
+composer: 
+  shape: pi
+theme: 
+  dark: titanium
+  light: light
+setupVersion: 2
