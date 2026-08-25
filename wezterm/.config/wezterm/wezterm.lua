@@ -145,7 +145,7 @@ end) --
 -- config.color_scheme = Scheme_for_appearance(get_appearance())
 
 -- Default scheme
-local default_scheme = "dawnfox"
+local default_scheme = "OneHalfLight"
 
 -- Load SSH themes from separate file (contains sensitive host information)
 local host_to_scheme = {}
