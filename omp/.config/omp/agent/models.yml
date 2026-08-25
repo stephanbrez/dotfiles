@@ -4,9 +4,15 @@
 providers:
   anthropic:
     baseUrl: http://127.0.0.1:8787
-  openrouter:
-    baseUrl: http://127.0.0.1:8787/v1
   opencode-zen:
-    baseUrl: http://127.0.0.1:8787
+    baseUrl: http://127.0.0.1:8787/v1
+    headers:
+      x-headroom-base-url: https://opencode.ai/zen
   opencode-go:
     baseUrl: http://127.0.0.1:8787/v1
+    headers:
+      x-headroom-base-url: https://opencode.ai/zen/go
+  openrouter:
+    baseUrl: http://127.0.0.1:8787/v1
+    headers:
+      x-headroom-base-url: https://openrouter.ai/api
