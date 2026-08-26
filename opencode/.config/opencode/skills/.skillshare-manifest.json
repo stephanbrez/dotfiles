@@ -1,0 +1,17 @@
+{
+  "managed": {
+    "code-clarifier": "symlink",
+    "defuddle": "symlink",
+    "eli5": "symlink",
+    "generating-commit-messages": "symlink",
+    "json-canvas": "symlink",
+    "obsidian-bases": "symlink",
+    "obsidian-cli": "symlink",
+    "obsidian-markdown": "symlink",
+    "python-optimizer": "symlink",
+    "review-journals": "symlink",
+    "skill-scanner": "symlink",
+    "skillshare": "symlink"
+  },
+  "updated_at": "2026-08-25T22:16:29.602892742-04:00"
+}
