@@ -14,9 +14,10 @@
 # ╚════════════════════════════════════════════════╝
 #
 # DESIGN:
-#   1. Set ZDOTDIR to point zsh at ~/.config/zsh
-#   2. Load ~/.dotfiles.local for machine-local profile selection
-#   3. Source configs in priority order:
+#   0. ZDOTDIR is set by ~/.zshenv (unconditional bootstrap); this file is the
+#      login-shell entry point reached through it
+#   1. Load ~/.dotfiles.local for machine-local profile selection
+#   2. Source configs in priority order:
 #      - 00-base:      Universal settings (all machines)
 #      - 10-<os>:     OS-specific (linux, macos)
 #      - 20-<profile>: Role-specific (dev-server, laptop, workstation)
@@ -31,8 +32,11 @@
 #   2. Add case to lib/loader.zsh source_os_config()
 #
 
-# Point zsh at the repo-managed config directory.
-export ZDOTDIR="$HOME/.config/zsh"
+# ZDOTDIR is exported by ~/.zshenv, the unconditional bootstrap, which is what
+# guarantees this file is reachable even for login shells that inherit the
+# variable from their parent. Re-exported here as a fallback so this dispatcher
+# still works when sourced directly (e.g. from a non-zsh shell).
+export ZDOTDIR="${ZDOTDIR:-${XDG_CONFIG_HOME:-$HOME/.config}/zsh}"
 
 # Load machine-local overrides/profile selection.
 # This file is not tracked in git.

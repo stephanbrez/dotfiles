@@ -15,8 +15,14 @@ This system uses a dispatch-based architecture to load configuration files in a 
 ## Quick Start
 
 The entry points are:
-- `~/.zprofile` - Environment variables (sourced first)
-- `~/.config/zsh/.zshrc` - Shell configuration (sourced second)
+- `~/.zshenv` - Bootstrap: sets `ZDOTDIR` (sourced by **every** zsh invocation)
+- `~/.config/zsh/.zprofile` - Environment variables (login shells)
+- `~/.config/zsh/.zshrc` - Shell configuration (interactive shells)
+
+`ZDOTDIR` must be exported from `.zshenv`, not `.zprofile`: zsh resolves its
+startup files from `$ZDOTDIR` when that variable is already in the environment
+and from `$HOME` otherwise. Bootstrapping from `.zprofile` is circular, so a
+login shell that inherits `ZDOTDIR` would silently load nothing.
 
 Set your profile in `~/.dotfiles.local`:
 ```sh
@@ -27,9 +33,10 @@ export DOTFILES_PROFILE=laptop
 
 ```
 zsh/
-├── .zprofile                    # Entry point - environment variables
+├── .zshenv                      # Bootstrap - ZDOTDIR (every zsh invocation)
 ├── README.md                    # This file
 └── .config/zsh/
+    ├── .zprofile                # Entry point - environment (login shells)
     ├── .zshrc                   # Entry point - shell configuration
     ├── lib/
     │   └── loader.zsh           # Context-aware loading utilities

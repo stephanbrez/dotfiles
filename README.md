@@ -513,10 +513,11 @@ points, managed entirely through `lib/loader.zsh`.
 
 ### Entry Points
 
-| File                                        | Purpose           | Sources                                             |
-| ------------------------------------------- | ----------------- | --------------------------------------------------- |
-| `~/.zprofile` (stowed from `zsh/`)          | Environment setup | `zprofile.d/` via loader                            |
-| `~/.config/zsh/.zshrc` (stowed from `zsh/`) | Shell config      | `zshrc.d/`, `aliases.d/`, `functions.d/` via loader |
+| File                                              | Purpose           | Sources                                             |
+| ------------------------------------------------- | ----------------- | --------------------------------------------------- |
+| `~/.zshenv` (stowed from `zsh/`)                  | Bootstrap         | sets `ZDOTDIR`; sourced by every zsh                |
+| `~/.config/zsh/.zprofile` (stowed from `zsh/`)    | Environment setup | `zprofile.d/` via loader                            |
+| `~/.config/zsh/.zshrc` (stowed from `zsh/`)       | Shell config      | `zshrc.d/`, `aliases.d/`, `functions.d/` via loader |
 
 ### Priority Loading Order
 
@@ -543,13 +544,15 @@ export DOTFILES_PROFILE="laptop"
 Defaults to`default` (no profile-specific config) when unset.
 
 The profile value is read in `.zprofile` before any config is loaded, so all
-layers can respond to it.
+layers can respond to it. `.zprofile` is reached through `~/.zshenv`, which sets
+`ZDOTDIR` for every zsh invocation — see [Entry Points](#entry-points).
 
 ### Directory Layout
 
 ```
 ~/.config/zsh/
-├── .zshrc                    # Dispatch entry point
+├── .zprofile                 # Environment entry point (login shells)
+├── .zshrc                    # Dispatch entry point (interactive shells)
 ├── lib/
 │   └── loader.zsh            # Context-aware sourcing: source_os_config,
 │                             # source_profile_config, source_host_config
